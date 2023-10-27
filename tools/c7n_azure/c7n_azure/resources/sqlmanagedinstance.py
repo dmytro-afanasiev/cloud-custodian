@@ -32,13 +32,13 @@ class SqlManagedInstanceVulnerabilityAssessmentsFilter(Filter):
 
     .. code-block:: yaml
 
-    policies:
-      - name: azure-sql-managed-instance-vulnerability-assessments
-        resource: azure.sql-managed-instance
-        filters:
-          - type: vulnerability-assessments
-            key: recurring_scans.is_enabled
-            value: true
+        policies:
+          - name: azure-sql-managed-instance-vulnerability-assessments
+            resource: azure.sql-managed-instance
+            filters:
+              - type: vulnerability-assessments
+                key: recurring_scans.is_enabled
+                value: true
     """
 
     schema = type_schema(
@@ -96,13 +96,13 @@ class SqlManagedInstanceEncryptionProtectorsFilter(Filter):
 
     .. code-block:: yaml
 
-    policies:
-      - name: azure-sql-managed-instance-service-managed
-        resource: azure.sql-managed-instance
-        filters:
-          - type: encryption-protector
-            key: kind
-            value: servicemanaged
+        policies:
+          - name: azure-sql-managed-instance-service-managed
+            resource: azure.sql-managed-instance
+            filters:
+              - type: encryption-protector
+                key: kind
+                value: servicemanaged
     """
 
     schema = type_schema(
@@ -162,13 +162,13 @@ class SqlManagedInstanceSecurityAlertPoliciesFilter(Filter):
 
     .. code-block:: yaml
 
-    policies:
-      - name: azure-sql-managed-server-security-alert-policies
-        resource: azure.sql-managed-instance
-        filters:
-          - type: managed-server-security-alert-policies
-            key: state
-            value: Disabled
+        policies:
+          - name: azure-sql-managed-server-security-alert-policies
+            resource: azure.sql-managed-instance
+            filters:
+              - type: managed-server-security-alert-policies
+                key: state
+                value: Disabled
     """
 
     schema = type_schema(

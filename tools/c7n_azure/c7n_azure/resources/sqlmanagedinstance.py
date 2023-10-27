@@ -1,4 +1,3 @@
-import distutils.util
 import logging
 
 from c7n_azure.filters import ValueFilter
@@ -6,6 +5,7 @@ from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
 from c7n.filters import Filter
 from c7n.utils import type_schema
+from c7n.vendored.distutils.util import strtobool
 
 log = logging.getLogger('custodian.azure.sql-managed-instance')
 
@@ -60,8 +60,8 @@ class SqlManagedInstanceVulnerabilityAssessmentsFilter(Filter):
                 else:
                     property_value = None
                     break
-            if type(property_value) is bool and type(value) is str:
-                value = distutils.util.strtobool(value)
+            if isinstance(property_value, bool) and isinstance(value, str):
+                value = bool(strtobool(value))
             if value == property_value:
                 add_to_filtered = True
                 break
@@ -124,8 +124,8 @@ class SqlManagedInstanceEncryptionProtectorsFilter(Filter):
                 else:
                     property_value = None
                     break
-            if type(property_value) is bool and type(value) is str:
-                value = distutils.util.strtobool(value)
+            if isinstance(property_value, bool) and isinstance(value, str):
+                value = bool(strtobool(value))
             if value == property_value:
                 add_to_filtered = True
                 break
@@ -190,8 +190,8 @@ class SqlManagedInstanceSecurityAlertPoliciesFilter(Filter):
                 else:
                     property_value = None
                     break
-            if type(property_value) is bool and type(value) is str:
-                value = distutils.util.strtobool(value)
+            if isinstance(property_value, bool) and isinstance(value, str):
+                value = bool(strtobool(value))
             if value == property_value:
                 add_to_filtered = True
                 break

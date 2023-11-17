@@ -39,7 +39,7 @@ class SqlManagedInstanceTest(BaseTest):
             'name': 'test-azure-sql-managed-server-filter-security-alert-policy',
             'resource': 'azure.sql-managed-instance',
             'filters': [{
-                'type': 'managed-server-security-alert-policies',
+                'type': 'security-alert-policies',
                 'key': 'state',
                 'value': 'Disabled'
             }]

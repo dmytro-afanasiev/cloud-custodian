@@ -153,7 +153,7 @@ class SqlManagedInstanceEncryptionProtectorsFilter(Filter):
             filtered_resources, event)
 
 
-@SqlManagedInstance.filter_registry.register('managed-server-security-alert-policies')
+@SqlManagedInstance.filter_registry.register('security-alert-policies')
 class SqlManagedInstanceSecurityAlertPoliciesFilter(Filter):
     """
     Filters resources by managed server security alert policies'.
@@ -166,13 +166,13 @@ class SqlManagedInstanceSecurityAlertPoliciesFilter(Filter):
           - name: azure-sql-managed-server-security-alert-policies
             resource: azure.sql-managed-instance
             filters:
-              - type: managed-server-security-alert-policies
+              - type: security-alert-policies
                 key: state
                 value: Disabled
     """
 
     schema = type_schema(
-        'managed-server-security-alert-policies', rinherit=ValueFilter.schema
+        'security-alert-policies', rinherit=ValueFilter.schema
     )
 
     def __call__(self, resource):

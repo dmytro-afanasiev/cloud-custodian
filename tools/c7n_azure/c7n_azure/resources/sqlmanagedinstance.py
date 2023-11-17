@@ -14,7 +14,7 @@ log = logging.getLogger('custodian.azure.sql-managed-instance')
 class SqlManagedInstance(ArmResourceManager):
 
     class resource_type(ArmResourceManager.resource_type):
-        doc_groups = ['Instances']
+        doc_groups = ['Databases']
 
         service = 'azure.mgmt.sql'
         client = 'SqlManagementClient'

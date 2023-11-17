@@ -10,13 +10,6 @@ class SqlManagedInstanceTest(BaseTest):
         }, validate=True)
         self.assertTrue(p)
 
-        # test alias for back-compatibility
-        p = self.load_policy({
-            'name': 'test-policy-assignment',
-            'resource': 'azure.sqlmanagedinstance'
-        }, validate=True)
-        self.assertTrue(p)
-
     def test_sql_managed_instance(self):
         p = self.load_policy({
             'name': 'test-azure-sql-managed-instance-all',

@@ -10,7 +10,7 @@ from c7n.vendored.distutils.util import strtobool
 log = logging.getLogger('custodian.azure.sql-managed-instance')
 
 
-@resources.register('sql-managed-instance', aliases=['sqlmanagedinstance'])
+@resources.register('sql-managed-instance')
 class SqlManagedInstance(ArmResourceManager):
 
     class resource_type(ArmResourceManager.resource_type):

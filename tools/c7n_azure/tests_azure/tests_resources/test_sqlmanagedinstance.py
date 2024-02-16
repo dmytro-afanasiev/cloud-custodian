@@ -48,15 +48,15 @@ class SqlManagedInstanceTest(BaseTest):
         self.assertEqual(1, len(resources))
         self.assertEqual('vvsqlmi1', resources[0]['name'])
 
-    def test_filter_recurring_scans(self):
+    def test_vulnerability_assessment_filter(self):
         p = self.load_policy({
             'name': 'test-azure-sql-managed-instance-recurring-scan-disabled',
             'resource': 'azure.sql-managed-instance',
-            'filters': [
-                {'type': 'vulnerability-assessments',
-                 'key': 'recurring_scans.is_enabled',
-                 'value': 'True'
-                 }],
+            'filters': [{
+                'type': 'vulnerability-assessment',
+                'key': 'recurringScans.isEnabled',
+                'value': True
+            }],
         })
         resources = p.run()
         self.assertEqual(1, len(resources))

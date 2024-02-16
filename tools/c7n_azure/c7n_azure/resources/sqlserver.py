@@ -310,6 +310,8 @@ class VulnerabilityAssessmentFilter(ValueFilter):
     def _process_resource_set(self, resources, event=None):
         client = self.manager.get_client()
         for resource in resources:
+            # todo key existence is checked against resource['properties'] but
+            #  then we set that key to resource dict, not properties
             if self.key not in resource['properties']:
                 va = list(client.server_vulnerability_assessments.list_by_server(
                     resource['resourceGroup'],

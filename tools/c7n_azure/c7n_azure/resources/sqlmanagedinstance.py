@@ -23,68 +23,36 @@ class SqlManagedInstance(ArmResourceManager):
         diagnostic_settings_enabled = False
 
 
-@SqlManagedInstance.filter_registry.register('vulnerability-assessments')
-class SqlManagedInstanceVulnerabilityAssessmentsFilter(Filter):
-    """
-    Filters resources by vulnerability assessments.
-
-    :example:
-
-    .. code-block:: yaml
-
-        policies:
-          - name: azure-sql-managed-instance-vulnerability-assessments
-            resource: azure.sql-managed-instance
-            filters:
-              - type: vulnerability-assessments
-                key: recurring_scans.is_enabled
-                value: true
-    """
-
+@SqlManagedInstance.filter_registry.register('vulnerability-assessment')
+class SqlManagedInstanceVulnerabilityAssessmentsFilter(ValueFilter):
     schema = type_schema(
-        'vulnerability-assessments', rinherit=ValueFilter.schema
+        'vulnerability-assessment',
+        rinherit=ValueFilter.schema,
     )
 
-    def __call__(self, resource):
-        return resource
-
-    @staticmethod
-    def filter_by_assessments(assessments, filtering_properties, value):
-        add_to_filtered = False
-        for assessment in assessments:
-            assessment = assessment.as_dict()
-            property_value = assessment
-            for filtering_property in filtering_properties:
-                if filtering_property in property_value:
-                    property_value = property_value[filtering_property]
-                else:
-                    property_value = None
-                    break
-            if isinstance(property_value, bool) and isinstance(value, str):
-                value = bool(strtobool(value))
-            if value == property_value:
-                add_to_filtered = True
-                break
-        return add_to_filtered
+    def __init__(self, data, manager=None):
+        super(SqlManagedInstanceVulnerabilityAssessmentsFilter, self).__init__(data, manager)
+        self.key = 'c7n:vulnerability_assessment'
 
     def process(self, resources, event=None):
-        client = self.manager.get_client('azure.mgmt.sql.SqlManagementClient')
-
-        filtered_resources = []
-        key = self.data['key']
-        value = self.data['value']
-        filtering_properties = key.split('.')
+        client = self.manager.get_client()
+        key = self.key
         for resource in resources:
-            assessments = client.managed_instance_vulnerability_assessments.list_by_instance(
-                resource['resourceGroup'],
-                resource['name']
-            )
-            add_to_filtered = self.filter_by_assessments(assessments, filtering_properties, value)
-            if add_to_filtered:
-                filtered_resources.append(resource)
+            if key in resource:
+                continue
+            # probably there can be only one of them. Oh, god bless azure api
+            assessment = next(client.managed_instance_vulnerability_assessments.list_by_instance(
+                resource_group_name=resource['resourceGroup'],
+                managed_instance_name=resource['name']
+            ), None)
+            if assessment:
+                resource[key] = assessment.serialize(True).get('properties') or {}
+            else:
+                resource[key] = {}
+        return super(SqlManagedInstanceVulnerabilityAssessmentsFilter, self).process(resources, event)
 
-        return super(SqlManagedInstanceVulnerabilityAssessmentsFilter, self).process(
-            filtered_resources, event)
+    def __call__(self, resource):
+        return super(SqlManagedInstanceVulnerabilityAssessmentsFilter, self).__call__(resource[self.key])
 
 
 @SqlManagedInstance.filter_registry.register('encryption-protector')

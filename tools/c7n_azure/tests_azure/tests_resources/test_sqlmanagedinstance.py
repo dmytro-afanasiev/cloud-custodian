@@ -66,11 +66,11 @@ class SqlManagedInstanceTest(BaseTest):
         p = self.load_policy({
             'name': 'test-azure-sql-managed-instance-service-managed',
             'resource': 'azure.sql-managed-instance',
-            'filters': [
-                {'type': 'encryption-protector',
-                 'key': 'kind',
-                 'value': 'servicemanaged'
-                 }],
+            'filters': [{
+                'type': 'encryption-protector',
+                'key': 'serverKeyType',
+                'value': 'ServiceManaged'
+            }],
         })
         resources = p.run()
         self.assertEqual(1, len(resources))

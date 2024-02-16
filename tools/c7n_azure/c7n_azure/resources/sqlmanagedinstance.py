@@ -56,7 +56,7 @@ class SqlManagedInstanceVulnerabilityAssessmentsFilter(ValueFilter):
 
 
 @SqlManagedInstance.filter_registry.register('encryption-protector')
-class SqlManagedInstanceEncryptionProtectorsFilter(Filter):
+class SqlManagedInstanceEncryptionProtectorsFilter(ValueFilter):
     """
     Filters resources by encryption protectors.
 
@@ -69,56 +69,37 @@ class SqlManagedInstanceEncryptionProtectorsFilter(Filter):
             resource: azure.sql-managed-instance
             filters:
               - type: encryption-protector
-                key: kind
-                value: servicemanaged
+                key: serverKeyType
+                value: ServiceManaged
     """
 
     schema = type_schema(
         'encryption-protector', rinherit=ValueFilter.schema
     )
 
-    def __call__(self, resource):
-        return resource
-
-    @staticmethod
-    def filter_by_encryption_protector(protectors, filtering_properties, value):
-        add_to_filtered = False
-        for protector in protectors:
-            protector = protector.as_dict()
-            property_value = protector
-            for filtering_property in filtering_properties:
-                if filtering_property in property_value:
-                    property_value = property_value[filtering_property]
-                else:
-                    property_value = None
-                    break
-            if isinstance(property_value, bool) and isinstance(value, str):
-                value = bool(strtobool(value))
-            if value == property_value:
-                add_to_filtered = True
-                break
-        return add_to_filtered
+    def __init__(self, data, manager=None):
+        super(SqlManagedInstanceEncryptionProtectorsFilter, self).__init__(data, manager)
+        self.key = 'c7n:encryption_protector'
 
     def process(self, resources, event=None):
-        client = self.manager.get_client('azure.mgmt.sql.SqlManagementClient')
-
-        filtered_resources = []
-        key = self.data['key']
-        value = self.data['value']
-        filtering_properties = key.split('.')
+        client = self.manager.get_client()
+        key = self.key
         for resource in resources:
-            protectors = client.managed_instance_encryption_protectors.list_by_instance(
-                resource['resourceGroup'],
-                resource['name']
-            )
-            add_to_filtered = self.filter_by_encryption_protector(
-                protectors, filtering_properties, value)
+            if key in resource:
+                continue
+            # probably there can be only one of them. Oh, god bless azure api
+            protector = next(client.managed_instance_encryption_protectors.list_by_instance(
+                resource_group_name=resource['resourceGroup'],
+                managed_instance_name=resource['name']
+            ), None)
+            if protector:
+                resource[key] = protector.serialize(True).get('properties') or {}
+            else:
+                resource[key] = {}
+        return super(SqlManagedInstanceEncryptionProtectorsFilter, self).process(resources, event)
 
-            if add_to_filtered:
-                filtered_resources.append(resource)
-
-        return super(SqlManagedInstanceEncryptionProtectorsFilter, self).process(
-            filtered_resources, event)
+    def __call__(self, resource):
+        return super(SqlManagedInstanceEncryptionProtectorsFilter, self).__call__(resource[self.key])
 
 
 @SqlManagedInstance.filter_registry.register('security-alert-policies')

@@ -40,8 +40,11 @@ class SqlManagedInstanceTest(BaseTest):
             'resource': 'azure.sql-managed-instance',
             'filters': [{
                 'type': 'security-alert-policies',
-                'key': 'state',
-                'value': 'Disabled'
+                'attrs': [{
+                    'type': 'value',
+                    'key': 'properties.state',
+                    'value': 'Disabled'
+                }]
             }]
         })
         resources = p.run()

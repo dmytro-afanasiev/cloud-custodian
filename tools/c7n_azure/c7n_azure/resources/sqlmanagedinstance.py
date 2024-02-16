@@ -1,11 +1,10 @@
 import logging
 
+from c7n.filters import ListItemFilter
+from c7n.utils import type_schema
 from c7n_azure.filters import ValueFilter
 from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
-from c7n.filters import Filter
-from c7n.utils import type_schema
-from c7n.vendored.distutils.util import strtobool
 
 log = logging.getLogger('custodian.azure.sql-managed-instance')
 
@@ -103,7 +102,7 @@ class SqlManagedInstanceEncryptionProtectorsFilter(ValueFilter):
 
 
 @SqlManagedInstance.filter_registry.register('security-alert-policies')
-class SqlManagedInstanceSecurityAlertPoliciesFilter(Filter):
+class SqlManagedInstanceSecurityAlertPoliciesFilter(ListItemFilter):
     """
     Filters resources by managed server security alert policies'.
 
@@ -116,53 +115,25 @@ class SqlManagedInstanceSecurityAlertPoliciesFilter(Filter):
             resource: azure.sql-managed-instance
             filters:
               - type: security-alert-policies
-                key: state
-                value: Disabled
+                attrs:
+                  - type: value
+                    key: state
+                    value: Disabled
     """
 
     schema = type_schema(
-        'security-alert-policies', rinherit=ValueFilter.schema
+        'security-alert-policies',
+        attrs={'$ref': '#/definitions/filters_common/list_item_attrs'},
+        count={'type': 'number'},
+        count_op={'$ref': '#/definitions/filters_common/comparison_operators'}
     )
 
-    def __call__(self, resource):
-        return resource
+    annotation_key = 'c7n:security-alert-policies'
+    annotate_items = True
 
-    @staticmethod
-    def filter_by_security_alert_policies(security_alert_policies, filtering_properties, value):
-        add_to_filtered = False
-        for security_alert_policy in security_alert_policies:
-            security_alert_policy = security_alert_policy.as_dict()
-            property_value = security_alert_policy
-            for filtering_property in filtering_properties:
-                if filtering_property in property_value:
-                    property_value = property_value[filtering_property]
-                else:
-                    property_value = None
-                    break
-            if isinstance(property_value, bool) and isinstance(value, str):
-                value = bool(strtobool(value))
-            if value == property_value:
-                add_to_filtered = True
-                break
-        return add_to_filtered
-
-    def process(self, resources, event=None):
-        client = self.manager.get_client('azure.mgmt.sql.SqlManagementClient')
-
-        filtered_resources = []
-        key = self.data['key']
-        value = self.data['value']
-        filtering_properties = key.split('.')
-        for resource in resources:
-            security_alert_policies = (
-                client.managed_server_security_alert_policies.list_by_instance(
-                    resource['resourceGroup'],
-                    resource['name']))
-            add_to_filtered = self.filter_by_security_alert_policies(
-                security_alert_policies, filtering_properties, value)
-
-            if add_to_filtered:
-                filtered_resources.append(resource)
-
-        return super(SqlManagedInstanceSecurityAlertPoliciesFilter, self).process(
-            filtered_resources, event)
+    def get_item_values(self, resource):
+        it = self.manager.get_client().managed_server_security_alert_policies.list_by_instance(
+            resource_group_name=resource['resourceGroup'],
+            managed_instance_name=resource['name']
+        )
+        return [item.serialize(True) for item in it]

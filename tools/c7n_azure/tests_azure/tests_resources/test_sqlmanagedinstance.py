@@ -56,7 +56,7 @@ class SqlManagedInstanceTest(BaseTest):
             'name': 'test-azure-sql-managed-instance-recurring-scan-disabled',
             'resource': 'azure.sql-managed-instance',
             'filters': [{
-                'type': 'vulnerability-assessment',
+                'type': 'vulnerability-assessments',
                 'attrs': [{
                     'type': 'value',
                     'key': 'properties.recurringScans.isEnabled',
@@ -73,7 +73,7 @@ class SqlManagedInstanceTest(BaseTest):
             'name': 'test-azure-sql-managed-instance-service-managed',
             'resource': 'azure.sql-managed-instance',
             'filters': [{
-                'type': 'encryption-protector',
+                'type': 'encryption-protectors',
                 'attrs': [{
                     'type': 'value',
                     'key': 'properties.serverKeyType',

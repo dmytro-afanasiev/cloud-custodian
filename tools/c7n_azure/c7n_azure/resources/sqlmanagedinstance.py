@@ -21,7 +21,7 @@ class SqlManagedInstance(ArmResourceManager):
         diagnostic_settings_enabled = False
 
 
-@SqlManagedInstance.filter_registry.register('vulnerability-assessment')
+@SqlManagedInstance.filter_registry.register('vulnerability-assessments')
 class SqlManagedInstanceVulnerabilityAssessmentsFilter(ListItemFilter):
     """
     Filters managed instances by their vulnerability assessments
@@ -34,14 +34,15 @@ class SqlManagedInstanceVulnerabilityAssessmentsFilter(ListItemFilter):
           - name: managed-instances-with-vulnerability-recurring-scan-enabled
             resource: azure.sql-managed-instance
             filters:
-              - type: vulnerability-assessment
+              - type: vulnerability-assessments
                 attrs:
                   - type: value
                     key: properties.recurringScans.isEnabled
                     value: True
+
     """
     schema = type_schema(
-        'vulnerability-assessment',
+        'vulnerability-assessments',
         attrs={'$ref': '#/definitions/filters_common/list_item_attrs'},
         count={'type': 'number'},
         count_op={'$ref': '#/definitions/filters_common/comparison_operators'}
@@ -58,7 +59,7 @@ class SqlManagedInstanceVulnerabilityAssessmentsFilter(ListItemFilter):
         return [item.serialize(True) for item in it]
 
 
-@SqlManagedInstance.filter_registry.register('encryption-protector')
+@SqlManagedInstance.filter_registry.register('encryption-protectors')
 class SqlManagedInstanceEncryptionProtectorsFilter(ListItemFilter):
     """
     Filters resources by encryption protectors.
@@ -71,15 +72,16 @@ class SqlManagedInstanceEncryptionProtectorsFilter(ListItemFilter):
           - name: azure-sql-managed-instance-service-managed
             resource: azure.sql-managed-instance
             filters:
-              - type: encryption-protector
+              - type: encryption-protectors
                 attrs:
                   - type: value
                     key: properties.serverKeyType
                     value: ServiceManaged
+
     """
 
     schema = type_schema(
-        'encryption-protector',
+        'encryption-protectors',
         attrs={'$ref': '#/definitions/filters_common/list_item_attrs'},
         count={'type': 'number'},
         count_op={'$ref': '#/definitions/filters_common/comparison_operators'}
@@ -112,8 +114,9 @@ class SqlManagedInstanceSecurityAlertPoliciesFilter(ListItemFilter):
               - type: security-alert-policies
                 attrs:
                   - type: value
-                    key: state
+                    key: properties.state
                     value: Disabled
+
     """
 
     schema = type_schema(

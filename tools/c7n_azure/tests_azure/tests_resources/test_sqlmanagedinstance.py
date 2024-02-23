@@ -57,8 +57,11 @@ class SqlManagedInstanceTest(BaseTest):
             'resource': 'azure.sql-managed-instance',
             'filters': [{
                 'type': 'vulnerability-assessment',
-                'key': 'recurringScans.isEnabled',
-                'value': True
+                'attrs': [{
+                    'type': 'value',
+                    'key': 'properties.recurringScans.isEnabled',
+                    'value': True
+                }]
             }],
         })
         resources = p.run()

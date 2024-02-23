@@ -1,8 +1,7 @@
 import logging
 
-from c7n.filters import ListItemFilter
+from c7n.filters import ListItemFilter, ValueFilter
 from c7n.utils import type_schema
-from c7n_azure.filters import ValueFilter
 from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
 
@@ -23,35 +22,40 @@ class SqlManagedInstance(ArmResourceManager):
 
 
 @SqlManagedInstance.filter_registry.register('vulnerability-assessment')
-class SqlManagedInstanceVulnerabilityAssessmentsFilter(ValueFilter):
+class SqlManagedInstanceVulnerabilityAssessmentsFilter(ListItemFilter):
+    """
+    Filters managed instances by their vulnerability assessments
+
+    :example:
+
+    .. code-block:: yaml
+
+        policies:
+          - name: managed-instances-with-vulnerability-recurring-scan-enabled
+            resource: azure.sql-managed-instance
+            filters:
+              - type: vulnerability-assessment
+                attrs:
+                  - type: value
+                    key: properties.recurringScans.isEnabled
+                    value: True
+    """
     schema = type_schema(
         'vulnerability-assessment',
-        rinherit=ValueFilter.schema,
+        attrs={'$ref': '#/definitions/filters_common/list_item_attrs'},
+        count={'type': 'number'},
+        count_op={'$ref': '#/definitions/filters_common/comparison_operators'}
     )
 
-    def __init__(self, data, manager=None):
-        super(SqlManagedInstanceVulnerabilityAssessmentsFilter, self).__init__(data, manager)
-        self.key = 'c7n:vulnerability_assessment'
+    item_annotation_key = 'c7n:VulnerabilityAssessments'
+    annotate_items = True
 
-    def process(self, resources, event=None):
-        client = self.manager.get_client()
-        key = self.key
-        for resource in resources:
-            if key in resource:
-                continue
-            # probably there can be only one of them. Oh, god bless azure api
-            assessment = next(client.managed_instance_vulnerability_assessments.list_by_instance(
-                resource_group_name=resource['resourceGroup'],
-                managed_instance_name=resource['name']
-            ), None)
-            if assessment:
-                resource[key] = assessment.serialize(True).get('properties') or {}
-            else:
-                resource[key] = {}
-        return super(SqlManagedInstanceVulnerabilityAssessmentsFilter, self).process(resources, event)
-
-    def __call__(self, resource):
-        return super(SqlManagedInstanceVulnerabilityAssessmentsFilter, self).__call__(resource[self.key])
+    def get_item_values(self, resource):
+        it = self.manager.get_client().managed_instance_vulnerability_assessments.list_by_instance(
+            resource_group_name=resource['resourceGroup'],
+            managed_instance_name=resource['name']
+        )
+        return [item.serialize(True) for item in it]
 
 
 @SqlManagedInstance.filter_registry.register('encryption-protector')
@@ -128,7 +132,7 @@ class SqlManagedInstanceSecurityAlertPoliciesFilter(ListItemFilter):
         count_op={'$ref': '#/definitions/filters_common/comparison_operators'}
     )
 
-    annotation_key = 'c7n:security-alert-policies'
+    item_annotation_key = 'c7n:security-alert-policies'
     annotate_items = True
 
     def get_item_values(self, resource):

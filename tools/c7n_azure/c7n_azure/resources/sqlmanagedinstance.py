@@ -1,6 +1,6 @@
 import logging
 
-from c7n.filters import ListItemFilter, ValueFilter
+from c7n.filters import ListItemFilter
 from c7n.utils import type_schema
 from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
@@ -59,7 +59,7 @@ class SqlManagedInstanceVulnerabilityAssessmentsFilter(ListItemFilter):
 
 
 @SqlManagedInstance.filter_registry.register('encryption-protector')
-class SqlManagedInstanceEncryptionProtectorsFilter(ValueFilter):
+class SqlManagedInstanceEncryptionProtectorsFilter(ListItemFilter):
     """
     Filters resources by encryption protectors.
 
@@ -72,37 +72,28 @@ class SqlManagedInstanceEncryptionProtectorsFilter(ValueFilter):
             resource: azure.sql-managed-instance
             filters:
               - type: encryption-protector
-                key: serverKeyType
-                value: ServiceManaged
+                attrs:
+                  - type: value
+                    key: properties.serverKeyType
+                    value: ServiceManaged
     """
 
     schema = type_schema(
-        'encryption-protector', rinherit=ValueFilter.schema
+        'encryption-protector',
+        attrs={'$ref': '#/definitions/filters_common/list_item_attrs'},
+        count={'type': 'number'},
+        count_op={'$ref': '#/definitions/filters_common/comparison_operators'}
     )
 
-    def __init__(self, data, manager=None):
-        super(SqlManagedInstanceEncryptionProtectorsFilter, self).__init__(data, manager)
-        self.key = 'c7n:encryption_protector'
+    item_annotation_key = 'c7n:EncryptionProtectors'
+    annotate_items = True
 
-    def process(self, resources, event=None):
-        client = self.manager.get_client()
-        key = self.key
-        for resource in resources:
-            if key in resource:
-                continue
-            # probably there can be only one of them. Oh, god bless azure api
-            protector = next(client.managed_instance_encryption_protectors.list_by_instance(
-                resource_group_name=resource['resourceGroup'],
-                managed_instance_name=resource['name']
-            ), None)
-            if protector:
-                resource[key] = protector.serialize(True).get('properties') or {}
-            else:
-                resource[key] = {}
-        return super(SqlManagedInstanceEncryptionProtectorsFilter, self).process(resources, event)
-
-    def __call__(self, resource):
-        return super(SqlManagedInstanceEncryptionProtectorsFilter, self).__call__(resource[self.key])
+    def get_item_values(self, resource):
+        it = self.manager.get_client().managed_instance_encryption_protectors.list_by_instance(
+            resource_group_name=resource['resourceGroup'],
+            managed_instance_name=resource['name']
+        )
+        return [item.serialize(True) for item in it]
 
 
 @SqlManagedInstance.filter_registry.register('security-alert-policies')

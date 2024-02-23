@@ -74,8 +74,11 @@ class SqlManagedInstanceTest(BaseTest):
             'resource': 'azure.sql-managed-instance',
             'filters': [{
                 'type': 'encryption-protector',
-                'key': 'serverKeyType',
-                'value': 'ServiceManaged'
+                'attrs': [{
+                    'type': 'value',
+                    'key': 'properties.serverKeyType',
+                    'value': 'ServiceManaged'
+                }]
             }],
         })
         resources = p.run()

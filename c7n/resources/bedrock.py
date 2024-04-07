@@ -78,6 +78,8 @@ class RemoveTagBedrockCustomModel(RemoveTag):
 
 
 BedrockCustomModel.filter_registry.register('marked-for-op', TagActionFilter)
+
+
 @BedrockCustomModel.action_registry.register('mark-for-op')
 class MarkBedrockCustomModelForOp(TagDelayedAction):
     """Mark custom models for future actions
@@ -119,9 +121,9 @@ class DeleteBedrockCustomModel(BaseAction):
         client = local_session(self.manager.session_factory).client('bedrock')
         for r in resources:
             try:
-              client.delete_custom_model(modelIdentifier=r['modelArn'])
+                client.delete_custom_model(modelIdentifier=r['modelArn'])
             except client.exceptions.ResourceNotFoundException:
-              continue
+                continue
 
 
 @BedrockCustomModel.filter_registry.register('kms-key')
@@ -154,7 +156,7 @@ class DescribeBedrockCustomizationJob(DescribeSource):
 
         def _augment(r):
             tags = client.list_tags_for_resource(resourceARN=r['jobArn'])['tags']
-            r['Tags'] = [{'Key': t['key'], 'Value':t['value']} for t in tags]
+            r['Tags'] = [{'Key': t['key'], 'Value': t['value']} for t in tags]
             return r
         resources = super().augment(resources)
         return list(map(_augment, resources))
@@ -329,6 +331,76 @@ class BedrockAgentKmsFilter(KmsRelatedFilter):
     RelatedIdsExpression = 'customerEncryptionKeyArn'
 
 
+@BedrockAgent.action_registry.register('tag')
+class TagBedrockAgent(Tag):
+    """Create tags on bedrock agent
+
+    :example:
+
+    .. code-block:: yaml
+
+        policies:
+            - name: bedrock-agent-tag
+              resource: aws.bedrock-agent
+              actions:
+                - type: tag
+                  key: test
+                  value: test-tag
+    """
+    permissions = ('bedrock:TagResource',)
+
+    def process_resource_set(self, client, resources, new_tags):
+        tags = {}
+        for t in new_tags:
+            tags[t['Key']] = t['Value']
+        for r in resources:
+            client.tag_resource(resourceArn=r["agentArn"], tags=tags)
+
+
+@BedrockAgent.action_registry.register('remove-tag')
+class RemoveTagBedrockAgent(RemoveTag):
+    """Remove tags from a bedrock agent
+    :example:
+
+    .. code-block:: yaml
+
+        policies:
+            - name: bedrock-agent-untag
+              resource: aws.bedrock-agent
+              actions:
+                - type: remove-tag
+                  tags: ["tag-key"]
+    """
+    permissions = ('bedrock:UntagResource',)
+
+    def process_resource_set(self, client, resources, tags):
+        for r in resources:
+            client.untag_resource(resourceArn=r['agentArn'], tagKeys=tags)
+
+
+BedrockAgent.filter_registry.register('marked-for-op', TagActionFilter)
+
+
+@BedrockAgent.action_registry.register('mark-for-op')
+class MarkBedrockAgentForOp(TagDelayedAction):
+    """Mark bedrock agent for future actions
+
+    :example:
+
+    .. code-block:: yaml
+
+        policies:
+          - name: bedrock-agent-tag-mark
+            resource: aws.bedrock-agent
+            filters:
+              - "tag:delete": present
+            actions:
+              - type: mark-for-op
+                op: delete
+                days: 1
+    """
+
+
 @BedrockAgent.action_registry.register('delete')
 class DeleteBedrockAgentBase(BaseAction):
     """Delete a bedrock agent
@@ -352,13 +424,12 @@ class DeleteBedrockAgentBase(BaseAction):
         client = local_session(self.manager.session_factory).client('bedrock-agent')
         for r in resources:
             try:
-              client.delete_agent(
-                  agentId=r['agentId'],
-                  skipResourceInUseCheck = skipResourceInUseCheck
-                  )
+                client.delete_agent(
+                    agentId=r['agentId'],
+                    skipResourceInUseCheck=skipResourceInUseCheck
+                )
             except client.exceptions.ResourceNotFoundException:
-              continue
-
+                continue
 
 
 @resources.register('bedrock-knowledge-base')
@@ -375,6 +446,7 @@ class BedrockKnowledgeBase(QueryResourceManager):
 
     def augment(self, resources):
         client = local_session(self.session_factory).client('bedrock-agent')
+
         def _augment(r):
             tags = self.retry(client.list_tags_for_resource,
                 resourceArn=r['knowledgeBaseArn'])['tags']
@@ -432,6 +504,8 @@ class RemoveTagBedrockKnowledgeBase(RemoveTag):
 
 
 BedrockKnowledgeBase.filter_registry.register('marked-for-op', TagActionFilter)
+
+
 @BedrockKnowledgeBase.action_registry.register('mark-for-op')
 class MarkBedrockKnowledgeBaseForOp(TagDelayedAction):
     """Mark knowledge bases for future actions
@@ -473,6 +547,6 @@ class DeleteBedrockKnowledgeBase(BaseAction):
         client = local_session(self.manager.session_factory).client('bedrock-agent')
         for r in resources:
             try:
-              client.delete_knowledge_base(knowledgeBaseId=r['knowledgeBaseId'])
+                client.delete_knowledge_base(knowledgeBaseId=r['knowledgeBaseId'])
             except client.exceptions.ResourceNotFoundException:
-              continue
+                continue

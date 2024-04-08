@@ -53,4 +53,3 @@ class DiskTest(BaseTest):
         self.assertEqual(len(resources), 1)
         self.assertEqual('cctestvm_disk2_a9097edcfa664ff48c8e88e87d72003e',
                          resources[0]['name'])
-

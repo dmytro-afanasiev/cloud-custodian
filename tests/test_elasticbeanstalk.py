@@ -80,7 +80,9 @@ class EbEnvBaseTest(BaseTest):
 
 class EbEnvConfigurationSettingsTest(EbEnvBaseTest):
     def test_filter_match(self):
-        session_factory = self.replay_flight_data("test_elasticbeanstalk_env_configuration_settings")
+        session_factory = self.replay_flight_data(
+            "test_elasticbeanstalk_env_configuration_settings"
+        )
         p = self.load_policy({
             "name": "managed-actions-disabled",
             "resource": "aws.elasticbeanstalk-environment",
@@ -94,11 +96,14 @@ class EbEnvConfigurationSettingsTest(EbEnvBaseTest):
         }, session_factory=session_factory)
         resources = p.run()
         self.assertEqual(len(resources), 1)
-        self.assertEqual(resources[0]['c7n:OptionSettings'][0]['OptionName'], 'ManagedActionsEnabled')
+        self.assertEqual(resources[0]['c7n:OptionSettings'][0]['OptionName'],
+                         'ManagedActionsEnabled')
         self.assertEqual(resources[0]['c7n:OptionSettings'][0]['Value'], 'false')
 
     def test_no_match(self):
-        session_factory = self.replay_flight_data("test_elasticbeanstalk_env_configuration_settings")
+        session_factory = self.replay_flight_data(
+            "test_elasticbeanstalk_env_configuration_settings"
+        )
         p = self.load_policy({
             "name": "enabled-capacity-rebalancing",
             "resource": "aws.elasticbeanstalk-environment",

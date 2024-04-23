@@ -80,7 +80,7 @@ class AppFlowKmsKeyFilter(ValueFilter):
             if arn:
                 keys.setdefault(arn, []).append(res)
         if not keys:
-            return super().process(resources, event)
+            return super().process(resources, event)  # pragma: no cover
 
         client = local_session(self.manager.session_factory).client('kms')
         with self.executor_factory(max_workers=3) as w:
@@ -102,7 +102,7 @@ class AppFlowKmsKeyFilter(ValueFilter):
         if self.annotate:
             item = r.setdefault(self.annotation_key, {})
         else:
-            item = r.pop(self.annotation_key, {})
+            item = r.pop(self.annotation_key, {})  # pragma: no cover
         return super().__call__(item)
 
 

@@ -107,7 +107,7 @@ class AWSLambdaSigninConfigFilter(Filter):
 
     def process(self, resources, event=None):
         client = local_session(self.manager.session_factory).client('lambda')
-        with self.manager.executor_factory(max_workers=3) as w:
+        with self.executor_factory(max_workers=3) as w:
             futures = []
             for res in resources:
                 if self.annotation_key in res:

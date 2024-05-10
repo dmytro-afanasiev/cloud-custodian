@@ -8,6 +8,7 @@ from botocore.exceptions import ClientError
 from .common import BaseTest, functional
 from c7n.executor import MainThreadExecutor
 from c7n.resources.aws import shape_validate
+from c7n.resources.awslambda import AWSLambdaSigninConfigFilter
 from c7n.resources.awslambda import AWSLambda, ReservedConcurrency
 from c7n.mu import PythonPackageArchive
 from pytest_terraform import terraform
@@ -792,6 +793,7 @@ def test_lambda_check_permission_deleted_role(test, aws_lambda_check_permissions
 class AWSLambdaSingingConfigFilterTest(BaseTest):
 
     def test_query(self):
+        self.patch(AWSLambdaSigninConfigFilter, "executor_factory", MainThreadExecutor)
         factory = self.replay_flight_data("test_awslambda_signing_config_filter")
 
         p = self.load_policy(

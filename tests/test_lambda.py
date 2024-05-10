@@ -810,3 +810,19 @@ class AWSLambdaSingingConfigFilterTest(BaseTest):
 
         self.assertEqual(resources[0]["FunctionName"], "678_lambda_green")
         self.assertEqual(len(resources), 1)
+
+    def test_exception(self):
+        self.patch(AWSLambdaSigninConfigFilter, "executor_factory", MainThreadExecutor)
+        factory = self.replay_flight_data("test_awslambda_signing_config_filter_exception")
+        p = self.load_policy(
+            {
+                "name": "awslambda-signing-config-filter",
+                "resource": "lambda",
+                "filters": [
+                    {"type": "signing-config"}
+                ],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+        self.assertEqual(resources, [])

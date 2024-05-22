@@ -428,7 +428,7 @@ S3_AUGMENT_TABLE = (
      'Notification', None, None, 's3:GetBucketNotification'),
     ('get_bucket_lifecycle_configuration',
      'Lifecycle', None, None, 's3:GetLifecycleConfiguration'),
-    ('get_object_lock_configuration', 'ObjectLockConfiguration', {},
+    ('get_object_lock_configuration', 'ObjectLockConfiguration', None,
      'ObjectLockConfiguration', 's3:GetBucketObjectLockConfiguration')
     #        ('get_bucket_cors', 'Cors'),
 )

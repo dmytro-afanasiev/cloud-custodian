@@ -1215,6 +1215,7 @@ class S3ConfigSource(ConfigTest):
                 "Replication": None,
                 "Versioning": None,
                 "Logging": None,
+                "ObjectLockConfiguration": None,
                 "Notification": None,
                 "Acl": {
                     "Owner": {
@@ -1278,6 +1279,7 @@ class S3ConfigSource(ConfigTest):
                 u"Tags": [],
                 u"Versioning": {},
                 u"Website": None,
+                u"ObjectLockConfiguration": None
             },
         )
 

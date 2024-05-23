@@ -4570,3 +4570,29 @@ class S3ObjectLockFilterTest(BaseTest):
             resources[0]['ObjectLockConfiguration']['Rule']['DefaultRetention']['Mode'],
             'GOVERNANCE'
         )
+
+    def test_query_exception(self):
+        self.patch(s3.S3, "executor_factory", MainThreadExecutor)
+        self.patch(s3.S3LockConfigurationFilter, "executor_factory", MainThreadExecutor)
+        self.patch(s3, "S3_AUGMENT_TABLE", [])
+        log_mock = mock.MagicMock()
+        self.patch(s3.S3LockConfigurationFilter, "log", log_mock)
+
+        factory = self.replay_flight_data('test_s3_bucket_object_lock_configuration_exception')
+        p = self.load_policy(
+            {
+                'name': 'test-s3-bucket-key-disabled',
+                'resource': 'aws.s3',
+                'filters': [
+                    {
+                        'type': 'lock-configuration',
+                        'key': 'Rule.DefaultRetention.Mode',
+                        'value': 'GOVERNANCE',
+                    }
+                ]
+            },
+            session_factory=factory
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        log_mock.error.assert_called()

@@ -871,7 +871,7 @@ class S3LockConfigurationFilter(ValueFilter):
             )['ObjectLockConfiguration']
         except ClientError as e:
             if e.response['Error']['Code'] == 'ObjectLockConfigurationNotFoundError':
-                config = {}
+                config = None
             else:
                 raise
         resource[self.annotation_key] = config
@@ -894,8 +894,8 @@ class S3LockConfigurationFilter(ValueFilter):
 
     def __call__(self, r):
         if self.annotate:
-            return super().__call__(r[self.annotation_key])
-        return super().__call__(r.pop(self.annotation_key))
+            return super().__call__(r.setdefault(self.annotation_key, None))
+        return super().__call__(r.pop(self.annotation_key, None))
 
 
 ENCRYPTION_STATEMENT_GLOB = {

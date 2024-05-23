@@ -4,7 +4,7 @@
         "Error": {
             "Code": "ObjectLockConfigurationNotFoundError",
             "Message": "Object Lock configuration does not exist for this bucket",
-            "BucketName": "custodian-test-s3object-lock"
+            "BucketName": "c7n-test-s3-bucket-bucket-key-disabled"
         },
         "ResponseMetadata": {}
     }

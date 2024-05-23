@@ -1215,7 +1215,6 @@ class S3ConfigSource(ConfigTest):
                 "Replication": None,
                 "Versioning": None,
                 "Logging": None,
-                "ObjectLockConfiguration": None,
                 "Notification": None,
                 "Acl": {
                     "Owner": {
@@ -1279,7 +1278,6 @@ class S3ConfigSource(ConfigTest):
                 u"Tags": [],
                 u"Versioning": {},
                 u"Website": None,
-                u"ObjectLockConfiguration": None
             },
         )
 
@@ -4542,3 +4540,31 @@ class BucketReplication(BaseTest):
                 ]
             },
         )
+
+
+class S3ObjectLockFilterTest(BaseTest):
+    def test_query(self):
+        self.patch(s3.S3, "executor_factory", MainThreadExecutor)
+        self.patch(s3.S3LockConfigurationFilter, "executor_factory", MainThreadExecutor)
+        self.patch(s3, "S3_AUGMENT_TABLE", [])
+        factory = self.replay_flight_data('test_s3_bucket_object_lock_configuration')
+
+        p = self.load_policy(
+            {
+                'name': 'test-s3-bucket-key-disabled',
+                'resource': 'aws.s3',
+                'filters': [
+                    {
+                        'type': 'lock-configuration',
+                        'key': 'Rule.DefaultRetention.Mode',
+                        'value': 'GOVERNANCE',
+                    }
+                ]
+            },
+            session_factory=factory
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['Name'], 'c7n-test-s3-bucket')
+        self.assertEqual(resources[0]['ObjectLockConfiguration']['Rule']['DefaultRetention']['Mode'], 'GOVERNANCE')
+

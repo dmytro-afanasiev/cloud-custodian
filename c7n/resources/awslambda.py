@@ -497,6 +497,22 @@ class LambdaEnableXrayTracing(Action):
                     continue
 
 
+@AWSLambda.filter_registry.register('awslambda-signing-config-filter')
+class AWSLambdaSingingConfigFilter(ValueFilter):
+    schema = type_schema('awslambda-signing-config-filter',)
+    permissions = ('lambda:GetFunction',)
+
+    def process(self, resources, event=None):
+        filtered_resources = []
+        client = local_session(self.manager.session_factory).client('lambda')
+        for resource in resources:
+            config = client.get_function_code_signing_config(FunctionName=resource['FunctionName'])
+            if config.get('CodeSigningConfigArn'):
+                filtered_resources.append(resource)
+
+        return filtered_resources
+
+
 @AWSLambda.action_registry.register('post-finding')
 class LambdaPostFinding(PostFinding):
 

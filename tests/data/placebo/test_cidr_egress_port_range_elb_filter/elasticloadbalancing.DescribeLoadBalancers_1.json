@@ -1,0 +1,240 @@
+{
+    "status_code": 200,
+    "data": {
+        "LoadBalancerDescriptions": [
+            {
+                "LoadBalancerName": "c7n-268-elb-green",
+                "DNSName": "c7n-268-elb-green-435303301.us-east-1.elb.amazonaws.com",
+                "CanonicalHostedZoneName": "c7n-268-elb-green-435303301.us-east-1.elb.amazonaws.com",
+                "CanonicalHostedZoneNameID": "Z35SXDOTRQ7X7K",
+                "ListenerDescriptions": [
+                    {
+                        "Listener": {
+                            "Protocol": "HTTP",
+                            "LoadBalancerPort": 80,
+                            "InstanceProtocol": "HTTP",
+                            "InstancePort": 8000
+                        },
+                        "PolicyNames": []
+                    }
+                ],
+                "Policies": {
+                    "AppCookieStickinessPolicies": [],
+                    "LBCookieStickinessPolicies": [],
+                    "OtherPolicies": []
+                },
+                "BackendServerDescriptions": [],
+                "AvailabilityZones": [
+                    "us-east-1b",
+                    "us-east-1a"
+                ],
+                "Subnets": [
+                    "subnet-00d110aad6b9e2e0f",
+                    "subnet-0a887a6c3abcd0855"
+                ],
+                "VPCId": "vpc-08818d795af083bf4",
+                "Instances": [],
+                "HealthCheck": {
+                    "Target": "TCP:8000",
+                    "Interval": 30,
+                    "Timeout": 5,
+                    "UnhealthyThreshold": 2,
+                    "HealthyThreshold": 10
+                },
+                "SourceSecurityGroup": {
+                    "OwnerAlias": "644160558196",
+                    "GroupName": "268_c7n_security_group1_green"
+                },
+                "SecurityGroups": [
+                    "sg-0b9e788f68d5183fe",
+                    "sg-063ed14d12ebbfb33"
+                ],
+                "CreatedTime": {
+                    "__class__": "datetime",
+                    "year": 2021,
+                    "month": 7,
+                    "day": 27,
+                    "hour": 13,
+                    "minute": 2,
+                    "second": 54,
+                    "microsecond": 570000
+                },
+                "Scheme": "internet-facing"
+            },
+            {
+                "LoadBalancerName": "c7n-268-elb-red",
+                "DNSName": "c7n-268-elb-red-736287999.us-east-1.elb.amazonaws.com",
+                "CanonicalHostedZoneName": "c7n-268-elb-red-736287999.us-east-1.elb.amazonaws.com",
+                "CanonicalHostedZoneNameID": "Z35SXDOTRQ7X7K",
+                "ListenerDescriptions": [
+                    {
+                        "Listener": {
+                            "Protocol": "HTTP",
+                            "LoadBalancerPort": 80,
+                            "InstanceProtocol": "HTTP",
+                            "InstancePort": 8000
+                        },
+                        "PolicyNames": []
+                    }
+                ],
+                "Policies": {
+                    "AppCookieStickinessPolicies": [],
+                    "LBCookieStickinessPolicies": [],
+                    "OtherPolicies": []
+                },
+                "BackendServerDescriptions": [],
+                "AvailabilityZones": [
+                    "us-east-1b",
+                    "us-east-1a"
+                ],
+                "Subnets": [
+                    "subnet-0db016d5200091eb1",
+                    "subnet-0e66236ebc2a08642"
+                ],
+                "VPCId": "vpc-074b6bd602b9d9663",
+                "Instances": [],
+                "HealthCheck": {
+                    "Target": "TCP:8000",
+                    "Interval": 30,
+                    "Timeout": 5,
+                    "UnhealthyThreshold": 2,
+                    "HealthyThreshold": 10
+                },
+                "SourceSecurityGroup": {
+                    "OwnerAlias": "644160558196",
+                    "GroupName": "268_c7n_security_group1_red"
+                },
+                "SecurityGroups": [
+                    "sg-086c8f15e699c3991",
+                    "sg-0870ea3ce2adf08f1"
+                ],
+                "CreatedTime": {
+                    "__class__": "datetime",
+                    "year": 2021,
+                    "month": 7,
+                    "day": 27,
+                    "hour": 13,
+                    "minute": 4,
+                    "second": 9,
+                    "microsecond": 920000
+                },
+                "Scheme": "internet-facing"
+            },
+            {
+                "LoadBalancerName": "c7n-269-elb-green",
+                "DNSName": "internal-c7n-269-elb-green-525255890.us-east-1.elb.amazonaws.com",
+                "CanonicalHostedZoneNameID": "Z35SXDOTRQ7X7K",
+                "ListenerDescriptions": [
+                    {
+                        "Listener": {
+                            "Protocol": "HTTP",
+                            "LoadBalancerPort": 80,
+                            "InstanceProtocol": "HTTP",
+                            "InstancePort": 8000
+                        },
+                        "PolicyNames": []
+                    }
+                ],
+                "Policies": {
+                    "AppCookieStickinessPolicies": [],
+                    "LBCookieStickinessPolicies": [],
+                    "OtherPolicies": []
+                },
+                "BackendServerDescriptions": [],
+                "AvailabilityZones": [
+                    "us-east-1a"
+                ],
+                "Subnets": [
+                    "subnet-00b319168e4953682"
+                ],
+                "VPCId": "vpc-09d4b5acfa4767e10",
+                "Instances": [],
+                "HealthCheck": {
+                    "Target": "TCP:8000",
+                    "Interval": 30,
+                    "Timeout": 5,
+                    "UnhealthyThreshold": 2,
+                    "HealthyThreshold": 10
+                },
+                "SourceSecurityGroup": {
+                    "OwnerAlias": "644160558196",
+                    "GroupName": "269_c7n_security_group2_green"
+                },
+                "SecurityGroups": [
+                    "sg-04c3d9d0227769f2a",
+                    "sg-06849c48e7ba7b557"
+                ],
+                "CreatedTime": {
+                    "__class__": "datetime",
+                    "year": 2021,
+                    "month": 7,
+                    "day": 27,
+                    "hour": 13,
+                    "minute": 6,
+                    "second": 22,
+                    "microsecond": 70000
+                },
+                "Scheme": "internal"
+            },
+            {
+                "LoadBalancerName": "c7n-269-elb-red",
+                "DNSName": "internal-c7n-269-elb-red-605921814.us-east-1.elb.amazonaws.com",
+                "CanonicalHostedZoneNameID": "Z35SXDOTRQ7X7K",
+                "ListenerDescriptions": [
+                    {
+                        "Listener": {
+                            "Protocol": "HTTP",
+                            "LoadBalancerPort": 80,
+                            "InstanceProtocol": "HTTP",
+                            "InstancePort": 8000
+                        },
+                        "PolicyNames": []
+                    }
+                ],
+                "Policies": {
+                    "AppCookieStickinessPolicies": [],
+                    "LBCookieStickinessPolicies": [],
+                    "OtherPolicies": []
+                },
+                "BackendServerDescriptions": [],
+                "AvailabilityZones": [
+                    "us-east-1b",
+                    "us-east-1a"
+                ],
+                "Subnets": [
+                    "subnet-0949107fac1c58520",
+                    "subnet-0d6931609dfe80038"
+                ],
+                "VPCId": "vpc-0730430f65e4f54ee",
+                "Instances": [],
+                "HealthCheck": {
+                    "Target": "TCP:8000",
+                    "Interval": 30,
+                    "Timeout": 5,
+                    "UnhealthyThreshold": 2,
+                    "HealthyThreshold": 10
+                },
+                "SourceSecurityGroup": {
+                    "OwnerAlias": "644160558196",
+                    "GroupName": "269_c7n_security_group2_red"
+                },
+                "SecurityGroups": [
+                    "sg-0d44bf850e1715350",
+                    "sg-0115af9c637b847a5"
+                ],
+                "CreatedTime": {
+                    "__class__": "datetime",
+                    "year": 2021,
+                    "month": 7,
+                    "day": 27,
+                    "hour": 13,
+                    "minute": 7,
+                    "second": 19,
+                    "microsecond": 170000
+                },
+                "Scheme": "internal"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

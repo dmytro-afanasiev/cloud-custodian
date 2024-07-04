@@ -884,3 +884,29 @@ class TestElbAttributeFilter(BaseTest):
         self.assertEqual(
             len(resources), 0, "Test should find 0 elbs with idle timeout < 30 seconds"
         )
+
+
+class TestCidrEgressPortRangeELBFilter(BaseTest):
+
+    def test_cidr_egress_port_range_elb_filter(self):
+        session_factory = self.replay_flight_data("test_cidr_egress_port_range_elb_filter")
+        policy = self.load_policy(
+            {
+                "name": "cidr-egress-port-range",
+                "resource": "elb",
+                "filters": [
+                    {
+                        "type": "cidr-egress-port-range-elb-filter",
+                        "required-ports": "23",
+                        "egress": False,
+                        "cidr": ["0.0.0.0/0", "::0/"]
+                    }
+                ],
+            },
+            session_factory=session_factory,
+        )
+
+        resources = policy.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["LoadBalancerName"], "c7n-268-elb-red")

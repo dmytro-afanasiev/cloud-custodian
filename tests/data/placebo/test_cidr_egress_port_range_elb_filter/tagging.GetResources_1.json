@@ -1,0 +1,45 @@
+{
+    "status_code": 200,
+    "data": {
+        "PaginationToken": "",
+        "ResourceTagMappingList": [
+            {
+                "ResourceARN": "arn:aws:elasticloadbalancing:us-east-1:644160558196:loadbalancer/c7n-269-elb-green",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "269_c7n_elb_green"
+                    }
+                ]
+            },
+            {
+                "ResourceARN": "arn:aws:elasticloadbalancing:us-east-1:644160558196:loadbalancer/c7n-268-elb-green",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "268_c7n_elb_green"
+                    }
+                ]
+            },
+            {
+                "ResourceARN": "arn:aws:elasticloadbalancing:us-east-1:644160558196:loadbalancer/c7n-269-elb-red",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "269_c7n_elb_red"
+                    }
+                ]
+            },
+            {
+                "ResourceARN": "arn:aws:elasticloadbalancing:us-east-1:644160558196:loadbalancer/c7n-268-elb-red",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "268_c7n_elb_red"
+                    }
+                ]
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

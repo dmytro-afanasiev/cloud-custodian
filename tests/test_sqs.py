@@ -846,3 +846,20 @@ class QueueTests(BaseTest):
         )
         resources = policy.run()
         self.assertEqual(len(resources), 2)
+
+
+class TestRedrivePolicySQSFilter(BaseTest):
+    def test_query(self):
+        factory = self.replay_flight_data('test_redrive_policy_sqs_filter')
+        p = self.load_policy({
+            'name': 'redrive-policy',
+            'resource': 'aws.sqs',
+            'filters': [
+                {'type': 'redrive-policy-sqs-filter'}
+            ]
+        }, session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual('arn:aws:sqs:us-east-1:644160558196:450_sqs_red',
+                         resources[0]['QueueArn'])

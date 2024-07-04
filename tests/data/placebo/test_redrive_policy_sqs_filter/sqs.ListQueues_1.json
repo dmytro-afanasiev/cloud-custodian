@@ -1,0 +1,12 @@
+{
+    "status_code": 200,
+    "data": {
+        "QueueUrls": [
+            "https://queue.amazonaws.com/644160558196/450_sqs_green",
+            "https://queue.amazonaws.com/644160558196/450_sqs_green_1",
+            "https://queue.amazonaws.com/644160558196/450_sqs_green_2",
+            "https://queue.amazonaws.com/644160558196/450_sqs_red"
+        ],
+        "ResponseMetadata": {}
+    }
+}

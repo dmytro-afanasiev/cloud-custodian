@@ -1,0 +1,61 @@
+{
+    "status_code": 200,
+    "data": {
+        "PaginationToken": "",
+        "ResourceTagMappingList": [
+            {
+                "ResourceARN": "arn:aws:sqs:us-east-1:644160558196:450_sqs_green",
+                "Tags": [
+                    {
+                        "Key": "ComplianceStatus",
+                        "Value": "Green"
+                    },
+                    {
+                        "Key": "CustodiaRule",
+                        "Value": "epam-aws-450-sqs_dead_letter_queue_enabled"
+                    }
+                ]
+            },
+            {
+                "ResourceARN": "arn:aws:sqs:us-east-1:644160558196:450_sqs_green_1",
+                "Tags": [
+                    {
+                        "Key": "ComplianceStatus",
+                        "Value": "Green"
+                    },
+                    {
+                        "Key": "CustodiaRule",
+                        "Value": "epam-aws-450-sqs_dead_letter_queue_enabled"
+                    }
+                ]
+            },
+            {
+                "ResourceARN": "arn:aws:sqs:us-east-1:644160558196:450_sqs_green_2",
+                "Tags": [
+                    {
+                        "Key": "ComplianceStatus",
+                        "Value": "Green"
+                    },
+                    {
+                        "Key": "CustodiaRule",
+                        "Value": "epam-aws-450-sqs_dead_letter_queue_enabled"
+                    }
+                ]
+            },
+            {
+                "ResourceARN": "arn:aws:sqs:us-east-1:644160558196:450_sqs_red",
+                "Tags": [
+                    {
+                        "Key": "ComplianceStatus",
+                        "Value": "Red"
+                    },
+                    {
+                        "Key": "CustodiaRule",
+                        "Value": "epam-aws-450-sqs_dead_letter_queue_enabled"
+                    }
+                ]
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

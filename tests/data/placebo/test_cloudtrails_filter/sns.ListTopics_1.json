@@ -1,0 +1,26 @@
+{
+    "status_code": 200,
+    "data": {
+        "Topics": [
+            {
+                "TopicArn": "arn:aws:sns:us-east-1:644160558196:230-sns-green"
+            },
+            {
+                "TopicArn": "arn:aws:sns:us-east-1:644160558196:230-sns-red1"
+            },
+            {
+                "TopicArn": "arn:aws:sns:us-east-1:644160558196:230_sns_red"
+            },
+            {
+                "TopicArn": "arn:aws:sns:us-east-1:644160558196:711_sns_green1"
+            },
+            {
+                "TopicArn": "arn:aws:sns:us-east-1:644160558196:711_sns_green2"
+            },
+            {
+                "TopicArn": "arn:aws:sns:us-east-1:644160558196:caas_scanning_automation_topic"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

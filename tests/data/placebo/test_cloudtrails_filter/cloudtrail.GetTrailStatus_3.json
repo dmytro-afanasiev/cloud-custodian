@@ -1,0 +1,43 @@
+{
+    "status_code": 200,
+    "data": {
+        "IsLogging": true,
+        "LatestDeliveryTime": {
+            "__class__": "datetime",
+            "year": 2022,
+            "month": 9,
+            "day": 30,
+            "hour": 5,
+            "minute": 3,
+            "second": 47,
+            "microsecond": 298000
+        },
+        "StartLoggingTime": {
+            "__class__": "datetime",
+            "year": 2022,
+            "month": 9,
+            "day": 19,
+            "hour": 22,
+            "minute": 40,
+            "second": 29,
+            "microsecond": 606000
+        },
+        "LatestCloudWatchLogsDeliveryTime": {
+            "__class__": "datetime",
+            "year": 2022,
+            "month": 9,
+            "day": 30,
+            "hour": 5,
+            "minute": 6,
+            "second": 27,
+            "microsecond": 619000
+        },
+        "LatestDeliveryAttemptTime": "2022-09-30T02:03:47Z",
+        "LatestNotificationAttemptTime": "",
+        "LatestNotificationAttemptSucceeded": "",
+        "LatestDeliveryAttemptSucceeded": "2022-09-30T02:03:47Z",
+        "TimeLoggingStarted": "2022-09-19T19:40:29Z",
+        "TimeLoggingStopped": "",
+        "ResponseMetadata": {}
+    }
+}

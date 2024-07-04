@@ -1,0 +1,52 @@
+{
+    "status_code": 200,
+    "data": {
+        "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/aws-aft-CustomizationsCloudTrail",
+        "AdvancedEventSelectors": [
+            {
+                "Name": "No Log Archive Buckets",
+                "FieldSelectors": [
+                    {
+                        "Field": "eventCategory",
+                        "Equals": [
+                            "Data"
+                        ]
+                    },
+                    {
+                        "Field": "resources.ARN",
+                        "NotEquals": [
+                            "arn:aws:s3:::aws-aft-logs-644160558196-us-east-1/*",
+                            "arn:aws:s3:::aws-aft-s3-access-logs-644160558196-us-east-1/*",
+                            "arn:aws:s3:::aws-controltower-logs-644160558196-us-east-1/*",
+                            "arn:aws:s3:::aws-controltower-s3-access-logs-644160558196-us-east-1/*"
+                        ]
+                    },
+                    {
+                        "Field": "resources.type",
+                        "Equals": [
+                            "AWS::S3::Object"
+                        ]
+                    }
+                ]
+            },
+            {
+                "Name": "Lamdba Functions",
+                "FieldSelectors": [
+                    {
+                        "Field": "eventCategory",
+                        "Equals": [
+                            "Data"
+                        ]
+                    },
+                    {
+                        "Field": "resources.type",
+                        "Equals": [
+                            "AWS::Lambda::Function"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

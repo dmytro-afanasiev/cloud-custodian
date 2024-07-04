@@ -1,0 +1,33 @@
+{
+    "status_code": 200,
+    "data": {
+        "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/caas_scanning_automation",
+        "AdvancedEventSelectors": [
+            {
+                "Name": "Log readOnly and writeOnly management events",
+                "FieldSelectors": [
+                    {
+                        "Field": "eventCategory",
+                        "Equals": [
+                            "Management"
+                        ]
+                    },
+                    {
+                        "Field": "eventSource",
+                        "NotEquals": [
+                            "kms.amazonaws.com",
+                            "rdsdata.amazonaws.com"
+                        ]
+                    },
+                    {
+                        "Field": "readOnly",
+                        "Equals": [
+                            "false"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

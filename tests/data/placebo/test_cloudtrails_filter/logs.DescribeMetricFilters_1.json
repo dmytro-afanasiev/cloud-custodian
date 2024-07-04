@@ -1,0 +1,63 @@
+{
+    "status_code": 200,
+    "data": {
+        "metricFilters": [
+            {
+                "filterName": "20210517-metric-filter",
+                "filterPattern": "{($.eventName=CreateTrail) || ($.eventName=UpdateTrail) || ($.eventName=DeleteTrail) || ($.eventName=StartLogging) || ($.eventName=StopLogging)}",
+                "metricTransformations": [
+                    {
+                        "metricName": "20210517-metric-filter-metric",
+                        "metricNamespace": "20210517-metric-filter-namespace",
+                        "metricValue": "1"
+                    }
+                ],
+                "creationTime": 1621232695161,
+                "logGroupName": "RDSOSMetrics"
+            },
+            {
+                "filterName": "230_VPC_Changes_green",
+                "filterPattern": "{($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) || ($.eventName = AcceptVpcPeeringConnection) || ($.eventName = CreateVpcPeeringConnection) || ($.eventName = DeleteVpcPeeringConnection) || ($.eventName = RejectVpcPeeringConnection) || ($.eventName = AttachClassicLinkVpc) || ($.eventName = DetachClassicLinkVpc) || ($.eventName = DisableVpcClassicLink) || ($.eventName = EnableVpcClassicLink)}",
+                "metricTransformations": [
+                    {
+                        "metricName": "230_VPC_Changes_green",
+                        "metricNamespace": "VPC_Changes",
+                        "metricValue": "1",
+                        "unit": "None"
+                    }
+                ],
+                "creationTime": 1663616357917,
+                "logGroupName": "230_log_group_green"
+            },
+            {
+                "filterName": "230_VPC_Changes_red1",
+                "filterPattern": "{($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) || ($.eventName = AcceptVpcPeeringConnection) || ($.eventName = CreateVpcPeeringConnection) || ($.eventName = DeleteVpcPeeringConnection) || ($.eventName = RejectVpcPeeringConnection) || ($.eventName = AttachClassicLinkVpc) || ($.eventName = DetachClassicLinkVpc) || ($.eventName = DisableVpcClassicLink) || ($.eventName = EnableVpcClassicLink)}",
+                "metricTransformations": [
+                    {
+                        "metricName": "230_VPC_Changes_red1",
+                        "metricNamespace": "VPC_Changes",
+                        "metricValue": "1",
+                        "unit": "None"
+                    }
+                ],
+                "creationTime": 1663616509789,
+                "logGroupName": "230_log_group_red1"
+            },
+            {
+                "filterName": "caas_scanning_automation_metric_filter",
+                "filterPattern": "{($.requestParameters.roleName = ecsTaskExecutionRole_caas_scanning_automation) && ( $.eventName = UpdateAssumeRolePolicy || $.eventName = PutRolePolicy || $.eventName = AttachRolePolicy || ($.eventName = DeleteRolePolicy) )}",
+                "metricTransformations": [
+                    {
+                        "metricName": "caas_scanning_automation_metric",
+                        "metricNamespace": "caas_scanning_automation_namespace",
+                        "metricValue": "1",
+                        "unit": "None"
+                    }
+                ],
+                "creationTime": 1657891352964,
+                "logGroupName": "/aws/cloudtrail/caas_scanning_automation"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

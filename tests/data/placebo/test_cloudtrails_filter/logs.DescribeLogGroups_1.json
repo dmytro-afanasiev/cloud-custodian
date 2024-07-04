@@ -1,0 +1,166 @@
+{
+    "status_code": 200,
+    "data": {
+        "logGroups": [
+            {
+                "logGroupName": "/aws/apigateway/welcome",
+                "creationTime": 1634022054375,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/apigateway/welcome:*",
+                "storedBytes": 110
+            },
+            {
+                "logGroupName": "/aws/cloudtrail/caas_scanning_automation",
+                "creationTime": 1657891352469,
+                "metricFilterCount": 1,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/cloudtrail/caas_scanning_automation:*",
+                "storedBytes": 28293205
+            },
+            {
+                "logGroupName": "/aws/docdb/cluster-421-green/audit",
+                "creationTime": 1663073403461,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/docdb/cluster-421-green/audit:*",
+                "storedBytes": 317
+            },
+            {
+                "logGroupName": "/aws/fsx/lustre",
+                "creationTime": 1662733081161,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/fsx/lustre:*",
+                "storedBytes": 299
+            },
+            {
+                "logGroupName": "/aws/lambda/DatadogIntegration-DatadogA-DatadogAPICallFunction-YS0W15cCMKu4",
+                "creationTime": 1662536490925,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/lambda/DatadogIntegration-DatadogA-DatadogAPICallFunction-YS0W15cCMKu4:*",
+                "storedBytes": 3206
+            },
+            {
+                "logGroupName": "/aws/lambda/security-swarm-manager-poc",
+                "creationTime": 1649172408287,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/lambda/security-swarm-manager-poc:*",
+                "storedBytes": 19574
+            },
+            {
+                "logGroupName": "/aws/rds/cluster/aurora-cluster-424-green/postgresql",
+                "creationTime": 1663069041945,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/rds/cluster/aurora-cluster-424-green/postgresql:*",
+                "storedBytes": 15371
+            },
+            {
+                "logGroupName": "/ecs/caas_scanning_automation-task",
+                "creationTime": 1657891352016,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/ecs/caas_scanning_automation-task:*",
+                "storedBytes": 140962
+            },
+            {
+                "logGroupName": "/ecs/custodian_sandbox",
+                "creationTime": 1659604398468,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/ecs/custodian_sandbox:*",
+                "storedBytes": 115252
+            },
+            {
+                "logGroupName": "/ecs/custodian_sandbox-deploy-task",
+                "creationTime": 1659367595288,
+                "retentionInDays": 30,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/ecs/custodian_sandbox-deploy-task:*",
+                "storedBytes": 735865
+            },
+            {
+                "logGroupName": "/ecs/custodian_sandbox-destroy-task",
+                "creationTime": 1659450344832,
+                "retentionInDays": 30,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/ecs/custodian_sandbox-destroy-task:*",
+                "storedBytes": 969543
+            },
+            {
+                "logGroupName": "/ecs/first-run-task-definition",
+                "creationTime": 1615550100185,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/ecs/first-run-task-definition:*",
+                "storedBytes": 905
+            },
+            {
+                "logGroupName": "/ecs/swarm-manager-logs",
+                "creationTime": 1649435246466,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/ecs/swarm-manager-logs:*",
+                "storedBytes": 9456
+            },
+            {
+                "logGroupName": "/ecs/swarm-worker-logs",
+                "creationTime": 1649435247024,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:/ecs/swarm-worker-logs:*",
+                "storedBytes": 32354
+            },
+            {
+                "logGroupName": "230_log_group_green",
+                "creationTime": 1663616357272,
+                "metricFilterCount": 1,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:230_log_group_green:*",
+                "storedBytes": 0
+            },
+            {
+                "logGroupName": "230_log_group_red",
+                "creationTime": 1663616417429,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:230_log_group_red:*",
+                "storedBytes": 14766509
+            },
+            {
+                "logGroupName": "230_log_group_red1",
+                "creationTime": 1663616509138,
+                "metricFilterCount": 1,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:230_log_group_red1:*",
+                "storedBytes": 14733558
+            },
+            {
+                "logGroupName": "API-Gateway-Execution-Logs_0g2w5c0nre/this",
+                "creationTime": 1634022199779,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:API-Gateway-Execution-Logs_0g2w5c0nre/this:*",
+                "storedBytes": 0
+            },
+            {
+                "logGroupName": "API-Gateway-Execution-Logs_h21l6uhp7f/apiGatewayStage526Red",
+                "creationTime": 1662963981260,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:API-Gateway-Execution-Logs_h21l6uhp7f/apiGatewayStage526Red:*",
+                "storedBytes": 0
+            },
+            {
+                "logGroupName": "RDSOSMetrics",
+                "creationTime": 1616158596243,
+                "retentionInDays": 30,
+                "metricFilterCount": 1,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:RDSOSMetrics:*",
+                "storedBytes": 80581
+            },
+            {
+                "logGroupName": "aws-cloudtrail-logs-644160558196-a2ac1b2b",
+                "creationTime": 1656931988611,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:aws-cloudtrail-logs-644160558196-a2ac1b2b:*",
+                "storedBytes": 61173
+            },
+            {
+                "logGroupName": "test_514",
+                "creationTime": 1662970029745,
+                "retentionInDays": 1,
+                "metricFilterCount": 0,
+                "arn": "arn:aws:logs:us-east-1:644160558196:log-group:test_514:*",
+                "storedBytes": 0
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

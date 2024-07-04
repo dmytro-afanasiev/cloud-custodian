@@ -1,0 +1,43 @@
+{
+    "status_code": 200,
+    "data": {
+        "IsLogging": true,
+        "LatestDeliveryTime": {
+            "__class__": "datetime",
+            "year": 2022,
+            "month": 9,
+            "day": 30,
+            "hour": 5,
+            "minute": 3,
+            "second": 41,
+            "microsecond": 605000
+        },
+        "StartLoggingTime": {
+            "__class__": "datetime",
+            "year": 2022,
+            "month": 4,
+            "day": 28,
+            "hour": 13,
+            "minute": 4,
+            "second": 56,
+            "microsecond": 905000
+        },
+        "LatestDigestDeliveryTime": {
+            "__class__": "datetime",
+            "year": 2022,
+            "month": 9,
+            "day": 30,
+            "hour": 4,
+            "minute": 29,
+            "second": 50,
+            "microsecond": 683000
+        },
+        "LatestDeliveryAttemptTime": "2022-09-30T02:03:41Z",
+        "LatestNotificationAttemptTime": "",
+        "LatestNotificationAttemptSucceeded": "",
+        "LatestDeliveryAttemptSucceeded": "2022-09-30T02:03:41Z",
+        "TimeLoggingStarted": "2022-04-28T10:04:56Z",
+        "TimeLoggingStopped": "",
+        "ResponseMetadata": {}
+    }
+}

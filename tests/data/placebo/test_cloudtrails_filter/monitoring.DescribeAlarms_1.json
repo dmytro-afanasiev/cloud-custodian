@@ -1,0 +1,184 @@
+{
+    "status_code": 200,
+    "data": {
+        "CompositeAlarms": [],
+        "MetricAlarms": [
+            {
+                "AlarmName": "230_VPC_Changes_green",
+                "AlarmArn": "arn:aws:cloudwatch:us-east-1:644160558196:alarm:230_VPC_Changes_green",
+                "AlarmConfigurationUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 9,
+                    "day": 19,
+                    "hour": 19,
+                    "minute": 39,
+                    "second": 19,
+                    "microsecond": 268000
+                },
+                "ActionsEnabled": true,
+                "OKActions": [],
+                "AlarmActions": [
+                    "arn:aws:sns:us-east-1:644160558196:230-sns-green"
+                ],
+                "InsufficientDataActions": [],
+                "StateValue": "INSUFFICIENT_DATA",
+                "StateReason": "Unchecked: Initial alarm creation",
+                "StateUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 9,
+                    "day": 19,
+                    "hour": 19,
+                    "minute": 39,
+                    "second": 19,
+                    "microsecond": 268000
+                },
+                "MetricName": "230_VPC_Changes_green",
+                "Namespace": "VPC_Changes",
+                "Statistic": "Sum",
+                "Dimensions": [],
+                "Period": 300,
+                "EvaluationPeriods": 1,
+                "Threshold": 1.0,
+                "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+                "TreatMissingData": "missing"
+            },
+            {
+                "AlarmName": "230_VPC_Changes_red1",
+                "AlarmArn": "arn:aws:cloudwatch:us-east-1:644160558196:alarm:230_VPC_Changes_red1",
+                "AlarmConfigurationUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 9,
+                    "day": 19,
+                    "hour": 19,
+                    "minute": 41,
+                    "second": 51,
+                    "microsecond": 187000
+                },
+                "ActionsEnabled": true,
+                "OKActions": [],
+                "AlarmActions": [
+                    "arn:aws:sns:us-east-1:644160558196:230-sns-red1"
+                ],
+                "InsufficientDataActions": [],
+                "StateValue": "INSUFFICIENT_DATA",
+                "StateReason": "Insufficient Data: 1 datapoint was unknown.",
+                "StateReasonData": "{\"version\":\"1.0\",\"queryDate\":\"2022-09-29T12:12:56.176+0000\",\"statistic\":\"Sum\",\"period\":300,\"recentDatapoints\":[],\"threshold\":1.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2022-09-29T12:07:00.000+0000\"}]}",
+                "StateUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 9,
+                    "day": 29,
+                    "hour": 12,
+                    "minute": 12,
+                    "second": 56,
+                    "microsecond": 179000
+                },
+                "MetricName": "230_VPC_Changes_red1",
+                "Namespace": "VPC_Changes",
+                "Statistic": "Sum",
+                "Dimensions": [],
+                "Period": 300,
+                "EvaluationPeriods": 1,
+                "Threshold": 1.0,
+                "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+                "TreatMissingData": "missing"
+            },
+            {
+                "AlarmName": "caas_scanning_automation_alarm",
+                "AlarmArn": "arn:aws:cloudwatch:us-east-1:644160558196:alarm:caas_scanning_automation_alarm",
+                "AlarmDescription": "Checks whether for the IAM ecsTaskExecutionRole_caas_scanning_automation role the permissions were updated.",
+                "AlarmConfigurationUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 7,
+                    "day": 17,
+                    "hour": 19,
+                    "minute": 13,
+                    "second": 30,
+                    "microsecond": 476000
+                },
+                "ActionsEnabled": true,
+                "OKActions": [],
+                "AlarmActions": [
+                    "arn:aws:sns:us-east-1:644160558196:caas_scanning_automation_topic"
+                ],
+                "InsufficientDataActions": [],
+                "StateValue": "OK",
+                "StateReason": "Threshold Crossed: no datapoints were received for 1 period and 1 missing datapoint was treated as [NonBreaching].",
+                "StateReasonData": "{\"version\":\"1.0\",\"queryDate\":\"2022-08-04T10:50:52.148+0000\",\"statistic\":\"Sum\",\"period\":300,\"recentDatapoints\":[],\"threshold\":1.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2022-08-04T10:45:00.000+0000\"}]}",
+                "StateUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 8,
+                    "day": 4,
+                    "hour": 10,
+                    "minute": 50,
+                    "second": 52,
+                    "microsecond": 153000
+                },
+                "MetricName": "caas_scanning_automation_metric",
+                "Namespace": "caas_scanning_automation_namespace",
+                "Statistic": "Sum",
+                "Dimensions": [],
+                "Period": 300,
+                "EvaluationPeriods": 1,
+                "Threshold": 1.0,
+                "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+                "TreatMissingData": "notBreaching"
+            },
+            {
+                "AlarmName": "sandbox_stop_instance",
+                "AlarmArn": "arn:aws:cloudwatch:us-east-1:644160558196:alarm:sandbox_stop_instance",
+                "AlarmDescription": "Alarm stops instance when average CPU less then 7 percent for 90 minutes",
+                "AlarmConfigurationUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 9,
+                    "day": 21,
+                    "hour": 19,
+                    "minute": 9,
+                    "second": 40,
+                    "microsecond": 514000
+                },
+                "ActionsEnabled": true,
+                "OKActions": [],
+                "AlarmActions": [
+                    "arn:aws:swf:us-east-1:644160558196:action/actions/AWS_EC2.InstanceId.Stop/1.0"
+                ],
+                "InsufficientDataActions": [],
+                "StateValue": "OK",
+                "StateReason": "Threshold Crossed: 17 datapoints were received for 18 periods and 1 missing datapoint was treated as [NonBreaching].",
+                "StateReasonData": "{\"version\":\"1.0\",\"queryDate\":\"2022-09-26T11:47:24.496+0000\",\"startDate\":\"2022-09-26T10:07:00.000+0000\",\"statistic\":\"Average\",\"period\":300,\"recentDatapoints\":[6.650189867555818,6.734074279892539,6.7001852366398165,6.576009539686959,6.599999999999985,6.517238584792094,6.678058720014792,6.555392701676402,6.634347503936271,6.591666666666697,6.599898119848092,6.519808743169401,6.572316384180785,6.516555524682808,6.601014170602928,6.500162082059832,6.576044271556884],\"threshold\":7.0,\"evaluatedDatapoints\":[{\"timestamp\":\"2022-09-26T11:42:00.000+0000\"}]}",
+                "StateUpdatedTimestamp": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 9,
+                    "day": 26,
+                    "hour": 11,
+                    "minute": 47,
+                    "second": 24,
+                    "microsecond": 500000
+                },
+                "MetricName": "CPUUtilization",
+                "Namespace": "AWS/EC2",
+                "Statistic": "Average",
+                "Dimensions": [
+                    {
+                        "Name": "InstanceId",
+                        "Value": "i-0e3a2c5f0542f78f3"
+                    }
+                ],
+                "Period": 300,
+                "EvaluationPeriods": 18,
+                "DatapointsToAlarm": 18,
+                "Threshold": 7.0,
+                "ComparisonOperator": "LessThanThreshold",
+                "TreatMissingData": "notBreaching"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

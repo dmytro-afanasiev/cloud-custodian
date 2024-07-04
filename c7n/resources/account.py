@@ -11,9 +11,11 @@ from fnmatch import fnmatch
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzutc
 
+from c7n.resources.cloudtrail import CloudTrailChangesAlarmExistsFilter, Status, get_trail_groups
 from c7n.actions import ActionRegistry, BaseAction
 from c7n.exceptions import PolicyValidationError
 from c7n.filters import Filter, FilterRegistry, ValueFilter
+from c7n.filters.core import op
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.filters.multiattr import MultiAttrFilter
 from c7n.filters.missing import Missing
@@ -83,6 +85,158 @@ class Account(QueryResourceManager):
 
     def get_arns(self, resources):
         return ["arn:::{account_id}".format(**r) for r in resources]
+
+
+@Account.filter_registry.register('cloudtrails')
+class CloudTrailsFilter(Filter):
+    schema = {
+        'type': 'object',
+        'additionalProperties': False,
+        'required': ['type'],
+        'properties': {
+            # Doesn't mix well as enum with inherits that extend
+            'type': {'enum': ['cloudtrails']},
+            'valueList': {'type': 'string'},
+            'statusList': {'type': 'string'},
+            'selectorList': {'type': 'string'},
+            'configurationChangesAlarmList': {'type': 'string'},
+            'value': {'$ref': '#/definitions/filters_common/value'},
+            'op': {'$ref': '#/definitions/filters_common/comparison_operators'}
+        }
+    }
+    schema_alias = True
+    annotate = True
+
+    permissions = ('cloudtrail:GetTrailStatus', 'cloudtrail:GetEventSelectors',)
+
+    def process(self, resources, event=None):
+        trail_client = local_session(self.manager.session_factory).client('cloudtrail')
+        cloud_trails = trail_client.describe_trails()
+        filtered_resources_map = {
+            'valueList': None,
+            'statusList': None,
+            'selectorList': None,
+            'configurationChangesAlarmList': None
+        }
+        trails_by_trail_arn_map = {}
+        if cloud_trails['trailList']:
+            for trail in cloud_trails['trailList']:
+                trails_by_trail_arn_map[trail['TrailARN']] = trail
+
+        if self.data.get('valueList'):
+            filtered_resources = self.__process_cloudtrail_values(cloud_trails)
+            filtered_resources_map['valueList'] = filtered_resources
+        if self.data.get('statusList'):
+            statuses = self.__load_statuses(cloud_trails)
+            value_filter = self.__build_value_filter('statusList')
+            filtered_resources = self.__process_cloudtrail_additional_values(
+                'statusList', statuses, trails_by_trail_arn_map, value_filter)
+            filtered_resources_map['statusList'] = filtered_resources
+        if self.data.get('selectorList'):
+            selectors = self.__load_selectors(cloud_trails, trail_client)
+            value_filter = self.__build_value_filter('selectorList')
+            filtered_resources = self.__process_cloudtrail_additional_values(
+                'selectorList', selectors, trails_by_trail_arn_map, value_filter)
+            filtered_resources_map['selectorList'] = filtered_resources
+        if self.data.get('configurationChangesAlarmList'):
+            value_filter = self.__build_configuration_changes_alarms_value_filter(
+                'configurationChangesAlarmList')
+            filtered_resources = value_filter.process(cloud_trails['trailList'])
+            filtered_resources_map['configurationChangesAlarmList'] = filtered_resources
+
+        result_filtered_resources = self.__find_intersection(
+            trails_by_trail_arn_map, filtered_resources_map)
+
+        return self.__process_result(resources, result_filtered_resources)
+
+    @staticmethod
+    def __find_intersection(trails_by_trail_arn_map, filtered_resources_map):
+        result = []
+        for trail_arn in trails_by_trail_arn_map.keys():
+            add_trail = True
+            for filtered_resources in filtered_resources_map.values():
+                if filtered_resources is not None:
+                    found = False
+                    for filtered_resource in filtered_resources:
+                        if filtered_resource['TrailARN'] == trail_arn:
+                            found = True
+                            break
+                    if not found:
+                        add_trail = False
+                        break
+            if add_trail:
+                result.append(trails_by_trail_arn_map[trail_arn])
+        return result
+
+    def __process_cloudtrail_values(self, cloud_trails):
+        value_filter = self.__build_value_filter('valueList')
+        filtered_resources = []
+        for trail in cloud_trails['trailList']:
+            filtered_resource = value_filter.process([{'trailList': [trail]}])
+            if filtered_resource:
+                filtered_resources.append(trail)
+        return filtered_resources
+
+    @staticmethod
+    def __process_cloudtrail_additional_values(
+            policy_filter_field_name, values, trails_by_trail_arn_map, value_filter):
+        filtered_values = []
+        for value in values:
+            filtered_value = value_filter.process([{policy_filter_field_name: [value]}])
+            if filtered_value:
+                filtered_values.append(value)
+        filtered_resources = [
+            trails_by_trail_arn_map[value['TrailARN']]
+            for value in filtered_values]
+        return filtered_resources
+
+    def __build_value_filter(self, policy_filter_field_name):
+        data = {
+            'key': 'length(' + self.data.get(policy_filter_field_name) + ')',
+            'op': 'gt',
+            'value': 0
+        }
+        return ValueFilter(data, self.manager)
+
+    def __build_configuration_changes_alarms_value_filter(self, policy_filter_field_name):
+        data = {
+            'filter-pattern': self.data.get(policy_filter_field_name),
+            'subscriptions-confirmed': 0,
+            'subscriptions-confirmed-op': 'ne'
+        }
+        return CloudTrailChangesAlarmExistsFilter(data, self.manager)
+
+    def __load_statuses(self, cloud_trails):
+        grouped_trails = get_trail_groups(self.manager.session_factory,
+                                          cloud_trails['trailList'])
+        for region, (client, trails) in grouped_trails.items():
+            for trail in trails:
+                if 'c7n:TrailStatus' in trail:
+                    continue
+                status = client.get_trail_status(Name=trail['TrailARN'])
+                status.pop('ResponseMetadata')
+                trail['c7n:TrailStatus'] = status
+
+        statuses = []
+        for trail in cloud_trails['trailList']:
+            status = {}
+            status.update(trail['c7n:TrailStatus'])
+            status.update({'TrailARN': trail['TrailARN']})
+            statuses.append(status)
+        return statuses
+
+    @staticmethod
+    def __load_selectors(cloud_trails, client_trail):
+        selectors = []
+        for trail in cloud_trails['trailList']:
+            selector = client_trail.get_event_selectors(TrailName=trail['TrailARN'])
+            selector.update({'TrailARN': trail['TrailARN']})
+            selectors.append(selector)
+        return selectors
+
+    def __process_result(self, resources, filtered_resources):
+        return resources if op(
+            self.data, len(filtered_resources), self.data.get('value')) else []
 
 
 @filters.register('credential')

@@ -1,0 +1,64 @@
+{
+    "status_code": 200,
+    "data": {
+        "trailList": [
+            {
+                "Name": "aws-aft-CustomizationsCloudTrail",
+                "S3BucketName": "aws-aft-logs-644160558196-us-east-1",
+                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": true,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/aws-aft-CustomizationsCloudTrail",
+                "LogFileValidationEnabled": true,
+                "KmsKeyId": "arn:aws:kms:us-east-1:644160558196:key/73e76c80-0766-482f-9902-e75c29997e7b",
+                "HasCustomEventSelectors": true,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": true
+            },
+            {
+                "Name": "caas_scanning_automation",
+                "S3BucketName": "caas-scanning-automation-logs",
+                "S3KeyPrefix": "cloudtrail_logs",
+                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": false,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/caas_scanning_automation",
+                "LogFileValidationEnabled": true,
+                "CloudWatchLogsLogGroupArn": "arn:aws:logs:us-east-1:644160558196:log-group:/aws/cloudtrail/caas_scanning_automation:*",
+                "CloudWatchLogsRoleArn": "arn:aws:iam::644160558196:role/caas_scanning_automation_cloudtrail",
+                "HasCustomEventSelectors": true,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": false
+            },
+            {
+                "Name": "cloudtrail-230-red",
+                "S3BucketName": "bucket-230-red",
+                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": false,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/cloudtrail-230-red",
+                "LogFileValidationEnabled": false,
+                "CloudWatchLogsLogGroupArn": "arn:aws:logs:us-east-1:644160558196:log-group:230_log_group_red:*",
+                "CloudWatchLogsRoleArn": "arn:aws:iam::644160558196:role/230_role_red",
+                "HasCustomEventSelectors": false,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": false
+            },
+            {
+                "Name": "cloudtrail-230-red1",
+                "S3BucketName": "bucket-230-red1",
+                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": false,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/cloudtrail-230-red1",
+                "LogFileValidationEnabled": false,
+                "CloudWatchLogsLogGroupArn": "arn:aws:logs:us-east-1:644160558196:log-group:230_log_group_red1:*",
+                "CloudWatchLogsRoleArn": "arn:aws:iam::644160558196:role/230_role_red1",
+                "HasCustomEventSelectors": false,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": false
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

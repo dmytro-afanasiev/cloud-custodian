@@ -1398,6 +1398,26 @@ class AccountTests(BaseTest):
             ]
         )
 
+    def test_cloudtrails_filter(self):
+        session_factory = self.replay_flight_data("test_cloudtrails_filter")
+        p = self.load_policy(
+            {
+                'name': 'test_cloudtrails_filter',
+                'resource': 'account',
+                'filters': [{
+                    'type': 'cloudtrails',
+                    'valueList': 'trailList[?IsMultiRegionTrail == `true`]',
+                    'statusList': 'statusList[?IsLogging == `true`]',
+                    'op': 'gt',
+                    'value': 0
+                }]
+            },
+            session_factory=session_factory)
+
+        resources = p.run()
+        self.assertEqual(1, len(resources))
+        self.assertEqual('644160558196', resources[0]['account_id'])
+
 
 class AccountDataEvents(BaseTest):
 

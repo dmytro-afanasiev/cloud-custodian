@@ -3,6 +3,7 @@
 """AWS Account as a custodian resource.
 """
 import json
+import re
 import time
 import datetime
 from contextlib import suppress
@@ -88,6 +89,40 @@ class Account(QueryResourceManager):
 
     def get_arns(self, resources):
         return ["arn:::{account_id}".format(**r) for r in resources]
+
+
+@Account.filter_registry.register('event-rule-filter')
+class EventRuleFilter(Filter):
+    schema = type_schema('event-rule-filter',)
+    permissions = ("iam:GetRole",)
+
+    def process(self, resources, event=None):
+        event_client = local_session(self.manager.session_factory).client('events')
+        workspace_client = local_session(self.manager.session_factory).client('workspaces')
+        list_workspaces = workspace_client.describe_workspaces()
+        list_regex = [r'{\"detail-type\":\[\"WorkSpaces Access\"\],'
+                      r'\"source\":\[\"aws\.workspaces\"\]}',
+                      r'{\"source\":\[\"aws\.workspaces\"\],'
+                      r'\"detail-type\":\[\"WorkSpaces Access\"\]}']
+        if not list_workspaces.get('Workspaces') and len(list_workspaces.get('Workspaces')) == 0:
+            return []
+        event_rules = event_client.list_rules()
+        if not event_rules.get('Rules'):
+            return resources
+        resulted = []
+        for event in event_rules['Rules']:
+            jmespath_key = jmespath.search('EventPattern', event)
+            for reg in list_regex:
+                if self.regex_match(jmespath_key, reg):
+                    resulted.append(event)
+                    break
+
+        if len(resulted) > 0:
+            return []
+        return resources
+
+    def regex_match(self, value, regex):
+        return bool(re.match(regex, value, flags=re.IGNORECASE))
 
 
 @Account.filter_registry.register('rds-sns-subscription-filter')
@@ -855,6 +890,39 @@ class AccessAnalyzer(ValueFilter):
                 matched_analyzers.append(analyzer)
         account[self.annotation_key] = matched_analyzers
         return matched_analyzers and resources or []
+
+
+@filters.register('analyzer-findings-filter')
+class AnalyzerFindingsFilter(Filter):
+    """Checks all analyzers findings on status - ACTIVE
+
+    :example:
+
+    .. code-block:: yaml
+
+      policies:
+        - name: analyzer-findings
+          resource: account
+          filters:
+            - type: analyzer-findings-filter
+    """
+
+    schema = type_schema('analyzer-findings-filter')
+    schema_alias = False
+    permissions = ('access-analyzer:ListAnalyzers',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('accessanalyzer')
+        account_analyzers = self.manager.retry(client.list_analyzers)['analyzers']
+        accepted = []
+        for analyzer in account_analyzers:
+            findings = client.list_findings(analyzerArn=analyzer['arn'])
+            if findings.get('findings'):
+                for finding in findings['findings']:
+                    if 'status' in finding and finding['status'] == 'ACTIVE':
+                        accepted.append(finding)
+
+        return accepted
 
 
 @filters.register('password-policy')

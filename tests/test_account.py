@@ -1891,3 +1891,42 @@ class TestRDSSNSSubscriptionFilter(BaseTest):
 
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources[0]['account_id'], '644160558196')
+
+
+class TestEventRuleFilter(BaseTest):
+
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_event_rule_filter")
+        p = self.load_policy(
+            {
+                'name': 'config-recorder',
+                'resource': 'account',
+                'filters': [{
+                    'type': 'event-rule-filter',
+                }],
+            },
+            session_factory=session_factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['account_id'], '644160558196')
+
+
+class TestAnalyzerFindingsFilter(BaseTest):
+
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_analyzer_findings_filter")
+        p = self.load_policy(
+            {
+                'name': 'analyzer-findings',
+                'resource': 'account',
+                'filters': [{
+                    'type': 'analyzer-findings-filter',
+                }],
+            },
+            session_factory=session_factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['status'], 'ACTIVE')
+

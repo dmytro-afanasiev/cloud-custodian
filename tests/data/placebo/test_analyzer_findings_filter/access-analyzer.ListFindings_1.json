@@ -1,0 +1,53 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResponseMetadata": {},
+        "findings": [
+            {
+                "action": [
+                    "sts:AssumeRole"
+                ],
+                "analyzedAt": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 1,
+                    "day": 10,
+                    "hour": 9,
+                    "minute": 40,
+                    "second": 2,
+                    "microsecond": 406000
+                },
+                "condition": {},
+                "createdAt": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 1,
+                    "day": 10,
+                    "hour": 9,
+                    "minute": 40,
+                    "second": 2,
+                    "microsecond": 406000
+                },
+                "id": "f7ff826d-743a-455b-b0a0-16db158da008",
+                "isPublic": false,
+                "principal": {
+                    "AWS": "arn:aws:iam::644160558196:role/cai-managed/private/PowerUser"
+                },
+                "resource": "arn:aws:iam::644160558196:role/ransomware-solution/enforcer",
+                "resourceOwnerAccount": "644160558196",
+                "resourceType": "AWS::IAM::Role",
+                "status": "ACTIVE",
+                "updatedAt": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 1,
+                    "day": 10,
+                    "hour": 9,
+                    "minute": 40,
+                    "second": 2,
+                    "microsecond": 406000
+                }
+            }
+        ]
+    }
+}

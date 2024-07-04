@@ -1,0 +1,74 @@
+{
+    "status_code": 200,
+    "data": {
+        "NetworkAcls": [
+            {
+                "Associations": [],
+                "Entries": [
+                    {
+                        "CidrBlock": "0.0.0.0/0",
+                        "Egress": false,
+                        "PortRange": {
+                            "From": 3389,
+                            "To": 3389
+                        },
+                        "Protocol": "6",
+                        "RuleAction": "allow",
+                        "RuleNumber": 2
+                    }
+                ],
+                "IsDefault": false,
+                "NetworkAclId": "acl-0a5e7f6243f0e21d1",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "y-test"
+                    }
+                ],
+                "VpcId": "vpc-ad9744d0",
+                "OwnerId": "644160558196"
+            },
+            {
+                "Associations": [],
+                "Entries": [
+                    {
+                        "CidrBlock": "0.0.0.0/0",
+                        "Egress": false,
+                        "Protocol": "-1",
+                        "RuleAction": "deny",
+                        "RuleNumber": 32767
+                    },
+                    {
+                        "CidrBlock": "0.0.0.0/0",
+                        "Egress": false,
+                        "PortRange": {
+                            "From": 0,
+                            "To": 25
+                        },
+                        "Protocol": "6",
+                        "RuleAction": "allow",
+                        "RuleNumber": 3
+                    },
+                    {
+                        "CidrBlock": "0.0.0.0/0",
+                        "Egress": false,
+                        "Protocol": "-1",
+                        "RuleAction": "deny",
+                        "RuleNumber": 32767
+                    }
+                ],
+                "IsDefault": false,
+                "NetworkAclId": "acl-0f35df1a8a8c65a85",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "test-2"
+                    }
+                ],
+                "VpcId": "vpc-ad9744d0",
+                "OwnerId": "644160558196"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

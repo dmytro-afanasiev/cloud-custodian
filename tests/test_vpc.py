@@ -1178,6 +1178,27 @@ class NetworkAclTest(BaseTest):
         resources = p.run()
         self.assertEqual(len(resources), 1)
 
+    def test_cidr_egress_port_range_nacl(self):
+        factory = self.replay_flight_data("test_cidr_egress_port_range_nacl")
+        p = self.load_policy(
+            {
+                "name": "all-incoming-port-22-cidr-egress-port-range-nacls",
+                "resource": "network-acl",
+                "filters": [
+                    {"type": "cidr-egress-port-range",
+                     "egress": False,
+                     "required-ports": "22,3389",
+                     "cidr": "0.0.0.0/0",
+                     "rule-action": "allow"}],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 2)
+        port_ranges = jmespath.search('[].Entries[].PortRange', resources)
+        self.assertIn({'From': 0, 'To': 25}, port_ranges)
+        self.assertIn({'From': 3389, 'To': 3389}, port_ranges)
+
 
 class TransitGatewayTest(BaseTest):
 

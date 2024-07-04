@@ -120,6 +120,53 @@ class TableContinuousBackupFilter(ValueFilter):
         return super().__call__(r.get(self.annotation_key, {}))
 
 
+@Table.filter_registry.register('auto-scaling', aliases=['autoscaling'])
+class AutoScalingFilter(Filter):
+    """Filters DynamoDB tables by auto-scaling enabling
+
+    :example:
+
+    .. code-block:: yaml
+
+        policies:
+          - name: dynamodb-auto-scaling
+            resource: dynamodb-table
+            filters:
+              - type: auto-scaling
+                enabled: false
+    """
+    schema = {
+        'type': 'object',
+        'required': ['enabled'],
+        'additionalProperties': False,
+        'properties': {
+            'type': {'enum': ['auto-scaling', 'autoscaling']},
+            'enabled': {'type': 'boolean'}
+        }
+    }
+
+    permissions = ('application-autoscaling:DescribeScalableTargets',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('application-autoscaling')
+        table_names = ["table/" + resource['TableName'] for resource in resources]
+        auto_scalings = client.describe_scalable_targets(
+            ServiceNamespace='dynamodb', ResourceIds=table_names)
+        filtered_resources = []
+        enabled_in_policy = self.data.get("enabled")
+        scalable_targets = auto_scalings.get('ScalableTargets')
+        scalable_targets_by_names = {}
+        for scalable_target in scalable_targets:
+            scalable_targets_by_names[scalable_target['ResourceId']] = scalable_target
+        for resource in resources:
+            if ((enabled_in_policy and
+                 scalable_targets_by_names.get("table/" + resource['TableName'])) or
+                    (not enabled_in_policy
+                     and not scalable_targets_by_names.get("table/" + resource['TableName']))):
+                filtered_resources.append(resource)
+        return filtered_resources
+
+
 @Table.action_registry.register('set-continuous-backup')
 class TableContinuousBackupAction(BaseAction):
     """Set continuous backups and point in time recovery (PITR) on a dynamodb table.

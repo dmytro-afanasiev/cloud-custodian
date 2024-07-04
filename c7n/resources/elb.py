@@ -5,6 +5,7 @@ Elastic Load Balancers
 """
 from concurrent.futures import as_completed
 import re
+import jmespath
 
 from botocore.exceptions import ClientError
 
@@ -163,6 +164,130 @@ class RemoveTag(tags.RemoveTag):
         client.remove_tags(
             LoadBalancerNames=[r['LoadBalancerName'] for r in resource_set],
             Tags=[{'Key': k} for k in tag_keys])
+
+
+@ELB.filter_registry.register('cidr-egress-port-range-elb-filter')
+class CidrEgressPortRangeELBFilter(net_filters.PortRangeFilter):
+    """That filter allows to check all open ports for specific ip scope.
+    We can use range, list of ports for checking or a specific port.
+    :example
+    required_ports: 1, 2, 3 - will be checked 3 ports (1,2,3)
+    ...
+    required_ports: 4-11 - will be checked range of ports from 4 to 11 port
+    ...
+    required_ports: 6,9,11 - will be checked 6,9 and 11 port
+    ...
+    required_ports: 9 - will be checked only 9 port
+
+    :example policy:
+
+        Find all security group for elb that allow port 22 or 3389 for all incoming
+        connections.
+
+    .. code-block:: yaml
+
+        policies:
+          - name: test
+            resource: aws.elb
+            filters:
+              - type: cidr-egress-port-range-elb-filter
+                required-ports: 23
+                egress: false
+                cidr: ["0.0.0.0/0"]
+
+    """
+    egress = 'egress'
+    cidr = 'cidr'
+    required_ports = 'required-ports'
+    schema = type_schema('cidr-egress-port-range-elb-filter',
+                         **{"required": ['required-ports', 'egress', 'cidr'],
+                            "required-ports": {
+                                '$ref': '#/definitions/filters_common/value'},
+                            "egress": {
+                                '$ref': '#/definitions/filters_common/value'},
+                            "cidr": {
+                                '$ref': '#/definitions/filters_common/value'},
+                            "ipv6": {
+                                '$ref': '#/definitions/filters_common/value'}})
+    permissions = ('elasticloadbalancing:DescribeLoadBalancers',)
+
+    def __init__(self, data, manager):
+        super(CidrEgressPortRangeELBFilter,
+              self).__init__(data, manager)
+        self.data[net_filters.PortRangeFilter.partial_key] = True
+        self.data['path'] = 'SecurityGroups'
+
+    def process(self, resources, event=None):
+        ingress = 'IpPermissions'
+        egress = 'IpPermissionsEgress'
+        self.check_ingress_or_egress = self.data.get(self.egress)
+        self.valid_cidr = self.data.get(self.cidr)
+        self.valid_ports = self.data.get(self.required_ports)
+        accepted_resource = []
+        client = local_session(self.manager.session_factory).client('ec2')
+        sec_groups = client.describe_security_groups()
+        if self.check_ingress_or_egress:
+            self.choose_ingress_or_egress = egress
+        else:
+            self.choose_ingress_or_egress = ingress
+        for resource in resources:
+            security_groups = jmespath.search(self.data['path'], resource)
+            if security_groups:
+                for sec_group in security_groups:
+                    check_is_valid_security_group = self._is_valid_security_group_id(
+                        sec_groups, sec_group)
+                    if check_is_valid_security_group and \
+                            self._is_valid_security_group(
+                                check_is_valid_security_group):
+                        accepted_resource.append(resource)
+                        break
+        return accepted_resource
+
+    def _is_valid_security_group_id(self, security_group, group_id):
+        #  Choosing of valid security group for elb resource
+        for security_group in security_group['SecurityGroups']:
+            if group_id == security_group['GroupId']:
+                return security_group
+        return False
+
+    def _is_valid_security_group(self, security_group):
+        data_scope = self.choose_ingress_or_egress
+        data = security_group[data_scope]
+        #  Check only scope of elements; Foresee
+        #  in advance cases with large quantity of values
+
+        if isinstance(self.valid_cidr, list):
+            cidrs = self.valid_cidr
+        else:
+            cidrs = [self.valid_cidr]
+        from_port = 0
+        to_port = 65535
+        policy_ranges = self.extract_policy_port_ranges()
+
+        for d in data:
+            if 'FromPort' in d:
+                from_port = d['FromPort']
+            if 'ToPort' in d:
+                to_port = d['ToPort']
+            resource_ranges = "{}-{}".format(from_port, to_port)
+            if self.check_ranges_match(policy_ranges, resource_ranges) and \
+                    self._is_valid_cidr_ip(d, cidrs) or \
+                    self._is_valid_ipv6_cidr_ip(d, cidrs):
+                return True
+        return False
+
+    def _is_valid_cidr_ip(self, data, cidrs):
+        for ip in data['IpRanges']:
+            if ip['CidrIp'] in cidrs:
+                return True
+        return False
+
+    def _is_valid_ipv6_cidr_ip(self, data, cidrs):
+        if 'ipv6' in self.data and self.data['ipv6']:
+            for ip in data['Ipv6Ranges']:
+                if ip['CidrIpv6'] in cidrs:
+                    return True
+        return False
 
 
 @actions.register('delete')

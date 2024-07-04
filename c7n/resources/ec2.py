@@ -33,6 +33,7 @@ from c7n.utils import type_schema, filter_empty, jmespath_search, jmespath_compi
 
 from c7n.resources.iam import CheckPermissions, SpecificIamProfileManagedPolicy
 from c7n.resources.securityhub import PostFinding
+from c7n.resources.elb import CidrEgressPortRangeELBFilter
 
 RE_ERROR_INSTANCE_ID = re.compile("'(?P<instance_id>i-.*?)'")
 
@@ -1093,6 +1094,21 @@ class MonitorInstances(BaseAction):
         except ClientError as e:
             if e.response['Error']['Code'] != 'InvalidInstanceId.NotFound':
                 raise
+
+
+@EC2.filter_registry.register('cidrip-security-group-ec2-filter')
+class CidrIpSecurityGroupEC2Filter(CidrEgressPortRangeELBFilter):
+    schema = type_schema('cidrip-security-group-ec2-filter',
+                         **{"required": ['required-ports', 'egress', 'cidr'],
+                            "required-ports": {'$ref': '#/definitions/filters_common/value'},
+                            "egress": {'$ref': '#/definitions/filters_common/value'},
+                            "cidr": {'$ref': '#/definitions/filters_common/value'}})
+
+    def _is_valid_security_group_id(self, security_group, group_id):
+        for security_group in security_group['SecurityGroups']:
+            if group_id['GroupId'] == security_group['GroupId']:
+                return security_group
+        return False
 
 
 @EC2.action_registry.register('set-metadata-access')

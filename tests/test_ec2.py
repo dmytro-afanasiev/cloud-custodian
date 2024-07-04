@@ -2316,6 +2316,25 @@ class TestDedicatedHost(BaseTest):
         self.assertEqual(len(resources), 3)
 
 
+class TestSecurityGroupEC2Filter(BaseTest):
+
+    def test_cidrip_security_group_ec2(self):
+        factory = self.replay_flight_data("test_cidrip_security_group_ec2")
+        p = self.load_policy({
+            "name": "security-group-ec2",
+            "resource": "aws.ec2",
+            "filters": [{"type": "cidrip-security-group-ec2-filter",
+                         "required-ports": "11211",
+                         "egress": False,
+                         "cidr": ["::/0", "0.0.0.0/0"]}
+                        ],
+        }, session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["ImageId"], "ami-0d94ba1e0556bb684")
+
+
 class TestSpotFleetRequest(BaseTest):
 
     def test_spot_fleet_request_query(self):

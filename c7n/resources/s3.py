@@ -862,7 +862,7 @@ class S3LockConfigurationFilter(ValueFilter):
     schema = type_schema('lock-configuration', rinherit=ValueFilter.schema)
     permissions = ('s3:GetBucketObjectLockConfiguration',)
     annotate = True
-    annotation_key = 'ObjectLockConfiguration'
+    annotation_key = 'c7n:ObjectLockConfiguration'
 
     def _process_resource(self, client, resource):
         try:
@@ -893,9 +893,7 @@ class S3LockConfigurationFilter(ValueFilter):
         return super().process(resources, event)
 
     def __call__(self, r):
-        if self.annotate:
-            return super().__call__(r.setdefault(self.annotation_key, None))
-        return super().__call__(r.pop(self.annotation_key, None))
+        return super().__call__(r[self.annotation_key])
 
 
 ENCRYPTION_STATEMENT_GLOB = {

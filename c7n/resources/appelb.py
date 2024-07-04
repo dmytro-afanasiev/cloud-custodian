@@ -33,6 +33,7 @@ from c7n.utils import (
 from c7n.resources.aws import Arn
 from c7n.resources.shield import IsShieldProtected, SetShieldProtection
 from c7n.filters.core import OPERATORS
+from c7n.resources.elb import CidrEgressPortRangeELBFilter
 
 log = logging.getLogger('custodian.app-elb')
 TZLOCAL_ZONE = tzlocal.get_localzone()
@@ -303,6 +304,18 @@ class WafV2Enabled(WafV2FilterBase):
             'APPLICATION_LOAD_BALANCER',
             resource['LoadBalancerArn']
         )
+
+
+@AppELB.filter_registry.register('cidrip-security-group-appelb-filter')
+class CidrIpSecurityGroupAppELBFilter(CidrEgressPortRangeELBFilter):
+    schema = type_schema('cidrip-security-group-appelb-filter',
+                         **{"required": ['required-ports', 'egress', 'cidr'],
+                            "required-ports": {
+                                '$ref': '#/definitions/filters_common/value'},
+                            "egress": {
+                                '$ref': '#/definitions/filters_common/value'},
+                            "cidr": {
+                                '$ref': '#/definitions/filters_common/value'}})
 
 
 @AppELB.action_registry.register('set-waf')

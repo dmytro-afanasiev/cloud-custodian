@@ -758,6 +758,25 @@ class AppELBTest(BaseTest):
         self.assertEqual(resources[0]['DNSName'], 'alb-https-089-red-199972601'
                                                   '.us-east-1.elb.amazonaws.com')
 
+    def test_cidrip_security_group_appelb_filter(self):
+        factory = self.replay_flight_data("test_cidrip_security_group_appelb_filter")
+        p = self.load_policy(
+            {
+                "name": "cidrip-security-group-appelb",
+                "resource": "aws.app-elb",
+                "filters": [{"type": "cidrip-security-group-appelb-filter",
+                             "required-ports": '8140',
+                             "egress": False,
+                             "cidr": ["::/0", "0.0.0.0/0"]
+                             }],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["LoadBalancerName"], "c7n-270-alb-red")
+
 
 class AppELBHealthcheckProtocolMismatchTest(BaseTest):
 

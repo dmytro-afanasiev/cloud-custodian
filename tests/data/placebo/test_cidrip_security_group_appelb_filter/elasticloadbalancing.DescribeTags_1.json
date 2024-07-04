@@ -1,0 +1,17 @@
+{
+    "status_code": 200,
+    "data": {
+        "TagDescriptions": [
+            {
+                "ResourceArn": "arn:aws:elasticloadbalancing:us-east-1:644160558196:loadbalancer/app/c7n-270-alb-red/49f079a2192a5dbc",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "270_c7n_alb_red"
+                    }
+                ]
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

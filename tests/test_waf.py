@@ -105,3 +105,22 @@ class ActiveRulesFilterTest(BaseTest):
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources[0]["Name"], '916_waf_rule_group_green')
 
+
+class WAFRuleValueTest(BaseTest):
+
+    def test_waf_rule_value_query(self):
+        session_factory = self.replay_flight_data("test_waf_rule_value_query")
+        p = self.load_policy(
+            {"name": "waf-rule",
+             "resource": "aws.waf-rule",
+             "filters": [{"type": "waf-rule-value",
+                          "key": "Predicates",
+                          "op": "eq",
+                          "value": "empty"
+                          }]},
+            session_factory=session_factory
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["Name"], '915_waf_rule_red')
+

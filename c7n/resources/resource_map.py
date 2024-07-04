@@ -288,6 +288,7 @@ ResourceMap = {
   "aws.vpn-gateway": "c7n.resources.vpc.VPNGateway",
   "aws.waf": "c7n.resources.waf.WAF",
   "aws.waf-regional": "c7n.resources.waf.RegionalWAF",
+  "aws.waf-rule": "c7n.resources.waf.WAFRule",
   "aws.waf-rule-groups": "c7n.resources.waf.WAFRuleGroups",
   "aws.wafv2": "c7n.resources.waf.WAFV2",
   "aws.workspaces": "c7n.resources.workspaces.Workspace",

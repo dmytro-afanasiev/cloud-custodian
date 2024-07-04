@@ -1,0 +1,18 @@
+{
+    "status_code": 200,
+    "data": {
+        "Rule": {
+            "RuleId": "10a41420-bf1c-46a3-94e9-2dafe5ee51da",
+            "Name": "915_waf_rule_green",
+            "MetricName": "915WafRuleMetricGreen",
+            "Predicates": [
+                {
+                    "Negated": false,
+                    "Type": "IPMatch",
+                    "DataId": "c13413c8-71d2-43b9-a067-2f7ae78c6d29"
+                }
+            ]
+        },
+        "ResponseMetadata": {}
+    }
+}

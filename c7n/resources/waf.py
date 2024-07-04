@@ -1,9 +1,11 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
+import jmespath
 from c7n.manager import resources
 from c7n.query import ConfigSource, QueryResourceManager, TypeInfo, DescribeSource
 from c7n.tags import universal_augment
 from c7n.filters import ValueFilter, Filter
+from c7n.filters.core import op
 from c7n.utils import type_schema, local_session
 
 
@@ -238,3 +240,44 @@ class WAFV2LoggingFilter(ValueFilter):
         return [
             r for r in resources if self.match(
                 r.get(self.annotation_key, {}))]
+
+
+@resources.register('waf-rule')
+class WAFRule(QueryResourceManager):
+
+    class resource_type(TypeInfo):
+        service = "waf"
+        enum_spec = ("list_rules", "Rules", None)
+        name = "Name"
+        id = "RuleId"
+        permissions_enum = ('waf:ListWebACLs',)
+        permissions_augment = ('waf:GetWebACL',)
+        arn_type = "webacl"
+        cfn_type = config_type = "AWS::WAF::WebACL"
+
+
+@WAFRule.filter_registry.register('waf-rule-value')
+class WAFRuleValue(ValueFilter):
+    schema = type_schema('waf-rule-value', rinherit=ValueFilter.schema)
+    permissions = ('waf:ListWebACLs',)
+
+    def process(self, resources, event=None):
+        filtered_resources = []
+        client = local_session(self.manager.session_factory).client('waf')
+
+        for resource in resources:
+            rule = client.get_rule(RuleId=resource['RuleId'])['Rule']
+            jmespath_key = jmespath.search(self.data.get('key'), rule)
+            if bool(jmespath_key) is False and self.data.get('value') == 'empty':
+                filtered_resources.append(resource)
+                continue
+            elif self.data.get('value') == 'present' and jmespath_key:
+                filtered_resources.append(resource)
+                continue
+            elif self.data.get('value') == 'absent' and jmespath_key is None:
+                filtered_resources.append(resource)
+                continue
+            elif op(self.data, jmespath_key, self.data.get('value')):
+                filtered_resources.append(resource)
+
+        return filtered_resources

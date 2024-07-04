@@ -1,10 +1,12 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
+import jmespath
 from c7n.actions import BaseAction
 from c7n.manager import resources
 from c7n.query import QueryResourceManager, TypeInfo, DescribeSource, ConfigSource
 from c7n.tags import RemoveTag, Tag, TagActionFilter, TagDelayedAction
 from c7n.utils import local_session, type_schema
+from c7n.filters import ValueFilter, OPERATORS
 
 
 class AppFlowDescribe(DescribeSource):
@@ -30,6 +32,48 @@ class AppFlow(QueryResourceManager):
         config_type = "AWS::AppFlow::Flow"
 
     source_mapping = {'describe': AppFlowDescribe, 'config': ConfigSource}
+
+
+@AppFlow.filter_registry.register('appflow-kms-key-filter')
+class AppFlowAlias(ValueFilter):
+    """Checks fields in Kms Key resource if KmsArn
+    in appflow resource
+
+    :example:
+
+    .. code-block:: yaml
+
+      policies:
+        - name: app-flow
+          resource: app-flow
+          filters:
+            - type: appflow-kms-key-filter
+              key: KeyManager
+              op: eq
+              value: AWS
+    """
+
+    schema = type_schema('appflow-kms-key-filter',
+                         rinherit=ValueFilter.schema)
+    permissions = ('appflow:DescribeFlow',)
+
+    def _op(self, a, b):
+        op = OPERATORS[self.data.get('op')]
+        return op(a, b)
+
+    def process(self, resources, event=None):
+        client = local_session(
+            self.manager.session_factory).client('kms')
+        self.key = self.data.get('key')
+        self.value = self.data.get('value')
+        accepted = []
+        for resource in resources:
+            key = client.describe_key(KeyId=resource['kmsArn'])['KeyMetadata']
+            jmespath_key = jmespath.search(self.key, key)
+            if self._op(jmespath_key, self.value):
+                accepted.append(resource)
+
+        return accepted
 
 
 @AppFlow.action_registry.register('tag')

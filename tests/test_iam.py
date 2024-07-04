@@ -244,6 +244,29 @@ class UserCredentialReportTest(BaseTest):
         self.assertEqual(len(resources), 1)
         self.assertEqual(sorted([r["UserName"] for r in resources]), ["kapil"])
 
+    def test_access_key_time_creation_and_user_time_creation(self):
+        session_factory = self.replay_flight_data(
+            "test_access_key_time_creation_and_user_time_creation")
+        p = self.load_policy(
+            {
+                "name": "test-access-key-and-iam-user",
+                "resource": "iam-user",
+                "filters": [
+                    {
+                        "type": "creation-time-aws-iam-user",
+                        "field_name_1": "access_key_1_last_rotated",
+                        "field_name_2": "CreateDate",
+                        "seconds": 4,
+                    }
+                ],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['UserName'], 'vlad180')
+
     def test_old_console_users(self):
         session_factory = self.replay_flight_data("test_iam_user_console_old")
         p = self.load_policy(

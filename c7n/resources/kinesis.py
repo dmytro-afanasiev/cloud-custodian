@@ -488,3 +488,9 @@ class VideoStreamRemoveTag(RemoveTag):
                 ResourceARN=r['StreamARN'],
                 TagKeyList=tag_keys,
                 ignore_err_codes=("ResourceNotFoundException",))
+
+
+@KinesisVideoStream.filter_registry.register('kms-key')
+class KmsFilterVideoStream(KmsRelatedFilter):
+
+    RelatedIdsExpression = 'KmsKeyId'

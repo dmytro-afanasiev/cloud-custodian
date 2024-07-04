@@ -1846,3 +1846,23 @@ def test_fail_cloudtrail_include_management_events(test, cloudtrail_fail_include
     )
     return_value = p.run()
     test.assertEqual(len(return_value), 1)
+
+
+class TestAccountIAMRoleLightFilter(BaseTest):
+
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_account_iam_role_light_filter")
+        p = self.load_policy(
+            {
+                'name': 'iam-role',
+                'resource': 'account',
+                'filters': [{'not': [{
+                    'type': 'account-iam-role-light-filter',
+                    'value': 'AWSSupportAccess'
+                }]}],
+            },
+            session_factory=session_factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['account_id'], '644160558196')

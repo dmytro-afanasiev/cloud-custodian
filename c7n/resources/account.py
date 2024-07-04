@@ -7,6 +7,7 @@ import time
 import datetime
 from contextlib import suppress
 from botocore.exceptions import ClientError
+from concurrent.futures import as_completed
 from fnmatch import fnmatch
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzutc
@@ -2651,3 +2652,33 @@ class SetBedrockModelInvocationLogging(BaseAction):
             client.put_model_invocation_logging_configuration(loggingConfig=params)
         else:
             client.delete_model_invocation_logging_configuration()
+
+
+@Account.filter_registry.register('account-iam-role-light-filter')
+class AccountIAMRoleLightFilter(Filter):
+    schema = type_schema('account-iam-role-light-filter',
+                         value={'$ref': '#/definitions/filters_common/value'})
+    permissions = ('iam:ListAttachedRolePolicies',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('iam')
+        roles = client.list_roles()
+        if not roles.get('Roles'):
+            return [resources[0]]
+
+        with self.executor_factory(max_workers=3) as w:
+            futures = {}
+            for role in roles['Roles']:
+                futures[w.submit(client.list_attached_role_policies,
+                                 RoleName=role['RoleName'])] = role
+                for future in as_completed(futures):
+                    if future.result().get('AttachedPolicies'):
+                        attached = future.result()['AttachedPolicies']
+                        managed_policies = self._managed_attached_policies(attached)
+                        if self.data.get('value') in managed_policies:
+                            return []
+
+        return [resources[0]]
+
+    def _managed_attached_policies(self, attached):
+        return [attache['PolicyName'] for attache in attached]

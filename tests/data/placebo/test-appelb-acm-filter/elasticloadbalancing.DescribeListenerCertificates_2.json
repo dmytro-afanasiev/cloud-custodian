@@ -1,0 +1,16 @@
+{
+    "status_code": 200,
+    "data": {
+        "Certificates": [
+            {
+                "CertificateArn": "arn:aws:acm:us-east-1:644160558196:certificate/0968edd6-3fad-4b84-ab15-f4fac7e3b03c",
+                "IsDefault": false
+            },
+            {
+                "CertificateArn": "arn:aws:acm:us-east-1:644160558196:certificate/0968edd6-3fad-4b84-ab15-f4fac7e3b03c",
+                "IsDefault": true
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

@@ -6,6 +6,10 @@ Application & Network Load Balancers
 import json
 import logging
 import re
+import datetime
+
+import jmespath
+import tzlocal
 
 from collections import defaultdict
 from c7n.actions import ActionRegistry, BaseAction, ModifyVpcSecurityGroupsAction
@@ -28,8 +32,10 @@ from c7n.utils import (
 
 from c7n.resources.aws import Arn
 from c7n.resources.shield import IsShieldProtected, SetShieldProtection
+from c7n.filters.core import OPERATORS
 
 log = logging.getLogger('custodian.app-elb')
+TZLOCAL_ZONE = tzlocal.get_localzone()
 
 
 class DescribeAppElb(DescribeSource):
@@ -210,6 +216,56 @@ class WafEnabled(WafClassicRegionalFilterBase):
             'APPLICATION_LOAD_BALANCER',
             resource['LoadBalancerArn']
         )
+
+
+@AppELB.filter_registry.register('appelb-acm-filter')
+class ElbAcmFilter(ValueFilter):
+    """
+    This filter allows check certificates expiration day
+    In that case we use local_zone function for comparing
+    dates in Amazon and locally with one time space.
+    """
+
+    schema = type_schema('appelb-acm-filter',
+                         key={'type': 'string'},
+                         value_type={
+                             '$ref': '#/definitions/filters_common/value_types'},
+                         op={
+                             '$ref': '#/definitions/filters_common/comparison_operators'},
+                         value={'$ref': '#/definitions/filters_common/value'})
+    permissions = ('elasticloadbalancing:DescribeLoadBalancers',)
+
+    def __call__(self, resource):
+        return resource
+
+    def process(self, resources, event=None):
+        acm_client = local_session(self.manager.session_factory).client("acm")
+        elb_client = local_session(self.manager.session_factory).client(
+            'elbv2')
+        result = []
+        value = self.data.get('value')
+        local_time_zone = datetime.datetime.now(TZLOCAL_ZONE)
+
+        for elb_arn in resources:
+            for listener in elb_client.describe_listeners(
+                    LoadBalancerArn=elb_arn['LoadBalancerArn'])['Listeners']:
+                listeners = elb_client.describe_listener_certificates(
+                    ListenerArn=listener['ListenerArn'])
+                if 'Certificates' in listeners:
+                    for certificate in listeners['Certificates']:
+                        cert_description = acm_client.describe_certificate(
+                            CertificateArn=certificate['CertificateArn'])
+                        key = jmespath.search(self.data.get('key'),
+                                              cert_description['Certificate'])
+                        op = OPERATORS[self.data.get('op')]
+                        if isinstance(value, int):
+                            value = local_time_zone + datetime.timedelta(
+                                days=int(value))
+                        if op(key, value):
+                            result.append(elb_arn)
+                            break
+
+        return result
 
 
 @AppELB.filter_registry.register('wafv2-enabled')

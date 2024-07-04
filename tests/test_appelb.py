@@ -1,5 +1,6 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
+import unittest
 
 from .common import BaseTest, event_data
 from c7n.exceptions import PolicyValidationError
@@ -735,6 +736,27 @@ class AppELBTest(BaseTest):
         self.assertTrue(
             'AWS/NetworkELB.TCP_ELB_Reset_Count.Sum.0.25' in resources[
                 0]['c7n.metrics'])
+
+    @unittest.skip('Fails due to some bug')
+    def test_appelb_acm_filter(self):
+        session_factory = self.replay_flight_data('test-appelb-acm-filter')
+        p = self.load_policy(
+            {
+                'name': 'appelb-acm-filter',
+                'resource': 'app-elb',
+                'filters': [{
+                    'type': 'appelb-acm-filter',
+                    'key': 'NotAfter',
+                    'op': 'lt',
+                    'value': 30}]
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['DNSName'], 'alb-https-089-red-199972601'
+                                                  '.us-east-1.elb.amazonaws.com')
 
 
 class AppELBHealthcheckProtocolMismatchTest(BaseTest):

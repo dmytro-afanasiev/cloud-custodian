@@ -232,6 +232,22 @@ class Kinesis(BaseTest):
             "DELETING",
         )
 
+    def test_kms_key_kinesis_query(self):
+        factory = self.replay_flight_data("test_kinesis_kms_key_rotation")
+        p = self.load_policy(
+            {
+                "name": "kinesis-kms",
+                "resource": "kinesis",
+                "filters": [{"type": "kms-key-kinesis-filter",
+                             "key": "KeyRotationEnabled",
+                             "op": "eq",
+                             "value": True}],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
     def test_video_stream_delete(self):
         factory = self.replay_flight_data("test_kinesis_video_stream_delete")
         p = self.load_policy(

@@ -1,0 +1,61 @@
+{
+    "status_code": 200,
+    "data": {
+        "StreamDescription": {
+            "StreamName": "test",
+            "StreamARN": "arn:aws:kinesis:us-east-1:644160558196:stream/test",
+            "StreamStatus": "ACTIVE",
+            "Shards": [
+                {
+                    "ShardId": "shardId-644160558196",
+                    "HashKeyRange": {
+                        "StartingHashKey": "0",
+                        "EndingHashKey": "113427455640312821154458202477256070484"
+                    },
+                    "SequenceNumberRange": {
+                        "StartingSequenceNumber": "49619884616445718461383165103994211529436515869602611202"
+                    }
+                },
+                {
+                    "ShardId": "shardId-644160558196",
+                    "HashKeyRange": {
+                        "StartingHashKey": "113427455640312821154458202477256070485",
+                        "EndingHashKey": "226854911280625642308916404954512140969"
+                    },
+                    "SequenceNumberRange": {
+                        "StartingSequenceNumber": "49619884616468019206581695727135747247709164231108591634"
+                    }
+                },
+                {
+                    "ShardId": "shardId-644160558196",
+                    "HashKeyRange": {
+                        "StartingHashKey": "226854911280625642308916404954512140970",
+                        "EndingHashKey": "340282366920938463463374607431768211455"
+                    },
+                    "SequenceNumberRange": {
+                        "StartingSequenceNumber": "49619884616490319951780226350277282965981812592614572066"
+                    }
+                }
+            ],
+            "HasMoreShards": false,
+            "RetentionPeriodHours": 24,
+            "StreamCreationTimestamp": {
+                "__class__": "datetime",
+                "year": 2021,
+                "month": 7,
+                "day": 6,
+                "hour": 17,
+                "minute": 45,
+                "second": 57,
+                "microsecond": 0
+            },
+            "EnhancedMonitoring": [
+                {
+                    "ShardLevelMetrics": []
+                }
+            ],
+            "EncryptionType": "NONE"
+        },
+        "ResponseMetadata": {}
+    }
+}

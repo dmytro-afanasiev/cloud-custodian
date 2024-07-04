@@ -281,3 +281,26 @@ class CodeDeploy(BaseTest):
             deploymentGroupName=resources[0]['deploymentGroupName'])
         self.assertEqual(
             e.exception.response['Error']['Code'], 'DeploymentGroupDoesNotExistException')
+
+
+class DeploymentConfigFilterTest(BaseTest):
+
+    def test_query(self):
+        factory = self.replay_flight_data('test_deployment_config_filter')
+        p = self.load_policy(
+            {
+                'name': 'deployment-config-filter',
+                'resource': 'codedeploy-group',
+                'filters': [{'and': [{
+                    'type': 'deployment-config-filter',
+                    'key': 'minimumHealthyHosts.type',
+                    'value': 'FLEET_PERCENT'},
+                    {'type': 'deployment-config-filter',
+                     'key': 'minimumHealthyHosts.value',
+                     'value': 50}]}],
+            },
+            session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['applicationName'], '722_codedeploy-app_green')

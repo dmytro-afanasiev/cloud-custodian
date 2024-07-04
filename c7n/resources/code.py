@@ -1,9 +1,12 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 from botocore.exceptions import ClientError
+import jmespath
 
 from c7n.actions import BaseAction
 from c7n.filters.vpc import SubnetFilter, SecurityGroupFilter, VpcFilter
+from c7n.filters import ValueFilter
+from c7n.filters.core import op
 from c7n.manager import resources
 from c7n.query import (
     QueryResourceManager, DescribeSource, ConfigSource, TypeInfo, ChildResourceManager)
@@ -399,6 +402,30 @@ class CodeDeployDeploymentGroup(ChildResourceManager):
         for r in resources:
             arns.append(self.generate_arn(r['applicationName'] + '/' + r['deploymentGroupName']))
         return arns
+
+
+@CodeDeployDeploymentGroup.filter_registry.register('deployment-config-filter')
+class DeploymentConfigFilter(ValueFilter):
+    schema = type_schema('deployment-config-filter', rinherit=ValueFilter.schema)
+    permissions = ("codedeploy:GetDeploymentGroup",)
+
+    def process(self, resources, event=None):
+        filtered = []
+        client = local_session(self.manager.session_factory).client('codedeploy')
+        for resource in resources:
+            dep_conf_name = client.get_deployment_group(
+                applicationName=resource['applicationName'],
+                deploymentGroupName=resource[
+                    'deploymentGroupName'])[
+                'deploymentGroupInfo']['deploymentConfigName']
+            config = client.get_deployment_config(
+                deploymentConfigName=dep_conf_name)['deploymentConfigInfo']
+            jmespath_key = jmespath.search(self.data.get('key'), config)
+
+            if jmespath_key is not None and op(self.data, jmespath_key, self.data.get('value')):
+                filtered.append(resource)
+
+        return filtered
 
 
 @CodeDeployDeploymentGroup.action_registry.register('delete')

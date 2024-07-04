@@ -1,0 +1,25 @@
+{
+    "status_code": 200,
+    "data": {
+        "deploymentConfigInfo": {
+            "deploymentConfigId": "fcffd0c1-2b54-41a4-9941-3e1a36c700db",
+            "deploymentConfigName": "722_deployment-config_green",
+            "minimumHealthyHosts": {
+                "type": "FLEET_PERCENT",
+                "value": 50
+            },
+            "createTime": {
+                "__class__": "datetime",
+                "year": 2022,
+                "month": 8,
+                "day": 30,
+                "hour": 12,
+                "minute": 13,
+                "second": 27,
+                "microsecond": 403000
+            },
+            "computePlatform": "Server"
+        },
+        "ResponseMetadata": {}
+    }
+}

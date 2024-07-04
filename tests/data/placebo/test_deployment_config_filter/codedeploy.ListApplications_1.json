@@ -1,0 +1,10 @@
+{
+    "status_code": 200,
+    "data": {
+        "applications": [
+            "722_codedeploy-app_red",
+            "722_codedeploy-app_green"
+        ],
+        "ResponseMetadata": {}
+    }
+}

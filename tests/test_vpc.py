@@ -4264,3 +4264,42 @@ def test_vpc_delete(test, vpc_delete):
         "Vpcs"
     ]
     test.assertFalse(vpcs)
+
+
+class TestVPCEndpointService(BaseTest):
+    def test_vpc_endpoint_service_resource(self):
+        session_factory = self.replay_flight_data("test_vpc_endpoint_service_resource")
+        p = self.load_policy(
+            {
+                "name": "test-vpc-endpoint-service",
+                "resource": "vpc-endpoint-service",
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources['ServiceConfigurations']), 1)
+        self.assertEqual(resources['ServiceConfigurations'][0]['ServiceId'],
+                         'vpce-svc-08c9b5cea2b1f249e')
+
+    def test_vpc_endpoint_service_filter(self):
+        session_factory = self.replay_flight_data("test_vpc_endpoint_service_filter")
+        p = self.load_policy(
+            {
+                "name": "test-vpc-endpoint-service",
+                "resource": "vpc-endpoint-service",
+                "filters": [
+                    {
+                        "type": "vpc-endpoint-service-configurations-filter",
+                        "key": "AcceptanceRequired",
+                        "op": "eq",
+                        "value": True
+                    }]
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['ServiceId'], 'vpce-svc-08c9b5cea2b1f249e')
+

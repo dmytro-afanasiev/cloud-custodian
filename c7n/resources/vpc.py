@@ -7,7 +7,7 @@ import jmespath
 from c7n.actions import BaseAction, ModifyVpcSecurityGroupsAction
 from c7n.deprecated import DeprecatedField
 from c7n.exceptions import PolicyValidationError, ClientError
-from c7n.filters import Filter, ValueFilter, MetricsFilter, ListItemFilter, PortRangeFilter
+from c7n.filters import Filter, ValueFilter, MetricsFilter, ListItemFilter, PortRangeFilter, OPERATORS
 import c7n.filters.vpc as net_filters
 from c7n.filters.iamaccess import CrossAccountAccessFilter
 from c7n.filters.related import RelatedResourceFilter, RelatedResourceByIdFilter
@@ -2764,6 +2764,38 @@ class VPNConnection(query.QueryResourceManager):
         filter_type = 'list'
         cfn_type = config_type = 'AWS::EC2::VPNConnection'
         id_prefix = "vpn-"
+
+
+@resources.register('vpc-endpoint-service')
+class VPCEndpointService(query.QueryResourceManager):
+    class resource_type(query.TypeInfo):
+        service = 'ec2'
+        enum_spec = (
+            'describe_vpc_endpoint_service_configurations', None, None)
+        arn_type = 'vpc-endpoint-service'
+        name = id = 'ServiceId'
+        filter_type = 'list'
+        id_prefix = "vpce-"
+
+
+@VPCEndpointService.filter_registry.register(
+    'vpc-endpoint-service-configurations-filter')
+class VPCEndpointServiceConfigurationsFilter(ValueFilter):
+    schema = type_schema('vpc-endpoint-service-configurations-filter',
+                         rinherit=ValueFilter.schema)
+    permissions = ('ec2:DescribeVpcEndpoints',)
+
+    def process(self, resources, event=None):
+        accepted_resources = []
+        op = OPERATORS[self.data.get('op')]
+        value = self.data.get('value')
+        if resources.get('ServiceConfigurations'):
+            for resource in resources['ServiceConfigurations']:
+                key = jmespath.search(self.data.get('key'), resource)
+                if op(key, value):
+                    accepted_resources.append(resource)
+
+        return accepted_resources
 
 
 @resources.register('vpn-gateway')

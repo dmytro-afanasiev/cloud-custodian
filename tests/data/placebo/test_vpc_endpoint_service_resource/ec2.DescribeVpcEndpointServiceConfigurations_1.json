@@ -1,0 +1,32 @@
+{
+    "status_code": 200,
+    "data": {
+        "ServiceConfigurations": [
+            {
+                "ServiceType": [
+                    {
+                        "ServiceType": "Interface"
+                    }
+                ],
+                "ServiceId": "vpce-svc-08c9b5cea2b1f249e",
+                "ServiceName": "com.amazonaws.vpce.us-east-1.vpce-svc-08c9b5cea2b1f249e",
+                "ServiceState": "Available",
+                "AvailabilityZones": [
+                    "us-east-1a",
+                    "us-east-1b"
+                ],
+                "AcceptanceRequired": true,
+                "ManagesVpcEndpoints": false,
+                "NetworkLoadBalancerArns": [
+                    "arn:aws:elasticloadbalancing:us-east-1:644160558196:loadbalancer/net/410-nlb-green/aba1e73dd8b5f0a2"
+                ],
+                "BaseEndpointDnsNames": [
+                    "vpce-svc-08c9b5cea2b1f249e.us-east-1.vpce.amazonaws.com"
+                ],
+                "PrivateDnsNameConfiguration": {},
+                "Tags": []
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

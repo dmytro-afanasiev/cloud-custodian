@@ -1,12 +1,14 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 import copy
+import jmespath
 from concurrent.futures import as_completed
 from botocore.exceptions import ClientError
 
 from c7n.actions import AutoTagUser, AutoscalingBase, BaseAction
 from c7n.exceptions import PolicyExecutionError, PolicyValidationError
 from c7n.filters import MetricsFilter, ValueFilter, Filter
+from c7n.filters.core import OPERATORS
 from c7n.filters.costhub import CostHubRecommendation
 from c7n.filters.offhours import OffHour, OnHour
 import c7n.filters.vpc as net_filters
@@ -1194,6 +1196,78 @@ class ECSTaggable(Filter):
             return [r for r in resources if not ecs_taggable(self.manager.resource_type, r)]
         else:
             return [r for r in resources if ecs_taggable(self.manager.resource_type, r)]
+
+
+@ECSCluster.filter_registry.register('encryption-instance-id-ecs-filter')
+class EncryptionInstanceIdEKSEBSFilter(ValueFilter):
+    schema = type_schema('encryption-instance-id-ecs-filter',
+                         rinherit=ValueFilter.schema
+                         )
+    permissions = ('ecs:DescribeClusters',)
+
+    def _perform_op(self, a, b):
+        op = OPERATORS[self.data.get('op', 'eq')]
+        return op(a, b)
+
+    def process(self, resources, event=None):
+        client_ecs = local_session(self.manager.session_factory).client('ecs')
+        client_ec2 = local_session(self.manager.session_factory).client('ec2')
+        self.described_volumes = client_ec2.describe_volumes()['Volumes']
+        self.value = self.data.get('value')
+        self.key = self.data.get('key')
+
+        filtered_clusters = []
+        filtered_containers = []
+        list_cluster_names = {
+            'cluster_names': [cluster['clusterName'] for cluster in resources]}
+        clusters_arns = {'containerInstanceArns': []}
+        for cluster_name in list_cluster_names['cluster_names']:
+            for container_arn in client_ecs.list_container_instances(
+                    cluster=cluster_name)['containerInstanceArns']:
+                clusters_arns['containerInstanceArns'].append(container_arn)
+
+        container_arns = {}
+        for container_arn in clusters_arns['containerInstanceArns']:
+            if container_arn.split('/')[-2] not in container_arns:
+                container_arns[container_arn.split('/')[-2]] = []
+                container_arns[container_arn.split('/')[-2]].append(
+                    container_arn.split('/')[-1])
+            else:
+                container_arns[container_arn.split('/')[-2]].append(
+                    container_arn.split('/')[-1])
+
+        if not container_arns:
+            return []
+
+        described_containers = [
+            client_ecs.describe_container_instances(
+                cluster=cluster, containerInstances=container_arns[cluster])[
+                'containerInstances'][0] for cluster in container_arns.keys()]
+
+        for container in described_containers:
+            if self._is_valid_volume(container['ec2InstanceId']):
+                filtered_containers.append(container['containerInstanceArn'])
+
+        for cluster in resources:
+            for container_arn in filtered_containers:
+                if cluster['clusterName'] == container_arn.split('/')[-2]:
+                    filtered_clusters.append(cluster)
+
+        return filtered_clusters
+
+    def _is_valid_volume(self, ec2_id):
+        def _check_volume_id(volumes):
+            for volume in volumes['Attachments']:
+                if volume['InstanceId'] == ec2_id:
+                    return True
+            return False
+
+        for volume in self.described_volumes:
+            if _check_volume_id(volume):
+                jmespath_value = jmespath.search(self.key, volume)
+                if self._perform_op(self.value, jmespath_value):
+                    return True
+        return False
 
 
 ECSCluster.filter_registry.register('marked-for-op', TagActionFilter)

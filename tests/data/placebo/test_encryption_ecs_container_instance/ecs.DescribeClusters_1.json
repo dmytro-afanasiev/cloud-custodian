@@ -1,0 +1,47 @@
+{
+    "status_code": 200,
+    "data": {
+        "clusters": [
+            {
+                "clusterArn": "arn:aws:ecs:us-east-1:644160558196:cluster/244_c7n_ecs_cluster_green",
+                "clusterName": "244_c7n_ecs_cluster_green",
+                "status": "ACTIVE",
+                "registeredContainerInstancesCount": 1,
+                "runningTasksCount": 0,
+                "pendingTasksCount": 0,
+                "activeServicesCount": 0,
+                "statistics": [],
+                "tags": [],
+                "settings": [
+                    {
+                        "name": "containerInsights",
+                        "value": "disabled"
+                    }
+                ],
+                "capacityProviders": [],
+                "defaultCapacityProviderStrategy": []
+            },
+            {
+                "clusterArn": "arn:aws:ecs:us-east-1:644160558196:cluster/244_c7n_ecs_cluster_red",
+                "clusterName": "244_c7n_ecs_cluster_red",
+                "status": "ACTIVE",
+                "registeredContainerInstancesCount": 1,
+                "runningTasksCount": 0,
+                "pendingTasksCount": 0,
+                "activeServicesCount": 0,
+                "statistics": [],
+                "tags": [],
+                "settings": [
+                    {
+                        "name": "containerInsights",
+                        "value": "disabled"
+                    }
+                ],
+                "capacityProviders": [],
+                "defaultCapacityProviderStrategy": []
+            }
+        ],
+        "failures": [],
+        "ResponseMetadata": {}
+    }
+}

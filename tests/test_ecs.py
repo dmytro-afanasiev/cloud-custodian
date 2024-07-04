@@ -654,6 +654,21 @@ class TestEcsContainerInstance(BaseTest):
         resources = p.run()
         self.assertEqual(len(resources), 1)
 
+    def test_encryption_ecs_container_instance(self):
+        session_factory = self.replay_flight_data("test_encryption_ecs_container_instance")
+        p = self.load_policy(
+            {"name": "encryption-ecs",
+             "resource": "ecs",
+             "filters": [{"type": "encryption-instance-id-ecs-filter",
+                          "key": "Encrypted",
+                          "op": "eq",
+                          "value": True}]},
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["clusterName"], "244_c7n_ecs_cluster_green")
+
     def test_container_instance_update_agent(self):
         session_factory = self.replay_flight_data(
             "test_ecs_container_instance_update_agent"

@@ -1,0 +1,94 @@
+{
+    "status_code": 200,
+    "data": {
+        "Directories": [
+            {
+                "DirectoryId": "d-9067b093ac",
+                "Alias": "d-9067b093ac",
+                "DirectoryName": "workspaces.green-example.com",
+                "RegistrationCode": "SLiad+BF6LAN",
+                "SubnetIds": [
+                    "subnet-06b57e0031f448197",
+                    "subnet-09d580a34d37ea94f"
+                ],
+                "DnsIpAddresses": [
+                    "10.0.1.239",
+                    "10.0.2.222"
+                ],
+                "CustomerUserName": "Administrator",
+                "IamRoleId": "arn:aws:iam::644160558196:role/workspaces_DefaultRole",
+                "DirectoryType": "SIMPLE_AD",
+                "WorkspaceSecurityGroupId": "sg-09416261631bd24df",
+                "State": "REGISTERED",
+                "WorkspaceCreationProperties": {
+                    "EnableWorkDocs": false,
+                    "EnableInternetAccess": true,
+                    "UserEnabledAsLocalAdministrator": true,
+                    "EnableMaintenanceMode": true
+                },
+                "WorkspaceAccessProperties": {
+                    "DeviceTypeWindows": "ALLOW",
+                    "DeviceTypeOsx": "ALLOW",
+                    "DeviceTypeWeb": "DENY",
+                    "DeviceTypeIos": "ALLOW",
+                    "DeviceTypeAndroid": "ALLOW",
+                    "DeviceTypeChromeOs": "ALLOW",
+                    "DeviceTypeZeroClient": "ALLOW",
+                    "DeviceTypeLinux": "DENY"
+                },
+                "Tenancy": "SHARED",
+                "SelfservicePermissions": {
+                    "RestartWorkspace": "ENABLED",
+                    "IncreaseVolumeSize": "DISABLED",
+                    "ChangeComputeType": "DISABLED",
+                    "SwitchRunningMode": "DISABLED",
+                    "RebuildWorkspace": "DISABLED"
+                }
+            },
+            {
+                "DirectoryId": "d-9067b096c4",
+                "Alias": "d-9067b096c4",
+                "DirectoryName": "workspaces.red2-example.com",
+                "RegistrationCode": "SLiad+VZ3ZLK",
+                "SubnetIds": [
+                    "subnet-04aa26425a3ab23c5",
+                    "subnet-04be040d2cff298f6"
+                ],
+                "DnsIpAddresses": [
+                    "10.0.1.79",
+                    "10.0.2.63"
+                ],
+                "CustomerUserName": "Administrator",
+                "IamRoleId": "arn:aws:iam::644160558196:role/workspaces_DefaultRole",
+                "DirectoryType": "SIMPLE_AD",
+                "WorkspaceSecurityGroupId": "sg-0769cd4e511a53273",
+                "State": "REGISTERED",
+                "WorkspaceCreationProperties": {
+                    "EnableWorkDocs": false,
+                    "EnableInternetAccess": true,
+                    "UserEnabledAsLocalAdministrator": true,
+                    "EnableMaintenanceMode": true
+                },
+                "WorkspaceAccessProperties": {
+                    "DeviceTypeWindows": "ALLOW",
+                    "DeviceTypeOsx": "ALLOW",
+                    "DeviceTypeWeb": "DENY",
+                    "DeviceTypeIos": "ALLOW",
+                    "DeviceTypeAndroid": "ALLOW",
+                    "DeviceTypeChromeOs": "ALLOW",
+                    "DeviceTypeZeroClient": "ALLOW",
+                    "DeviceTypeLinux": "DENY"
+                },
+                "Tenancy": "SHARED",
+                "SelfservicePermissions": {
+                    "RestartWorkspace": "ENABLED",
+                    "IncreaseVolumeSize": "DISABLED",
+                    "ChangeComputeType": "DISABLED",
+                    "SwitchRunningMode": "DISABLED",
+                    "RebuildWorkspace": "DISABLED"
+                }
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

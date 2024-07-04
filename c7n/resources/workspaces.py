@@ -1,6 +1,7 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 import functools
+import re
 import itertools
 import jmespath
 
@@ -399,6 +400,92 @@ class WorkspacesDirectoryClientProperties(ValueFilter):
 
             if self.match(directory[self.annotation_key]):
                 results.append(directory)
+        return results
+
+
+@WorkspaceDirectory.filter_registry.register('radius-settings')
+class WorkspacesDirectoryRadiusSettings(ValueFilter):
+    """Filter workspace directories based on workspace radius settings.
+
+    :example:
+
+    .. code-block:: yaml
+
+       policies:
+         - name: workspace-radius-settings
+           resource: aws.workspaces-directory
+           filters:
+            - type: radius-settings
+              key: AuthenticationProtocol
+              value: PAP
+
+    """
+    permissions = ('workspaces:DescribeClientProperties',)
+
+    schema = type_schema('radius-settings', rinherit=ValueFilter.schema)
+    annotation_key = 'c7n:radius-settings'
+
+    def process(self, directories, event=None):
+        client = local_session(self.manager.session_factory).client('ds')
+        results = []
+        for directory in directories:
+            if self.annotation_key not in directory:
+                try:
+                    radius_settings = client.describe_directories(
+                        DirectoryIds=[directory['DirectoryId']]).get(
+                        'DirectoryDescriptions')[0].get('RadiusSettings')
+                except client.exceptions.ResourceNotFoundException:
+                    continue
+                directory[self.annotation_key] = radius_settings
+            if (directory[self.annotation_key] and
+                    self.data['value'] ==
+                    directory[self.annotation_key].get(self.data.get('key'))):
+                results.append(directory)
+        return results
+
+
+@WorkspaceDirectory.filter_registry.register('check-vpc-endpoints-availability')
+class WorkspacesDirectoryVpcEndpointFilter(ValueFilter):
+    """Filter workspace directories based on vpc endpoints availability.
+
+    :example:
+
+    .. code-block:: yaml
+
+       policies:
+         - name: workspace-directories-vpc-endpoints
+           resource: aws.workspaces-directory
+           filters:
+            - type: check-vpc-endpoints-availability
+
+    """
+    permissions = ('workspaces:DescribeClientProperties',)
+
+    schema = type_schema('check-vpc-endpoints-availability')
+
+    def process(self, directories, event=None):
+        ds_client = local_session(self.manager.session_factory).client('ds')
+        ec2_client = local_session(self.manager.session_factory).client('ec2')
+        results = []
+        for directory in directories:
+            try:
+                vpc_settings = ds_client.describe_directories(
+                    DirectoryIds=[directory['DirectoryId']]).get(
+                    'DirectoryDescriptions')[0].get('VpcSettings')
+                if vpc_settings:
+                    vpc_id = vpc_settings.get('VpcId')
+                    vpc_endpoints = ec2_client.describe_vpc_endpoints(Filters=[{
+                        'Name': 'vpc-id',
+                        'Values': [vpc_id]
+                    }]).get('VpcEndpoints')
+                    if len(vpc_endpoints) == 0 or not (
+                            vpc_endpoints[0].get('VpcEndpointType') == 'Interface'
+                            and re.match('^com\\.amazonaws\\..*\\.workspaces$',
+                                         vpc_endpoints[0].get('ServiceName'))
+                            and vpc_endpoints[0].get('State') == 'available'):
+                        results.append(directory)
+            except Exception:
+                continue
         return results
 
 

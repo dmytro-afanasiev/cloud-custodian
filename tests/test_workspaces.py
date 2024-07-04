@@ -517,6 +517,40 @@ class TestWorkspacesBundleDelete(BaseTest):
         response = client.describe_workspace_bundles()['Bundles']
         self.assertFalse(any(b['Name'] == 'test' for b in response))
 
+    def test_workspaces_directory_radius_properties(self):
+        factory = self.replay_flight_data("test_workspaces_directory_radius_properties")
+        p = self.load_policy(
+            {
+                "name": "workspace-directory-radius",
+                "resource": "workspaces-directory",
+                "filters": [
+                    {'type': 'radius-settings',
+                     'key': 'AuthenticationProtocol',
+                     'value': 'CHAP'}],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['DirectoryId'], 'd-9067b0eabf')
+        self.assertEqual(resources[0]['DirectoryName'], 'workspaces.546RadiusServerRed.com')
+
+    def test_workspaces_directory_vpc_availability(self):
+        factory = self.replay_flight_data("test_workspaces_directory_vpc_availability")
+        p = self.load_policy(
+            {
+                "name": "workspace-directory-vpc_availability",
+                "resource": "workspaces-directory",
+                "filters": [
+                    {'type': 'check-vpc-endpoints-availability'}],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+        self.assertEqual(1, len(resources))
+        self.assertEqual('d-9067b096c4', resources[0]['DirectoryId'])
+        self.assertEqual('workspaces.red2-example.com', resources[0]['DirectoryName'])
+
 
 class TestWorkspacesSecurityGroupFilter(BaseTest):
 

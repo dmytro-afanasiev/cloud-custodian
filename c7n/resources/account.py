@@ -12,6 +12,8 @@ from fnmatch import fnmatch
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzutc
 
+import jmespath
+
 from c7n.resources.cloudtrail import CloudTrailChangesAlarmExistsFilter, Status, get_trail_groups
 from c7n.actions import ActionRegistry, BaseAction
 from c7n.exceptions import PolicyValidationError
@@ -86,6 +88,82 @@ class Account(QueryResourceManager):
 
     def get_arns(self, resources):
         return ["arn:::{account_id}".format(**r) for r in resources]
+
+
+@Account.filter_registry.register('rds-sns-subscription-filter')
+class RDSSubscriptionFilter(ValueFilter):
+    schema = type_schema('rds-sns-subscription-filter',
+                         check_in={'$ref': '#/definitions/filters_common/value'},
+                         key={'$ref': '#/definitions/filters_common/value'},
+                         op={'$ref': '#/definitions/filters_common/value'},
+                         value={'$ref': '#/definitions/filters_common/value'})
+    permissions = ('rds:DescribeEventSubscriptions',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('rds')
+        client_sns = local_session(self.manager.session_factory).client('sns')
+        described_subscriptions = client.describe_event_subscriptions()
+        sns_topics = client_sns.list_topics()
+        accepted_arns = []
+        accepted = []
+        if not self._check_if_rds_and_cluster(client):
+            return accepted
+
+        if not sns_topics.get('Topics') and described_subscriptions.get(
+                'EventSubscriptionsList'):
+            return [resources[0]]
+
+        with self.executor_factory(max_workers=3) as w:
+            for sns_topic in sns_topics['Topics']:
+                for sub in described_subscriptions['EventSubscriptionsList']:
+                    if sns_topic.get('TopicArn') and sub.get('SnsTopicArn') and \
+                            sns_topic['TopicArn'] == sub['SnsTopicArn'] and \
+                            sns_topic['TopicArn'] not in accepted_arns:
+                        futures = {}
+                        futures[w.submit(client_sns.get_topic_attributes,
+                                         TopicArn=sns_topic['TopicArn'])] = sns_topic
+                        # Starting of concurrent cycle
+                        for future in as_completed(futures):
+                            attribute = future.result()
+                            if attribute.get('Attributes') and int(
+                                    attribute['Attributes']['SubscriptionsConfirmed']) > 0:
+                                jmespath_key = jmespath.search(self.data.get('key'), sub)
+                                value = self.data.get('value')
+                                if jmespath_key is not None and op(self.data, jmespath_key, value):
+                                    accepted_arns.append(sns_topic['TopicArn'])
+                                    accepted.append(sns_topic)
+                                    break
+                                break
+
+        if len(accepted) > 0:
+            return []
+        return [resources[0]]
+
+    def _check_in_perfomance(self, check_in):
+        if ',' in check_in:
+            checked = check_in.replace(' ', '')
+            return checked.split(',')
+        if isinstance(check_in, str):
+            return [check_in]
+        if isinstance(check_in, list):
+            return check_in
+        return False
+
+    def _check_if_rds_and_cluster(self, client):
+        check_in = self.data.get('check_in')
+        if self._check_in_perfomance(check_in):
+            evaluated_checkin = self._check_in_perfomance(check_in)
+            if 'rds' in evaluated_checkin and 'cluster' in evaluated_checkin and \
+                    len(client.describe_db_instances()['DBInstances']) > 0 and \
+                    len(client.describe_db_clusters()['DBClusters']) > 0:
+                return True
+            elif 'rds' in evaluated_checkin and len(
+                    client.describe_db_instances()['DBInstances']) > 0:
+                return True
+            else:
+                return 'cluster' in evaluated_checkin and len(
+                    client.describe_db_clusters()['DBClusters']) > 0
+        return False
 
 
 @Account.filter_registry.register('cloudtrails')

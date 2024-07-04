@@ -1866,3 +1866,28 @@ class TestAccountIAMRoleLightFilter(BaseTest):
 
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources[0]['account_id'], '644160558196')
+
+
+class TestRDSSNSSubscriptionFilter(BaseTest):
+
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_rds_sbs_subs_filter")
+        p = self.load_policy(
+            {
+                'name': 'rds-sns-sub',
+                'resource': 'account',
+                'filters': [{
+                    'type': 'rds-sns-subscription-filter',
+                    'check_in': 'rds',
+                    'op': 'eq',
+                    'key': r"SourceType=='db-security-group' && Enabled==`true` && "
+                           r"SourceIdsList==null && ( EventCategoriesList==null || "
+                           r"length(EventCategoriesList[])==`2`)",
+                    'value': True
+                }],
+            },
+            session_factory=session_factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['account_id'], '644160558196')

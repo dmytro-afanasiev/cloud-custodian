@@ -1,0 +1,28 @@
+{
+    "status_code": 200,
+    "data": {
+        "EventSubscriptionsList": [
+            {
+                "CustomerAwsId": "644160558196",
+                "CustSubscriptionId": "db-event-subscription-301-green",
+                "SnsTopicArn": "arn:aws:sns:us-east-1:644160558196:301-sns-topic-green",
+                "Status": "active",
+                "SubscriptionCreationTime": "2022-02-03 09:09:52.022",
+                "SourceType": "db-cluster",
+                "Enabled": true,
+                "EventSubscriptionArn": "arn:aws:rds:us-east-1:644160558196:es:db-event-subscription-301-green"
+            },
+            {
+                "CustomerAwsId": "644160558196",
+                "CustSubscriptionId": "db-event-subscription-304-green",
+                "SnsTopicArn": "arn:aws:sns:us-east-1:644160558196:304_sns_topic_green",
+                "Status": "active",
+                "SubscriptionCreationTime": "2022-02-03 09:11:45.188",
+                "SourceType": "db-security-group",
+                "Enabled": true,
+                "EventSubscriptionArn": "arn:aws:rds:us-east-1:644160558196:es:db-event-subscription-304-green"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

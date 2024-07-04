@@ -1,0 +1,72 @@
+{
+    "status_code": 200,
+    "data": {
+        "CacheSubnetGroups": [
+            {
+                "CacheSubnetGroupName": "c7n-417-elasticache-subnet-green",
+                "CacheSubnetGroupDescription": "Managed by Terraform",
+                "VpcId": "vpc-021cd7ed6eb416f68",
+                "Subnets": [
+                    {
+                        "SubnetIdentifier": "subnet-0cabf9554c0dc3554",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1b"
+                        }
+                    },
+                    {
+                        "SubnetIdentifier": "subnet-02db1f7d00abd7a02",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1a"
+                        }
+                    }
+                ],
+                "ARN": "arn:aws:elasticache:us-east-1:644160558196:subnetgroup:c7n-417-elasticache-subnet-green"
+            },
+            {
+                "CacheSubnetGroupName": "default",
+                "CacheSubnetGroupDescription": "Default CacheSubnetGroup",
+                "VpcId": "vpc-ad9744d0",
+                "Subnets": [
+                    {
+                        "SubnetIdentifier": "subnet-8158d8de",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1a"
+                        }
+                    },
+                    {
+                        "SubnetIdentifier": "subnet-5264af63",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1e"
+                        }
+                    },
+                    {
+                        "SubnetIdentifier": "subnet-b045c2d6",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1b"
+                        }
+                    },
+                    {
+                        "SubnetIdentifier": "subnet-247c052a",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1f"
+                        }
+                    },
+                    {
+                        "SubnetIdentifier": "subnet-fa9dcab7",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1d"
+                        }
+                    },
+                    {
+                        "SubnetIdentifier": "subnet-cd7af8ec",
+                        "SubnetAvailabilityZone": {
+                            "Name": "us-east-1c"
+                        }
+                    }
+                ],
+                "ARN": "arn:aws:elasticache:us-east-1:644160558196:subnetgroup:default"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

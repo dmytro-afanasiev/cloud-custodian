@@ -515,6 +515,45 @@ class TestElastiCacheReplicationGroup(BaseTest):
         response = client.describe_replication_groups(ReplicationGroupId='c7n-delete')
         self.assertEqual(response.get('ReplicationGroups')[0].get('Status'), 'deleting')
 
+
+class TestVPCElasticCacheFilter(BaseTest):
+
+    def test_query_vpc_elastic_cache_filter(self):
+        session_factory = self.replay_flight_data("test_query_vpc_elastic_cache_filter")
+        p = self.load_policy(
+            {
+                "name": "test-query-elastic-cache-filter",
+                "resource": "cache-cluster",
+                "filters": [{"type": "vpc-elastic-cache-filter",
+                             "key": "IsDefault",
+                             "op": "eq",
+                             "value": False}],
+            },
+            session_factory=session_factory, )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['CacheClusterId'],
+                         'c7n-417-elasticache-redis-cluster-green')
+
+
+class TestRedisMemcacheFilter(BaseTest):
+
+    def test_redis_memcache_filter(self):
+        session_factory = self.replay_flight_data("test_redis_memcache_filter")
+        p = self.load_policy(
+            {
+                "name": "test-redis-memcache-filter",
+                "resource": "cache-cluster",
+                "filters": [{"type": "redis-memcache-filter",
+                             "port": "11211"}],
+            },
+            session_factory=session_factory, )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['Engine'], 'memcached')
+
     def test_elasticache_replication_group_tag(self):
         # the elasticache resource uses the universal_taggable wrapper for the AWS
         # resource tagging API - this test ensures that API works for RGs

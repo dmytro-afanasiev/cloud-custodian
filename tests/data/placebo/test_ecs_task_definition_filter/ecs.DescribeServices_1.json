@@ -1,0 +1,97 @@
+{
+    "status_code": 200,
+    "data": {
+        "services": [
+            {
+                "serviceArn": "arn:aws:ecs:us-east-1:644160558196:service/252_ecs_cluster_green/252_ecs_service_green",
+                "serviceName": "252_ecs_service_green",
+                "clusterArn": "arn:aws:ecs:us-east-1:644160558196:cluster/252_ecs_cluster_green",
+                "loadBalancers": [],
+                "serviceRegistries": [],
+                "status": "ACTIVE",
+                "desiredCount": 2,
+                "runningCount": 0,
+                "pendingCount": 0,
+                "launchType": "EC2",
+                "taskDefinition": "arn:aws:ecs:us-east-1:644160558196:task-definition/service:22",
+                "deploymentConfiguration": {
+                    "deploymentCircuitBreaker": {
+                        "enable": false,
+                        "rollback": false
+                    },
+                    "maximumPercent": 200,
+                    "minimumHealthyPercent": 100
+                },
+                "deployments": [
+                    {
+                        "id": "ecs-svc/6245796448124386689",
+                        "status": "PRIMARY",
+                        "taskDefinition": "arn:aws:ecs:us-east-1:644160558196:task-definition/service:22",
+                        "desiredCount": 2,
+                        "pendingCount": 0,
+                        "runningCount": 0,
+                        "failedTasks": 10,
+                        "createdAt": {
+                            "__class__": "datetime",
+                            "year": 2022,
+                            "month": 2,
+                            "day": 21,
+                            "hour": 13,
+                            "minute": 34,
+                            "second": 31,
+                            "microsecond": 555000
+                        },
+                        "updatedAt": {
+                            "__class__": "datetime",
+                            "year": 2022,
+                            "month": 2,
+                            "day": 21,
+                            "hour": 13,
+                            "minute": 34,
+                            "second": 31,
+                            "microsecond": 555000
+                        },
+                        "launchType": "EC2",
+                        "rolloutState": "IN_PROGRESS",
+                        "rolloutStateReason": "ECS deployment ecs-svc/6245796448124386689 in progress."
+                    }
+                ],
+                "events": [
+                    {
+                        "id": "546609d5-9605-4b14-a856-5af866c60fe8",
+                        "createdAt": {
+                            "__class__": "datetime",
+                            "year": 2022,
+                            "month": 2,
+                            "day": 21,
+                            "hour": 13,
+                            "minute": 34,
+                            "second": 32,
+                            "microsecond": 740000
+                        },
+                        "message": "(service 252_ecs_service_green) was unable to place a task because no container instance met all of its requirements. Reason: No Container Instances were found in your cluster. For more information, see the Troubleshooting section of the Amazon ECS Developer Guide."
+                    }
+                ],
+                "createdAt": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 2,
+                    "day": 21,
+                    "hour": 13,
+                    "minute": 34,
+                    "second": 31,
+                    "microsecond": 555000
+                },
+                "placementConstraints": [],
+                "placementStrategy": [],
+                "schedulingStrategy": "REPLICA",
+                "createdBy": "arn:aws:iam::644160558196:user/Vladyslav_Yevsiukov",
+                "enableECSManagedTags": false,
+                "propagateTags": "NONE",
+                "enableExecuteCommand": false
+            }
+        ],
+        "failures": [],
+        "ResponseMetadata": {}
+    }
+}

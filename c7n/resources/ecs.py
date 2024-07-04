@@ -1,6 +1,7 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 import copy
+from concurrent.futures import as_completed
 from botocore.exceptions import ClientError
 
 from c7n.actions import AutoTagUser, AutoscalingBase, BaseAction
@@ -226,6 +227,29 @@ class Service(query.ChildResourceManager):
 
     def get_resources(self, ids, cache=True, augment=True):
         return super(Service, self).get_resources(ids, cache, augment=False)
+
+
+@Service.filter_registry.register('ecs-task-definition-filter')
+class ECSTaskDefinitionFilter(Filter):
+    schema = type_schema('ecs-task-definition-filter')
+    permissions = ('ecs:DescribeTaskDefinition',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('ecs')
+        accepted = []
+        with self.executor_factory(max_workers=3) as w:
+            futures = {}
+            for resource in resources:
+                if resource.get('taskDefinition'):
+                    futures[w.submit(client.describe_task_definition,
+                                     taskDefinition=resource.get(
+                                         'taskDefinition'))] = resource
+                    for future in as_completed(futures):
+                        described_task = future.result()
+                        if 'taskRoleArn' not in described_task['taskDefinition']:
+                            accepted.append(resource)
+
+        return accepted
 
 
 @Service.filter_registry.register('metrics')

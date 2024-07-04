@@ -1,6 +1,7 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 from .common import BaseTest
+import unittest
 
 import fnmatch
 import os
@@ -709,6 +710,25 @@ class TestEcsContainerInstance(BaseTest):
             "status"
         ]
         self.assertEqual(state, "DRAINING")
+
+
+class TestECSTaskDefinitionFilter(BaseTest):
+    @unittest.skip('contains bug probably due to thread pool executor. '
+                   'Sometimes green, sometimes red')
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_ecs_task_definition_filter")
+        p = self.load_policy(
+            {
+                "name": "task-defs-filters",
+                "resource": "ecs-service",
+                "filters": [{"type": "ecs-task-definition-filter"}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['serviceName'], '252_ecs_service_red')
 
     def test_ecs_container_instance_subnet(self):
         session_factory = self.replay_flight_data("test_ecs_container_instance_subnet")

@@ -1,0 +1,11 @@
+{
+    "status_code": 200,
+    "data": {
+        "clusterArns": [
+            "arn:aws:ecs:us-east-1:644160558196:cluster/default",
+            "arn:aws:ecs:us-east-1:644160558196:cluster/252_ecs_cluster_green",
+            "arn:aws:ecs:us-east-1:644160558196:cluster/252_ecs_cluster_red"
+        ],
+        "ResponseMetadata": {}
+    }
+}

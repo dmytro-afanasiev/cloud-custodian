@@ -516,3 +516,27 @@ class TestWorkspacesBundleDelete(BaseTest):
 
         response = client.describe_workspace_bundles()['Bundles']
         self.assertFalse(any(b['Name'] == 'test' for b in response))
+
+
+class TestWorkspacesSecurityGroupFilter(BaseTest):
+
+    def test_query(self):
+        factory = self.replay_flight_data("test_workspaces_security_group_filter")
+        p = self.load_policy(
+            {
+                "name": "workspace-security",
+                "resource": "workspaces",
+                "filters": [{'not': [
+                    {'type': 'security-group-workspace-filter',
+                     'key': "length(IpPermissions[?(IpRanges[?CidrIp=='0.0.0.0/0'] || "
+                            "Ipv6Ranges[?CidrIpv6=='::/0']) && "
+                            "IpProtocol=='-1'&& !FromPort&& !ToPort ])",
+                     'op': 'gt',
+                     'value': 0}]}],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['DirectoryId'], 'd-90674cc9a1')

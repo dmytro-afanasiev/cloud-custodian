@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 import functools
 import itertools
+import jmespath
 
 from c7n.actions import BaseAction
-from c7n.filters import ValueFilter
+from c7n.filters import ValueFilter, OPERATORS
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.manager import resources
 from c7n.query import QueryResourceManager, TypeInfo, DescribeSource, ConfigSource
@@ -38,6 +39,44 @@ class Workspace(QueryResourceManager):
         'describe': DescribeWorkspace,
         'config': ConfigSource
     }
+
+
+@Workspace.filter_registry.register('security-group-workspace-filter')
+class SecurityGroupWorkspaceFilter(ValueFilter):
+    schema = type_schema('security-group-workspace-filter', rinherit=ValueFilter.schema)
+    permissions = ('workspaces:DescribeWorkspaces',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('ec2')
+        resulted = []
+        sec_groups = client.describe_security_groups()['SecurityGroups']
+        for resource in resources:
+            subnet_id = resource['SubnetId']
+            ip_address = resource['IpAddress']
+            interfaces = client.describe_network_interfaces(
+                Filters=[{'Name': 'private-ip-address', 'Values': [
+                    ip_address]}, {'Name': 'subnet-id',
+                                   'Values': [subnet_id]}])['NetworkInterfaces'][0]
+            for interface in interfaces['Groups']:
+                valid_group = self._check_if_group_is_valid(sec_groups, interface)
+                if valid_group and self._check_conditions_for_valid_group(valid_group):
+                    resulted.append(resource)
+                    break
+        return resulted
+
+    def _check_if_group_is_valid(self, sec_groups, interface):
+        for group in sec_groups:
+            if interface['GroupId'] == group['GroupId']:
+                return group
+        return False
+
+    def _check_conditions_for_valid_group(self, sec_group):
+        return jmespath.search(self.data.get('key'), sec_group) and self._perform_op(
+            jmespath.search(self.data.get('key'), sec_group), self.data.get('value'))
+
+    def _perform_op(self, a, b):
+        op = OPERATORS[self.data.get('op', 'eq')]
+        return op(a, b)
 
 
 @Workspace.filter_registry.register('connection-status')

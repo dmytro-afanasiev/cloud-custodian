@@ -9,6 +9,8 @@ from c7n.actions import BaseAction
 from c7n.manager import resources
 from c7n.query import QueryResourceManager, TypeInfo
 from c7n.utils import local_session, type_schema
+from c7n.filters import ValueFilter
+from c7n.filters.core import OPERATORS
 from c7n.tags import RemoveTag, Tag
 
 log = logging.getLogger('custodian.cfn')
@@ -217,3 +219,48 @@ class CloudFormationRemoveTag(RemoveTag):
     def process_resource_set(self, client, stacks, keys):
         for s in stacks:
             _tag_stack(client, s, remove=keys)
+
+
+@CloudFormation.filter_registry.register('subscription')
+class CloudFormationSubscriptionFilter(ValueFilter):
+    """Filter a cloud formation by its sns topic attributes.
+
+    :example:
+
+    .. code-block:: yaml
+
+      policies:
+        - name: cfn-subscription-filter
+          resource: aws.cfn
+          filters:
+            - type: subscription
+              key: SubscriptionsConfirmed
+              op: ne
+              value: 1
+    """
+
+    schema = type_schema('subscription', rinherit=ValueFilter.schema)
+    schema_alias = False
+    permissions = ('sns:GetTopicAttributes',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('sns')
+        key = self.data.get('key')
+        value = self.data.get('value')
+        op = OPERATORS[self.data.get('op')]
+        filtered_resources = []
+        for resource in resources:
+            notification_arns = resource.get('NotificationARNs')
+            if notification_arns:
+                for notification_arn in notification_arns:
+                    try:
+                        topic_attributes = client.get_topic_attributes(
+                            TopicArn=notification_arn
+                        )
+                        if (topic_attributes and topic_attributes.get('Attributes')
+                                and topic_attributes.get('Attributes').get(key)):
+                            if op(topic_attributes.get('Attributes').get(key), value):
+                                filtered_resources.append(resource)
+                    except ClientError:
+                        continue
+        return filtered_resources

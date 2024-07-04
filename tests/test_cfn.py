@@ -199,3 +199,21 @@ class TestCFN(BaseTest):
             "Tags"
         ]
         self.assertEqual(len(tags), 0)
+
+    def test_cfn_subscription_filter(self):
+        session_factory = self.replay_flight_data("test_cfn_subscription_filter")
+        p = self.load_policy(
+            {
+                "name": "cfn-subscription-filter",
+                "resource": "cfn",
+                "filters": [{
+                    "type": "subscription",
+                    "key": "SubscriptionsConfirmed",
+                    "value": "1",
+                    "op": "ne"}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(1, len(resources))
+        self.assertEqual('stack-711-red', resources[0].get('StackName'))

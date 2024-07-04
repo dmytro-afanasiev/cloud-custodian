@@ -1,0 +1,11 @@
+{
+    "status_code": 403,
+    "data": {
+        "Error": {
+            "Type": "Sender",
+            "Code": "AuthorizationError",
+            "Message": "User: arn:aws:iam::644160558196:user/Yauhen_Shaliou is not authorized to perform: SNS:GetTopicAttributes on resource: arn:aws:sns:us-east-1:644160558196:CfnNotificationSNSTopic because no resource-based policy allows the SNS:GetTopicAttributes action"
+        },
+        "ResponseMetadata": {}
+    }
+}

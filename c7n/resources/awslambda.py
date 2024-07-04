@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 import json
 from urllib.parse import urlparse, parse_qs
+import jmespath
 
 from botocore.exceptions import ClientError
 from botocore.paginate import Paginator
@@ -10,6 +11,7 @@ from datetime import timedelta, datetime
 
 from c7n.actions import Action, RemovePolicyBase, ModifyVpcSecurityGroupsAction
 from c7n.filters import CrossAccountAccessFilter, ValueFilter, Filter
+from c7n.filters.core import OPERATORS
 from c7n.filters.costhub import CostHubRecommendation
 from c7n.filters.kms import KmsRelatedFilter
 import c7n.filters.vpc as net_filters
@@ -189,6 +191,77 @@ def get_lambda_policies(client, executor_factory, resources, log):
             results.append(f.result())
 
     return filter(None, results)
+
+
+@AWSLambda.filter_registry.register('awslambda-iam-role-policy-filter')
+class AWSLambdaIamRolePolicy(Filter):
+    """
+    That filter gets role_name from lambda resource, then
+    outlines all policies for this role, and gives result
+    of GetRolePolicy method for checking, if policy allows
+    acts for all resources "*"
+    """
+    RelatedIdsExpression = "VpcConfig.SecurityGroupIds[]"
+    schema = type_schema('awslambda-iam-role-policy-filter',
+                         conditions={'type': 'array', 'items': {
+                             'type': 'object',
+                             'required': ['key', 'op', 'value'],
+                             'additionalProperties': False,
+                             'properties': {
+                                 'key': {'type': 'string'},
+                                 'op': {'type': 'string'},
+                                 'value': {
+                                     '$ref': '#/definitions/filters_common/value'}
+                             }
+                         }})
+    permissions = ('lambda:GetFunction',)
+
+    def __init__(self, data, manager=None):
+        super().__init__(data, manager)
+
+    @staticmethod
+    def get_policies(role_detail_list, role):
+        result = []
+        for role_detail in role_detail_list:
+            if role_detail['RoleName'] == role:
+                result.extend(role_detail['RolePolicyList'])
+        return result
+
+    def process(self, resources, event=None):
+        self.iam_client = local_session(self.manager.session_factory).client(
+            'iam')
+        conditions = self.data.get('conditions')
+        role_detail_list = self.iam_client.get_account_authorization_details(
+            Filter=['Role']).get('RoleDetailList')
+        result = []
+        for aws_lambda in resources:
+            # for getting attached role_name from aws lambda - aws_lambda['Role'].split('/')[1]
+            lambda_role = aws_lambda['Role'].split('/')[1]
+            policies = self.get_policies(role_detail_list, lambda_role)
+            for policy in policies:
+                # aws_lambda is valid if any its policy is valid
+                if self._validate_policy_conditions(policy, lambda_role,
+                                                    conditions):
+                    result.append(aws_lambda)
+                    break
+
+        return result
+
+    def _validate_policy_conditions(self, policy, lambda_role, conditions):
+        # policy is valid if all conditions pass
+        for condition in conditions:
+            op = OPERATORS[condition.get('op')]
+            key = condition.get('key')
+            value = condition.get('value')
+            if not self._validate_policy(policy, key, op, value):
+                return False
+        return True
+
+    def _validate_policy(self, policy, condition_key, condition_op,
+                         condition_value):
+        value = jmespath.search(condition_key,
+                                policy['PolicyDocument']['Statement'][0])
+        return condition_op(condition_value, value)
 
 
 @AWSLambda.filter_registry.register('event-source')

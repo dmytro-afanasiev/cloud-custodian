@@ -430,6 +430,33 @@ class LambdaTest(BaseTest):
         self.assertEqual(resources[0]["FunctionName"], "mys3")
         self.assertEqual(resources[0]["c7n:matched-security-groups"], ["sg-f9cc4d9f"])
 
+    def test_awslambda_iam_role_policy_filter_query(self):
+        factory = self.replay_flight_data(
+            "test_awslambda_iam_role_policy_filter_query")
+        p = self.load_policy(
+            {
+                "name": "awslambda-iam-role-policy",
+                "resource": "lambda",
+                "filters": [{"type": "awslambda-iam-role-policy-filter",
+                             "conditions": [
+                                 {"key": "Resource",
+                                  "op": "eq",
+                                  "value": "*"},
+                                 {"key": "Effect",
+                                  "op": "eq",
+                                  "value": "Allow"},
+                                 {"key": "Action",
+                                  "op": "eq",
+                                  "value": "*"}
+                             ]}]
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["FunctionName"], "213_lambda_red")
+
     def test_set_xray_tracing_true(self):
         factory = self.replay_flight_data("test_set_xray_tracing_true")
 

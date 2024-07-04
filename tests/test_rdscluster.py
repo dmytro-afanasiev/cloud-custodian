@@ -762,6 +762,28 @@ class RDSClusterSnapshotTest(BaseTest):
         self.assertEqual(len(restore_permissions_after), 0)
 
 
+class TestRDSClusterParameterFilter(BaseTest):
+    def test_rds_cluster_parameter_filter(self):
+        session_factory = self.replay_flight_data("test_rds_cluster_parameter_filter")
+        p = self.load_policy(
+            {
+                "name": "rds-cluster-parameter-filter",
+                "resource": "aws.rds-cluster",
+                "filters": [{"type": "rds-cluster-parameter-filter",
+                             "parameters": [{"key": "slow_query_log",
+                                             "value": "absent"},
+                                            {"key": "log_output",
+                                             "value": "FILE"},
+                                            {"key": "general_log",
+                                             "value": 1}]}]},
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['DBClusterIdentifier'], 'aurora-cluster-422-red')
+
+
 class TestRDSClusterParameterGroupFilter(BaseTest):
 
     def test_param_value_cases(self):

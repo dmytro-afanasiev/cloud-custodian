@@ -235,3 +235,42 @@ class TestEBEnvTagging(EbEnvBaseTest):
                 sleep(30)
             pass
         self.assertIsNone(self.env_tags_dict(factory(), envarn).get("tagTestKey"))
+
+
+class TestElasticBeanstalkConfigurationSettingsFilter(BaseTest):
+
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_elastic_conf_settings_filter")
+        p = self.load_policy(
+            {
+                "name": "test",
+                "resource": "elasticbeanstalk-environment",
+                "filters": [{"type": 'elasticbeanstalk-configuration-settings-filter',
+                             "key": "ManagedActionsEnabled",
+                             "op": "eq",
+                             "value": "true"}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(resources[0]['EnvironmentName'], 'environment-446-green')
+        self.assertEqual(len(resources), 1)
+
+
+class TestDescribeConfigurationSettingsFilter(BaseTest):
+
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_described_conf_settings_filter")
+        p = self.load_policy(
+            {
+                "name": "test",
+                "resource": "elasticbeanstalk-environment",
+                "filters": [{"type": 'describe-configuration-settings-filter'}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(resources[0]['EnvironmentName'], '443-beanstalk-environment-green')
+        self.assertEqual(len(resources), 1)

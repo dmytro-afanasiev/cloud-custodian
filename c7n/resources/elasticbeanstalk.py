@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+import jmespath
 
 from c7n.manager import resources
 from c7n.query import ConfigSource, DescribeSource, QueryResourceManager, TypeInfo
@@ -9,6 +10,8 @@ from c7n import utils
 from c7n import tags
 from c7n.utils import local_session, type_schema
 from c7n.actions import BaseAction
+from c7n.filters import ValueFilter, Filter
+from c7n.filters.core import op
 
 log = logging.getLogger('custodian.elasticbeanstalk')
 
@@ -66,6 +69,63 @@ class ElasticBeanstalkEnvironment(QueryResourceManager):
         'describe': DescribeEnvironment,
         'config': ConfigSource
     }
+
+
+@ElasticBeanstalkEnvironment.filter_registry.register(
+    'elasticbeanstalk-configuration-settings-filter')
+class ElasticBeanstalkConfigurationSettingsFilter(ValueFilter):
+    schema = type_schema('elasticbeanstalk-configuration-settings-filter',
+                         rinherit=ValueFilter.schema)
+    permissions = ('elasticbeanstalk:ListTagsForResource',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('elasticbeanstalk')
+        accepted = []
+        for config in resources:
+            env = client.describe_configuration_settings(
+                ApplicationName=config['ApplicationName'],
+                EnvironmentName=config['EnvironmentName'])[
+                'ConfigurationSettings']
+            for setting in env[0]['OptionSettings']:
+                jmespath_option = jmespath.search('OptionName', setting)
+                jmespath_value = jmespath.search('Value', setting)
+                if jmespath_value and jmespath_option and \
+                        op(self.data, jmespath_value, self.data.get('value')) and \
+                        op(self.data, jmespath_option, self.data.get('key')):
+                    accepted.append(config)
+                    break
+
+        return accepted
+
+
+@ElasticBeanstalkEnvironment.filter_registry.register('describe-configuration-settings-filter')
+class DescribeConfigurationSettingsFilter(Filter):
+    schema = type_schema('describe-configuration-settings-filter',)
+    permissions = ("elasticbeanstalk:TerminateEnvironment",)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('elasticbeanstalk')
+        sns_client = local_session(self.manager.session_factory).client('sns')
+        accepted = []
+        for config in resources:
+            described = client.describe_configuration_settings(
+                EnvironmentName=config['EnvironmentName'],
+                ApplicationName=config['ApplicationName'])
+            if described.get('ConfigurationSettings'):
+                for setting in described['ConfigurationSettings']:
+                    if 'OptionSettings' in setting:
+                        for topic in setting['OptionSettings']:
+                            if 'Value' in topic and topic['Value'].startswith(
+                                    'arn'):
+                                got_topic = sns_client.get_topic_attributes(
+                                    TopicArn=topic['Value'])
+                                if 'Attributes' in got_topic and \
+                                        'SubscriptionsConfirmed' in got_topic['Attributes'] and \
+                                        got_topic['Attributes']['SubscriptionsConfirmed'] == '1':
+                                    accepted.append(config)
+                                    break
+                        break
+        return accepted
 
 
 ElasticBeanstalkEnvironment.filter_registry.register(

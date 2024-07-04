@@ -1,0 +1,29 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResourceArn": "arn:aws:elasticbeanstalk:us-east-1:644160558196:environment/446_application_green/environment-446-green",
+        "ResourceTags": [
+            {
+                "Key": "elasticbeanstalk:environment-id",
+                "Value": "e-mm2ucqkwua"
+            },
+            {
+                "Key": "CustodiaRule",
+                "Value": "epam-aws-446-elastic_beanstalk_managed_platform_updates"
+            },
+            {
+                "Key": "ComplianceStatus",
+                "Value": "Green"
+            },
+            {
+                "Key": "elasticbeanstalk:environment-name",
+                "Value": "environment-446-green"
+            },
+            {
+                "Key": "Name",
+                "Value": "environment-446-green"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

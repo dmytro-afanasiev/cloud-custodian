@@ -1,0 +1,29 @@
+{
+    "status_code": 200,
+    "data": {
+        "ResourceArn": "arn:aws:elasticbeanstalk:us-east-1:644160558196:environment/443-beanstalk-application-green/443-beanstalk-environment-green",
+        "ResourceTags": [
+            {
+                "Key": "elasticbeanstalk:environment-id",
+                "Value": "e-s7jwdttj2c"
+            },
+            {
+                "Key": "CustodiaRule",
+                "Value": "epam-aws-443-elastic_beanstalk_notifications_enabled"
+            },
+            {
+                "Key": "ComplianceStatus",
+                "Value": "Green"
+            },
+            {
+                "Key": "elasticbeanstalk:environment-name",
+                "Value": "443-beanstalk-environment-green"
+            },
+            {
+                "Key": "Name",
+                "Value": "443-beanstalk-environment-green"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

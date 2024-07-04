@@ -1,0 +1,48 @@
+{
+    "status_code": 200,
+    "data": {
+        "Environments": [
+            {
+                "EnvironmentName": "443-beanstalk-environment-green",
+                "EnvironmentId": "e-s7jwdttj2c",
+                "ApplicationName": "443-beanstalk-application-green",
+                "SolutionStackName": "64bit Amazon Linux 2 v3.3.13 running Python 3.8",
+                "PlatformArn": "arn:aws:elasticbeanstalk:us-east-1::platform/Python 3.8 running on 64bit Amazon Linux 2/3.3.13",
+                "EndpointURL": "awseb-e-s-AWSEBLoa-NLHLFK9W7EJP-1039735464.us-east-1.elb.amazonaws.com",
+                "CNAME": "443-beanstalk-environment-green.eba-z6ckajmp.us-east-1.elasticbeanstalk.com",
+                "DateCreated": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 5,
+                    "day": 10,
+                    "hour": 9,
+                    "minute": 42,
+                    "second": 29,
+                    "microsecond": 501000
+                },
+                "DateUpdated": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 5,
+                    "day": 10,
+                    "hour": 9,
+                    "minute": 45,
+                    "second": 5,
+                    "microsecond": 631000
+                },
+                "Status": "Ready",
+                "AbortableOperationInProgress": false,
+                "Health": "Green",
+                "HealthStatus": "Ok",
+                "Tier": {
+                    "Name": "WebServer",
+                    "Type": "Standard",
+                    "Version": "1.0"
+                },
+                "EnvironmentLinks": [],
+                "EnvironmentArn": "arn:aws:elasticbeanstalk:us-east-1:644160558196:environment/443-beanstalk-application-green/443-beanstalk-environment-green"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

@@ -648,3 +648,28 @@ class TestFSxBackup(BaseTest):
         self.assertEqual(len(resources), 3)
         for r in resources:
             self.assertEqual(len(r['c7n:matched-kms-key']), 1)
+
+
+class AttachedVolumeFilterTest(BaseTest):
+    def test_query(self):
+        session_factory = self.replay_flight_data("test_attached_volume_filter_query")
+        p = self.load_policy(
+            {
+                "name": "fsx-volume",
+                "resource": "fsx",
+                "filters": [
+                    {
+                        "type": "attached-volume-filter",
+                        "key": "FileSystemId",
+                        "value": "fs-0f0646a49041b9c94",
+                        "op": "eq"
+                    }
+                ]
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['FileSystemId'], "fs-0f0646a49041b9c94")
+

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 from datetime import datetime, timedelta
+import jmespath
 
 from c7n.manager import resources
 from c7n.query import (
@@ -10,7 +11,8 @@ from c7n.query import (
 from c7n.actions import BaseAction
 from c7n.tags import Tag, TagDelayedAction, RemoveTag, coalesce_copy_user_tags, TagActionFilter
 from c7n.utils import type_schema, local_session, chunks
-from c7n.filters import Filter
+from c7n.filters import Filter, ValueFilter
+from c7n.filters.core import op
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.filters.vpc import SubnetFilter
 from c7n.filters.backup import ConsecutiveAwsBackupsFilter
@@ -336,6 +338,29 @@ class KmsFilter(KmsRelatedFilter):
 class KmsFilterFsxBackup(KmsRelatedFilter):
 
     RelatedIdsExpression = 'KmsKeyId'
+
+
+@FSx.filter_registry.register('attached-volume-filter')
+class AttachedVolumeFilter(ValueFilter):
+    schema = type_schema('attached-volume-filter', rinherit=ValueFilter.schema)
+    permissions = ('fsx:DescribeFileSystems',)
+
+    def process(self, resources, event=None):
+        filtered = []
+        client = local_session(self.manager.session_factory).client('fsx')
+        for resource in resources:
+            if resource.get('FileSystemType') == 'OPENZFS' and \
+                    'OpenZFSConfiguration' in resource:
+                volume = client.describe_volumes(
+                    VolumeIds=[resource['OpenZFSConfiguration']['RootVolumeId']])[
+                    'Volumes']
+                for vol in volume:
+                    jme = jmespath.search(self.data.get('key'), vol)
+                    if op(self.data, jme, self.data.get('value')):
+                        filtered.append(resource)
+                        break
+
+        return filtered
 
 
 @FSx.filter_registry.register('consecutive-backups')

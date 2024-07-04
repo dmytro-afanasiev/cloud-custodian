@@ -1,0 +1,211 @@
+{
+    "status_code": 200,
+    "data": {
+        "FileSystems": [
+            {
+                "OwnerId": "644160558196",
+                "CreationTime": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 8,
+                    "day": 12,
+                    "hour": 11,
+                    "minute": 14,
+                    "second": 47,
+                    "microsecond": 464000
+                },
+                "FileSystemId": "fs-04dce187e926735d3",
+                "FileSystemType": "LUSTRE",
+                "Lifecycle": "AVAILABLE",
+                "StorageCapacity": 6000,
+                "StorageType": "HDD",
+                "VpcId": "vpc-07ff2dcc746c16f9f",
+                "SubnetIds": [
+                    "subnet-0f7e75a33c0a7c120"
+                ],
+                "NetworkInterfaceIds": [
+                    "eni-0fe6405aafd44bab7",
+                    "eni-0f253b96daae794ab"
+                ],
+                "DNSName": "fs-04dce187e926735d3.fsx.us-east-1.amazonaws.com",
+                "KmsKeyId": "arn:aws:kms:us-east-1:644160558196:key/dd9fb145-9e61-4b40-a1d5-b079e1d5ccdd",
+                "ResourceARN": "arn:aws:fsx:us-east-1:644160558196:file-system/fs-04dce187e926735d3",
+                "Tags": [
+                    {
+                        "Key": "CustodianRule",
+                        "Value": "epam-aws-596-fsx_without_tag_information"
+                    },
+                    {
+                        "Key": "ComplianceStatus",
+                        "Value": "Green"
+                    }
+                ],
+                "LustreConfiguration": {
+                    "WeeklyMaintenanceStartTime": "6:04:30",
+                    "DeploymentType": "PERSISTENT_1",
+                    "PerUnitStorageThroughput": 12,
+                    "MountName": "tdvbxbev",
+                    "CopyTagsToBackups": false,
+                    "DriveCacheType": "NONE",
+                    "DataCompressionType": "NONE",
+                    "LogConfiguration": {
+                        "Level": "DISABLED"
+                    }
+                },
+                "FileSystemTypeVersion": "2.10"
+            },
+            {
+                "OwnerId": "644160558196",
+                "CreationTime": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 8,
+                    "day": 12,
+                    "hour": 11,
+                    "minute": 21,
+                    "second": 32,
+                    "microsecond": 648000
+                },
+                "FileSystemId": "fs-0f0646a49041b9c94",
+                "FileSystemType": "OPENZFS",
+                "Lifecycle": "AVAILABLE",
+                "StorageCapacity": 64,
+                "StorageType": "SSD",
+                "VpcId": "vpc-ad9744d0",
+                "SubnetIds": [
+                    "subnet-cd7af8ec"
+                ],
+                "NetworkInterfaceIds": [
+                    "eni-067c6e77e4a162f16"
+                ],
+                "DNSName": "fs-0f0646a49041b9c94.fsx.us-east-1.amazonaws.com",
+                "KmsKeyId": "arn:aws:kms:us-east-1:644160558196:key/dd9fb145-9e61-4b40-a1d5-b079e1d5ccdd",
+                "ResourceARN": "arn:aws:fsx:us-east-1:644160558196:file-system/fs-0f0646a49041b9c94",
+                "Tags": [
+                    {
+                        "Key": "CustodianRule",
+                        "Value": "epam-aws-695-fsx_openzfs_copy_tags_to_snapshots"
+                    },
+                    {
+                        "Key": "ComplianceStatus",
+                        "Value": "Red"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "695_fsx_openzfs_file_system_red"
+                    }
+                ],
+                "OpenZFSConfiguration": {
+                    "CopyTagsToBackups": false,
+                    "CopyTagsToVolumes": false,
+                    "DeploymentType": "SINGLE_AZ_1",
+                    "ThroughputCapacity": 64,
+                    "WeeklyMaintenanceStartTime": "3:10:30",
+                    "DiskIopsConfiguration": {
+                        "Mode": "AUTOMATIC",
+                        "Iops": 192
+                    },
+                    "RootVolumeId": "fsvol-0a398ad975a3ce166"
+                }
+            },
+            {
+                "OwnerId": "644160558196",
+                "CreationTime": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 8,
+                    "day": 12,
+                    "hour": 11,
+                    "minute": 27,
+                    "second": 43,
+                    "microsecond": 218000
+                },
+                "FileSystemId": "fs-07214c65679ccc832",
+                "FileSystemType": "OPENZFS",
+                "Lifecycle": "AVAILABLE",
+                "StorageCapacity": 64,
+                "StorageType": "SSD",
+                "VpcId": "vpc-ad9744d0",
+                "SubnetIds": [
+                    "subnet-cd7af8ec"
+                ],
+                "NetworkInterfaceIds": [
+                    "eni-041f0575beb7f55a6"
+                ],
+                "DNSName": "fs-07214c65679ccc832.fsx.us-east-1.amazonaws.com",
+                "KmsKeyId": "arn:aws:kms:us-east-1:644160558196:key/dd9fb145-9e61-4b40-a1d5-b079e1d5ccdd",
+                "ResourceARN": "arn:aws:fsx:us-east-1:644160558196:file-system/fs-07214c65679ccc832",
+                "Tags": [
+                    {
+                        "Key": "CustodianRule",
+                        "Value": "epam-aws-695-fsx_openzfs_copy_tags_to_snapshots"
+                    },
+                    {
+                        "Key": "ComplianceStatus",
+                        "Value": "Green"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "695_fsx_openzfs_file_system_green"
+                    }
+                ],
+                "OpenZFSConfiguration": {
+                    "CopyTagsToBackups": false,
+                    "CopyTagsToVolumes": false,
+                    "DeploymentType": "SINGLE_AZ_1",
+                    "ThroughputCapacity": 64,
+                    "WeeklyMaintenanceStartTime": "4:08:30",
+                    "DiskIopsConfiguration": {
+                        "Mode": "AUTOMATIC",
+                        "Iops": 192
+                    },
+                    "RootVolumeId": "fsvol-03cdfb4bb9b7f1daa"
+                }
+            },
+            {
+                "OwnerId": "644160558196",
+                "CreationTime": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 8,
+                    "day": 12,
+                    "hour": 12,
+                    "minute": 1,
+                    "second": 49,
+                    "microsecond": 49000
+                },
+                "FileSystemId": "fs-0ca40251bb3dc409a",
+                "FileSystemType": "LUSTRE",
+                "Lifecycle": "AVAILABLE",
+                "StorageCapacity": 6000,
+                "StorageType": "HDD",
+                "VpcId": "vpc-03cb2f20486703cfc",
+                "SubnetIds": [
+                    "subnet-0d96a06b0662d448a"
+                ],
+                "NetworkInterfaceIds": [
+                    "eni-03734af111355a6df",
+                    "eni-0396416723b9a0c91"
+                ],
+                "DNSName": "fs-0ca40251bb3dc409a.fsx.us-east-1.amazonaws.com",
+                "KmsKeyId": "arn:aws:kms:us-east-1:644160558196:key/dd9fb145-9e61-4b40-a1d5-b079e1d5ccdd",
+                "ResourceARN": "arn:aws:fsx:us-east-1:644160558196:file-system/fs-0ca40251bb3dc409a",
+                "Tags": [],
+                "LustreConfiguration": {
+                    "WeeklyMaintenanceStartTime": "4:09:00",
+                    "DeploymentType": "PERSISTENT_1",
+                    "PerUnitStorageThroughput": 12,
+                    "MountName": "olqbxbev",
+                    "CopyTagsToBackups": false,
+                    "DriveCacheType": "NONE",
+                    "DataCompressionType": "NONE",
+                    "LogConfiguration": {
+                        "Level": "DISABLED"
+                    }
+                },
+                "FileSystemTypeVersion": "2.10"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

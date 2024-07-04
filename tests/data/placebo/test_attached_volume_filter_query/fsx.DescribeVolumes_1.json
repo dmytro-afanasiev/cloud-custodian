@@ -1,0 +1,59 @@
+{
+    "status_code": 200,
+    "data": {
+        "Volumes": [
+            {
+                "CreationTime": {
+                    "__class__": "datetime",
+                    "year": 2022,
+                    "month": 8,
+                    "day": 12,
+                    "hour": 11,
+                    "minute": 16,
+                    "second": 28,
+                    "microsecond": 811000
+                },
+                "FileSystemId": "fs-0f0646a49041b9c94",
+                "Lifecycle": "AVAILABLE",
+                "Name": "fsx",
+                "ResourceARN": "arn:aws:fsx:us-east-1:644160558196:volume/fs-0f0646a49041b9c94/fsvol-0a398ad975a3ce166",
+                "VolumeId": "fsvol-0a398ad975a3ce166",
+                "VolumeType": "OPENZFS",
+                "OpenZFSConfiguration": {
+                    "VolumePath": "/fsx",
+                    "StorageCapacityReservationGiB": 0,
+                    "StorageCapacityQuotaGiB": 64,
+                    "DataCompressionType": "NONE",
+                    "CopyTagsToSnapshots": false,
+                    "ReadOnly": false,
+                    "NfsExports": [
+                        {
+                            "ClientConfigurations": [
+                                {
+                                    "Clients": "*",
+                                    "Options": [
+                                        "rw",
+                                        "crossmnt"
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "UserAndGroupQuotas": [
+                        {
+                            "Type": "USER",
+                            "Id": 0,
+                            "StorageCapacityQuotaGiB": 0
+                        },
+                        {
+                            "Type": "GROUP",
+                            "Id": 0,
+                            "StorageCapacityQuotaGiB": 0
+                        }
+                    ]
+                }
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

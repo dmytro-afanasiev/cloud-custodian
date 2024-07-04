@@ -893,7 +893,7 @@ class S3LockConfigurationFilter(ValueFilter):
         return super().process(resources, event)
 
     def __call__(self, r):
-        return super().__call__(r[self.annotation_key])
+        return super().__call__(r.setdefault(self.annotation_key, None))
 
 
 ENCRYPTION_STATEMENT_GLOB = {

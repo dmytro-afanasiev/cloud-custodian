@@ -4567,7 +4567,7 @@ class S3ObjectLockFilterTest(BaseTest):
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources[0]['Name'], 'c7n-test-s3-bucket')
         self.assertEqual(
-            resources[0]['ObjectLockConfiguration']['Rule']['DefaultRetention']['Mode'],
+            resources[0]['c7n:ObjectLockConfiguration']['Rule']['DefaultRetention']['Mode'],
             'GOVERNANCE'
         )
 

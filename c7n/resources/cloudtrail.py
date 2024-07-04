@@ -1,10 +1,13 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 import logging
+import jmespath
 
+from botocore.exceptions import ClientError
 from c7n.actions import Action, BaseAction
 from c7n.exceptions import PolicyValidationError
 from c7n.filters import ValueFilter, Filter
+from c7n.filters.core import OPERATORS
 from c7n.manager import resources
 from c7n.tags import universal_augment
 from c7n.query import ConfigSource, DescribeSource, QueryResourceManager, TypeInfo
@@ -52,6 +55,42 @@ class CloudTrail(QueryResourceManager):
         'describe': DescribeTrail,
         'config': ConfigSource
     }
+
+
+@CloudTrail.filter_registry.register('cloudtrail-s3-logging')
+class CloudTrailS3LoggingFilter(Filter):
+    schema = type_schema('cloudtrail-s3-logging', enabled={'type': 'boolean'})
+    permissions = ('cloudtrail:DescribeTrails',)
+
+    def __call__(self, resource):
+        return resource
+
+    def process(self, resources, event=None):
+        s3_client = local_session(self.manager.session_factory).client('s3')
+        result = []
+
+        if self.data.get('enabled', True):
+            for cloudtrail_bucket in resources:
+                try:
+                    s3_bucket = s3_client.get_bucket_logging(
+                        Bucket=cloudtrail_bucket['S3BucketName'])
+                    if 'LoggingEnabled' in s3_bucket:
+                        result.append(cloudtrail_bucket)
+
+                except ClientError:
+                    continue
+        else:
+            for cloudtrail_bucket in resources:
+                try:
+                    s3_bucket = s3_client.get_bucket_logging(
+                        Bucket=cloudtrail_bucket['S3BucketName'])
+                    if 'LoggingEnabled' not in s3_bucket:
+                        result.append(cloudtrail_bucket)
+
+                except ClientError:
+                    continue
+
+        return result
 
 
 @CloudTrail.filter_registry.register('is-shadow')
@@ -155,6 +194,56 @@ class EventSelectors(ValueFilter):
 
     def __call__(self, r):
         return self.match(r[self.annotation_key])
+
+
+@CloudTrail.filter_registry.register('cloudtrail-s3-filter')
+class CloudTrailS3LoggingPublicFilter(Filter):
+    schema = type_schema('cloudtrail-s3-filter',
+                         key={'type': 'string'},
+                         op={'type': 'string'},
+                         state={'type': 'string'},
+                         # If we want to check existing of key
+                         # in resource, we can use state field
+                         value={'$ref': '#/definitions/filters_common/value'})
+    permissions = ('cloudtrail:DescribeTrails',)
+
+    def __call__(self, resource):
+        return resource
+
+    def process(self, resources, event=None):
+        s3_client = local_session(self.manager.session_factory).client('s3')
+        s3_api_fields = {'LoggingEnabled': s3_client.get_bucket_logging,
+                         'PublicAccessBlockConfiguration': s3_client.get_public_access_block}
+        result = []
+        k = self.data.get('key').split('.')[0]
+
+        for r in resources:
+            if k in s3_api_fields:
+                try:
+                    entity = s3_api_fields[k](
+                        Bucket='{}'.format(r['S3BucketName']))
+                    if self.is_valid_state(k, entity):
+                        result.append(r)
+                    else:
+                        key = jmespath.search(self.data.get('key'), entity)
+                        op = OPERATORS[self.data.get('op')]
+                        if op(key, self.data.get('value')):
+                            result.append(r)
+                except ClientError:
+                    continue
+            else:
+                raise KeyError
+
+        return result
+
+    def is_valid_state(self, key, entity):
+        if self.data.get('state') == 'present':
+            if key in entity:
+                return True
+        elif self.data.get('state') == 'absent':
+            if key not in entity:
+                return True
+        return False
 
 
 @CloudTrail.action_registry.register('update-trail')

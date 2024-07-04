@@ -1,0 +1,73 @@
+{
+    "status_code": 200,
+    "data": {
+        "trailList": [
+            {
+                "Name": "c7n-177-cloudtrail-green",
+                "S3BucketName": "c7n-177-s3-cloutrail",
+                "S3KeyPrefix": "prefix",
+                "IncludeGlobalServiceEvents": false,
+                "IsMultiRegionTrail": false,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/c7n-177-cloudtrail-green",
+                "LogFileValidationEnabled": false,
+                "HasCustomEventSelectors": false,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": false
+            },
+            {
+                "Name": "c7n-177-cloudtrail-red",
+                "S3BucketName": "c7n-177-s3-cloutrail-red",
+                "S3KeyPrefix": "prefix",
+                "IncludeGlobalServiceEvents": false,
+                "IsMultiRegionTrail": false,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/c7n-177-cloudtrail-red",
+                "LogFileValidationEnabled": false,
+                "HasCustomEventSelectors": false,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": false
+            },
+            {
+                "Name": "c7n-green-trail-211ggg",
+                "S3BucketName": "c7n-green-bucket-211ggg",
+                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": true,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/c7n-green-trail-211ggg",
+                "LogFileValidationEnabled": false,
+                "HasCustomEventSelectors": false,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": false
+            },
+            {
+                "Name": "c7n-red-trail-211rrrr",
+                "S3BucketName": "c7n-red-bucket-211rrrr",
+                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": true,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/c7n-red-trail-211rrrr",
+                "LogFileValidationEnabled": false,
+                "HasCustomEventSelectors": false,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": false
+            },
+            {
+                "Name": "epmcsec-master",
+                "S3BucketName": "epmc-logs-cloudtrail-d634e43f3cc0",
+                "IncludeGlobalServiceEvents": true,
+                "IsMultiRegionTrail": true,
+                "HomeRegion": "us-east-1",
+                "TrailARN": "arn:aws:cloudtrail:us-east-1:644160558196:trail/epmcsec-master",
+                "LogFileValidationEnabled": true,
+                "CloudWatchLogsLogGroupArn": "arn:aws:logs:us-east-1:644160558196:log-group:CloudTrail/epmcsec-master:*",
+                "CloudWatchLogsRoleArn": "arn:aws:iam::644160558196:role/epmc-master-cloudtrail-cwlogs",
+                "KmsKeyId": "arn:aws:kms:us-east-1:644160558196:key/e829ee47-826c-4219-8ef7-d8154fb7538b",
+                "HasCustomEventSelectors": false,
+                "HasInsightSelectors": false,
+                "IsOrganizationTrail": true
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

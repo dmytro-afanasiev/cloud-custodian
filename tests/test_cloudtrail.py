@@ -192,3 +192,46 @@ class CloudTrail(BaseTest):
             client.exceptions.TrailNotFoundException,
             client.delete_trail,
             Name=resources[0]['Name'])
+
+    def test_cloudtrail_s3_logging(self):
+        session_factory = self.replay_flight_data("test-cloudtrail-s3-logging")
+        p = self.load_policy(
+            {
+                "name": "cloudtrail-s3-logging",
+                "resource": "cloudtrail",
+                "filters": [{'type': 'cloudtrail-s3-logging', 'enabled': True}]
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+
+    def test_cloudtrail_s3_public_access(self):
+        factory = self.replay_flight_data("test_cloudtrail_s3_public_access")
+        p = self.load_policy(
+            {
+                "name": 'cloudtrail-resource',
+                "resource": 'cloudtrail',
+                "filters": [{'type': 'cloudtrail-s3-filter',
+                             'key': 'PublicAccessBlockConfiguration.BlockPublicAcls',
+                             'op': 'eq',
+                             'value': True},
+                            {'type': 'cloudtrail-s3-filter',
+                             'key': 'PublicAccessBlockConfiguration.RestrictPublicBuckets',
+                             'op': 'eq',
+                             'value': True},
+                            {'type': 'cloudtrail-s3-filter',
+                             'key': 'PublicAccessBlockConfiguration.IgnorePublicAcls',
+                             'op': 'eq',
+                             'value': True},
+                            {'type': 'cloudtrail-s3-filter',
+                             'key': 'PublicAccessBlockConfiguration.BlockPublicPolicy',
+                             'op': 'eq',
+                             'value': True}]
+            },
+            session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['Name'], 'c7n-177-cloudtrail-green')

@@ -1,0 +1,100 @@
+{
+    "status_code": 200,
+    "data": {
+        "DBInstances": [
+            {
+                "DBInstanceIdentifier": "terraform-20210906071259513600000001",
+                "DBInstanceClass": "db.t3.micro",
+                "Engine": "mysql",
+                "DBInstanceStatus": "stopped",
+                "MasterUsername": "foo",
+                "DBName": "mydb_red",
+                "Endpoint": {
+                    "Address": "terraform-20210906071259513600000001.chhajgiktbgu.us-east-1.rds.amazonaws.com",
+                    "Port": 3306,
+                    "HostedZoneId": "Z2R2ITUGPM61AM"
+                },
+                "AllocatedStorage": 10,
+                "InstanceCreateTime": {
+                    "__class__": "datetime",
+                    "year": 2021,
+                    "month": 9,
+                    "day": 6,
+                    "hour": 7,
+                    "minute": 17,
+                    "second": 44,
+                    "microsecond": 76000
+                },
+                "PreferredBackupWindow": "06:52-07:22",
+                "BackupRetentionPeriod": 0,
+                "DBSecurityGroups": [],
+                "VpcSecurityGroups": [
+                    {
+                        "VpcSecurityGroupId": "sg-036611b170ca29c52",
+                        "Status": "active"
+                    }
+                ],
+                "DBParameterGroups": [
+                    {
+                        "DBParameterGroupName": "default.mysql5.7",
+                        "ParameterApplyStatus": "in-sync"
+                    }
+                ],
+                "AvailabilityZone": "us-east-1b",
+                "DBSubnetGroup": {
+                    "DBSubnetGroupName": "database subnets",
+                    "DBSubnetGroupDescription": "Subnets for Database Instance",
+                    "VpcId": "vpc-036845f89a9952624",
+                    "SubnetGroupStatus": "Complete",
+                    "Subnets": [
+                        {
+                            "SubnetIdentifier": "subnet-0a7d050dbfcd04b91",
+                            "SubnetAvailabilityZone": {
+                                "Name": "us-east-1a"
+                            },
+                            "SubnetOutpost": {},
+                            "SubnetStatus": "Active"
+                        },
+                        {
+                            "SubnetIdentifier": "subnet-0d0d6b6767c1f5b65",
+                            "SubnetAvailabilityZone": {
+                                "Name": "us-east-1b"
+                            },
+                            "SubnetOutpost": {},
+                            "SubnetStatus": "Active"
+                        }
+                    ]
+                },
+                "PreferredMaintenanceWindow": "thu:03:15-thu:03:45",
+                "PendingModifiedValues": {},
+                "MultiAZ": false,
+                "EngineVersion": "5.7.33",
+                "AutoMinorVersionUpgrade": true,
+                "ReadReplicaDBInstanceIdentifiers": [],
+                "LicenseModel": "general-public-license",
+                "OptionGroupMemberships": [
+                    {
+                        "OptionGroupName": "default:mysql-5-7",
+                        "Status": "in-sync"
+                    }
+                ],
+                "PubliclyAccessible": false,
+                "StorageType": "gp2",
+                "DbInstancePort": 0,
+                "StorageEncrypted": false,
+                "DbiResourceId": "db-VODSCCOI66MHMRQORJUSIGZZPU",
+                "CACertificateIdentifier": "rds-ca-2019",
+                "DomainMemberships": [],
+                "CopyTagsToSnapshot": true,
+                "MonitoringInterval": 0,
+                "DBInstanceArn": "arn:aws:rds:us-east-1:644160558196:db:terraform-20210906071259513600000001",
+                "IAMDatabaseAuthenticationEnabled": false,
+                "PerformanceInsightsEnabled": false,
+                "DeletionProtection": false,
+                "AssociatedRoles": [],
+                "TagList": []
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

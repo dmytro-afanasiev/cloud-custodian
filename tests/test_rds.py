@@ -1425,6 +1425,24 @@ class RDSSnapshotTest(BaseTest):
             ]
         )
 
+    def test_rds_vpc_query(self):
+        session_factory = self.replay_flight_data("test_rds_vpc_query")
+        policy = self.load_policy(
+            {
+                "name": "test-rds-vpc",
+                "resource": "aws.rds",
+                "filters": [{"type": "rds-vpc-filter",
+                             "key": "SecurityGroups[].IpPermissions[].IpRanges[].CidrIp",
+                             "op": "eq",
+                             "value": "0.0.0.0/0"}],
+            },
+            session_factory=session_factory,
+        )
+        resources = policy.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["DBName"], "custodian081red")
+
     def _get_effective_permissions(self, client, snapshot_id):
         attributes = client.describe_db_snapshot_attributes(
             DBSnapshotIdentifier=snapshot_id
@@ -1892,6 +1910,44 @@ class TestRDSParameterGroupFilter(BaseTest):
             'c7n:MatchedDBParameter')[0], 'rds.force_admin_logging_level')
         self.assertIn(('DBParameterGroupName', 'test'), resources[0].get(
             'DBParameterGroups')[0].items())
+
+
+class TestEndpointPortRdsFilter(BaseTest):
+
+    def test_rds_endpoint_port(self):
+        session_factory = self.replay_flight_data("test_rds_endpoint_port")
+        policy = self.load_policy({
+            "name": "rds-endpoint-port",
+            "resource": "aws.rds",
+            "filters": [{
+                "type": "endpoint-port",
+                "required-ports": "1433, 3306, 5432"
+            }]
+        }, session_factory=session_factory)
+
+        resources = policy.resource_manager.resources()
+
+        self.assertEqual(1, len(resources))
+        self.assertEqual("mydb_red", resources[0]["DBName"])
+
+
+class TestVpcSecurityGroupRdsFilter(BaseTest):
+
+    def test_rds_vpc_security_group(self):
+        session_factory = self.replay_flight_data("test_rds_vpc_security_group")
+        policy = self.load_policy({
+            "name": "rds-vpc-security-group-inbound-ports",
+            "resource": "aws.rds",
+            "filters": [{
+                "type": "vpc-security-group-inbound-ports",
+                "required-ports": "1433, 3306, 5432"
+            }]
+        }, session_factory=session_factory)
+
+        resources = policy.resource_manager.resources()
+
+        self.assertEqual(1, len(resources))
+        self.assertEqual("mydb_red", resources[0]["DBName"])
 
 
 class Resize(BaseTest):

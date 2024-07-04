@@ -1,0 +1,17 @@
+{
+    "status_code": 200,
+    "data": {
+        "NextMarker": "c3215e86-40d2-47c4-bbc2-8018f5f8bc9d",
+        "RuleGroups": [
+            {
+                "RuleGroupId": "2109ecfc-1e40-40b4-8000-acf0332cbd5e",
+                "Name": "916_waf_rule_group_red"
+            },
+            {
+                "RuleGroupId": "c3215e86-40d2-47c4-bbc2-8018f5f8bc9d",
+                "Name": "916_waf_rule_group_green"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "status_code": 200,
+    "data": {
+        "ActivatedRules": [
+            {
+                "Priority": 1,
+                "RuleId": "7cd868e4-8c8e-49f3-8757-9294c4720235",
+                "Action": {
+                    "Type": "ALLOW"
+                },
+                "Type": "REGULAR"
+            }
+        ],
+        "ResponseMetadata": {}
+    }
+}

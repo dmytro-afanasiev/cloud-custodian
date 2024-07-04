@@ -89,3 +89,19 @@ class WAFTest(BaseTest):
         resources = p.run()
         self.assertEqual(len(resources), 1)
         self.assertTrue('c7n:WafV2LoggingConfiguration' not in resources[0])
+
+
+class ActiveRulesFilterTest(BaseTest):
+
+    def test_activated_rules_query(self):
+        session_factory = self.replay_flight_data("test_activated_rules_query")
+        p = self.load_policy(
+            {"name": "waf-rule-groups",
+             "resource": "aws.waf-rule-groups",
+             "filters": [{"type": "active-rules-filter"}]},
+            session_factory=session_factory
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]["Name"], '916_waf_rule_group_green')
+

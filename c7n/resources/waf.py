@@ -3,7 +3,7 @@
 from c7n.manager import resources
 from c7n.query import ConfigSource, QueryResourceManager, TypeInfo, DescribeSource
 from c7n.tags import universal_augment
-from c7n.filters import ValueFilter
+from c7n.filters import ValueFilter, Filter
 from c7n.utils import type_schema, local_session
 
 
@@ -108,6 +108,39 @@ class WAF(QueryResourceManager):
         'describe': DescribeWaf,
         'config': ConfigSource
     }
+
+
+@resources.register('waf-rule-groups')
+class WAFRuleGroups(QueryResourceManager):
+
+    class resource_type(TypeInfo):
+        service = "waf"
+        enum_spec = ("list_rule_groups", "RuleGroups", None)
+        name = "Name"
+        id = "RuleGroupId"
+        dimension = "WebACL"
+        cfn_type = config_type = "AWS::WAF::WebACL"
+        arn_type = "webacl"
+        permissions_enum = ('waf:ListWebACLs',)
+        permissions_augment = ('waf:GetWebACL',)
+
+
+@WAFRuleGroups.filter_registry.register('active-rules-filter')
+class ActiveRules(Filter):
+    schema = type_schema('active-rules-filter')
+    permissions = ("waf-regional:ListWebACLs",)
+
+    def process(self, resources, event=None):
+        accepted = []
+        client = local_session(self.manager.session_factory).client(
+            'waf')
+        for resource in resources:
+            to_check = client.list_activated_rules_in_rule_group(
+                RuleGroupId=resource['RuleGroupId'])
+            if to_check.get('ActivatedRules'):
+                accepted.append(resource)
+
+        return accepted
 
 
 @resources.register('waf-regional')

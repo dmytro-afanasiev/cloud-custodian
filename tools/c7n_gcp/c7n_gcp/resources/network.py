@@ -1,12 +1,14 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 import re
+import jmespath
 
 from c7n_gcp.actions import MethodAction
 from c7n_gcp.query import QueryResourceManager, TypeInfo
+from c7n.filters import PortRangeFilter
 
 from c7n_gcp.provider import resources
-from c7n.filters.core import ListItemFilter
+from c7n.filters.core import ListItemFilter, ValueFilter
 from c7n.utils import type_schema, local_session
 from c7n_gcp.utils import get_firewall_port_ranges
 
@@ -175,6 +177,39 @@ class Firewall(QueryResourceManager):
         if not resources:
             return []
         return get_firewall_port_ranges(resources)
+
+
+@Firewall.filter_registry.register('port-range')
+class PortRangeFirewallFilter(PortRangeFilter):
+    permissions = ('compute.firewalls.get', 'compute.firewalls.list')
+
+
+@Firewall.filter_registry.register('attached-to-cluster')
+class AttachedToClusterFirewallFilter(ValueFilter):
+    """
+    Checks if a firewall rule belongs to the network among the available clusters.
+
+    Usage example:
+      policies:
+       - name: gcp-firewall-attached-to-cluster-filter
+         resource: gcp.firewall
+         filters:
+         - attached-to-cluster
+    """
+    permissions = ('compute.firewalls.get', 'compute.firewalls.list')
+
+    def process(self, resources, event=None):
+        session = local_session(self.manager.session_factory)
+        parent = 'projects/{}/locations/-'.format(session.get_default_project())
+        client = session.client('container', 'v1', 'projects.locations.clusters')
+        clusters = client.execute_query('list', {'parent': parent}).get('clusters', [])
+        networks = set([jmespath.search('networkConfig.network', cluster) for cluster in clusters])
+        return self.filter_firewalls_if_attached_to_networks(resources, networks)
+
+    def filter_firewalls_if_attached_to_networks(self, firewalls, networks):
+        return [firewall for network in networks
+                for firewall in
+                list(filter(lambda f: f['network'].endswith(network), firewalls))]
 
 
 @Firewall.action_registry.register('delete')

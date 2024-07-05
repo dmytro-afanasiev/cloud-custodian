@@ -164,6 +164,30 @@ class VirtualMachine(ArmResourceManager):
         resource_type = 'Microsoft.Compute/virtualMachines'
 
 
+@VirtualMachine.filter_registry.register('security-jit-policy')
+class SecurityJitPoliciesFilter(ValueFilter):
+    schema = type_schema('security-jit-policy',)
+
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client(
+            'azure.mgmt.security.SecurityCenter')
+        jit_policies = client.jit_network_access_policies.list()
+        filtered_resources = []
+        for resource in resources:
+            if not self._check_if_jit_policy(jit_policies, resource['id']):
+                filtered_resources.append(resource)
+        return filtered_resources
+
+    def _check_if_jit_policy(self, policies, vm_id):
+        for policy in policies:
+            for machine in policy.virtual_machines:
+                if vm_id == machine.id:
+                    for port in machine.ports:
+                        if port.number == 22 or port.number == 3389:
+                            return True
+        return False
+
+
 @VirtualMachine.filter_registry.register('instance-view')
 class InstanceViewFilter(ValueFilter):
     schema = type_schema('instance-view', rinherit=ValueFilter.schema)

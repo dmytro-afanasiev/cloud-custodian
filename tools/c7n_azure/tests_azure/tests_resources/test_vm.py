@@ -12,6 +12,20 @@ from c7n.testing import mock_datetime_now
 from c7n.utils import local_session
 
 
+class TestJitPolicyFilter(BaseTest):
+    def test_query_jit_policy(self):
+        p = self.load_policy({
+            'name': 'jit-policy',
+            'resource': 'azure.vm',
+            'filters': [{'not': [
+                {'type': 'security-jit-policy'}]}]
+        })
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual('dd2instance', resources[0]['name'])
+
+
 class VMTest(BaseTest):
     def setUp(self):
         super(VMTest, self).setUp()

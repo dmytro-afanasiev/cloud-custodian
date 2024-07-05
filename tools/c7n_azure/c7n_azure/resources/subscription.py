@@ -46,6 +46,9 @@ class Subscription(ResourceManager, metaclass=QueryMeta):
                 definition_name: "Audit use of classic storage accounts"
 
     """
+    def __init__(self, *args, **kwargs):
+        super(Subscription, self).__init__(*args, **kwargs)
+        self._session = None
 
     class resource_type(TypeInfo):
         doc_groups = ['Subscription']
@@ -64,11 +67,43 @@ class Subscription(ResourceManager, metaclass=QueryMeta):
     def get_resources(self, resource_ids):
         return [self._get_subscription(self.session_factory, self.config)]
 
+    def get_session(self):
+        if self._session is None:
+            self._session = local_session(self.session_factory)
+        return self._session
+
+    def get_client(self, service=None):
+        if not service:
+            return self.get_session().client(
+                "%s.%s" % (self.resource_type.service, self.resource_type.client))
+        return self.get_session().client(service)
+
     def _get_subscription(self, session_factory, config):
         session = local_session(session_factory)
         client = SubscriptionClient(session.get_credentials())
         details = client.subscriptions.get(subscription_id=session.get_subscription_id())
         return details.serialize(True)
+
+
+@Subscription.filter_registry.register('activity-log-alert')
+class SubscriptionActivityLogAlertFilter(ValueFilter):
+
+    schema = type_schema(
+        'activity-log-alert', rinherit=ValueFilter.schema
+    )
+
+    def process(self, resources, event=None):
+        result = []
+        for resource in resources:
+            # client should be in the cycle to load proper subscription through the client
+            client = self.manager.get_client('azure.mgmt.monitor.MonitorManagementClient')
+            alerts = [alert.as_dict()
+                      for alert in client.activity_log_alerts.list_by_subscription_id()]
+            filtered = super(SubscriptionActivityLogAlertFilter, self).process(
+                [{"alerts": alerts}], event)
+            if filtered:
+                result.append(resource)
+        return result
 
 
 Subscription.filter_registry.register('missing', Missing)

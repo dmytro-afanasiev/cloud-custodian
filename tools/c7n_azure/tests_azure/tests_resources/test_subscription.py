@@ -104,3 +104,24 @@ class SubscriptionDiagnosticSettingsFilterTest(BaseTest):
         }, validate=True)
 
         self.assertEqual(0, len(p.run()))
+
+    def test_subscription_activity_log_alerts(self):
+        p = self.load_policy({
+            'name': 'test-subscription-activity-log-alerts',
+            'resource': 'azure.subscription',
+            'filters': [{
+                'type': 'activity-log-alert',
+                'key': "length(alerts[?location=='Global' " +
+                       " && condition.all_of[" +
+                       "?(field=='operationName'" +
+                       " && equals=='Microsoft.Authorization/policyAssignments/write')]" +
+                       " && length(condition.all_of[" +
+                       "?(field=='level' || field=='status' || field=='caller') " +
+                       "|| contains(keys(@), 'containsAny')])==`0`])",
+                'value': 0,
+                'op': 'gt'
+            }],
+        })
+        resources = p.run()
+        self.assertEqual(1, len(resources))
+        self.assertEqual('ea42f556-5106-4743-99b0-c129bfa71a47', resources[0]['subscriptionId'])

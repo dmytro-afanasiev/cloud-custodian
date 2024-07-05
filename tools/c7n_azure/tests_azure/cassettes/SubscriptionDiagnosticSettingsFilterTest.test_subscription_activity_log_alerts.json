@@ -1,0 +1,171 @@
+{
+    "version": 1,
+    "interactions": [
+        {
+            "request": {
+                "method": "GET",
+                "uri": "https://management.azure.com/subscriptions/f7dc8823-4f06-4346-9de0-badbe6273a54?api-version=2019-11-01",
+                "body": null,
+                "headers": {}
+            },
+            "response": {
+                "status": {
+                    "code": 200,
+                    "message": "OK"
+                },
+                "headers": {
+                    "cache-control": [
+                        "no-cache"
+                    ],
+                    "content-length": [
+                        "403"
+                    ],
+                    "date": [
+                        "Mon, 27 Dec 2021 06:55:03 GMT"
+                    ],
+                    "content-type": [
+                        "application/json; charset=utf-8"
+                    ]
+                },
+                "body": {
+                    "data": {
+                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47",
+                        "authorizationSource": "RoleBased",
+                        "managedByTenants": [],
+                        "subscriptionId": "ea42f556-5106-4743-99b0-c129bfa71a47",
+                        "tenantId": "00000000-0000-0000-0000-000000000003",
+                        "displayName": "Pay-As-You-Go-Student02",
+                        "state": "Enabled",
+                        "subscriptionPolicies": {
+                            "locationPlacementId": "Public_2014-09-01",
+                            "quotaId": "PayAsYouGo_2014-09-01",
+                            "spendingLimit": "Off"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "request": {
+                "method": "GET",
+                "uri": "https://management.azure.com/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/providers/microsoft.insights/activityLogAlerts?api-version=2017-04-01",
+                "body": null,
+                "headers": {}
+            },
+            "response": {
+                "status": {
+                    "code": 200,
+                    "message": "OK"
+                },
+                "headers": {
+                    "cache-control": [
+                        "no-cache"
+                    ],
+                    "date": [
+                        "Mon, 27 Dec 2021 06:55:05 GMT"
+                    ],
+                    "content-type": [
+                        "application/json; charset=utf-8"
+                    ],
+                    "content-length": [
+                        "1619"
+                    ]
+                },
+                "body": {
+                    "data": {
+                        "value": [
+                            {
+                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/RG-039cisalertlog/providers/microsoft.insights/activityLogAlerts/green_alert-039cisalertlog",
+                                "type": "Microsoft.Insights/ActivityLogAlerts",
+                                "name": "green_alert-039cisalertlog",
+                                "location": "Global",
+                                "kind": null,
+                                "tags": {
+                                    "test": "Green"
+                                },
+                                "properties": {
+                                    "scopes": [
+                                        "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47"
+                                    ],
+                                    "condition": {
+                                        "allOf": [
+                                            {
+                                                "field": "category",
+                                                "equals": "Administrative",
+                                                "containsAny": null,
+                                                "odata.type": null
+                                            },
+                                            {
+                                                "field": "operationName",
+                                                "equals": "Microsoft.Authorization/policyAssignments/write",
+                                                "containsAny": null,
+                                                "odata.type": null
+                                            }
+                                        ],
+                                        "odata.type": null
+                                    },
+                                    "actions": {
+                                        "actionGroups": []
+                                    },
+                                    "enabled": true,
+                                    "description": ""
+                                },
+                                "identity": null
+                            },
+                            {
+                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/RG-039cisalertlog/providers/microsoft.insights/activityLogAlerts/red_alert-039cisalertlog",
+                                "type": "Microsoft.Insights/ActivityLogAlerts",
+                                "name": "red_alert-039cisalertlog",
+                                "location": "Global",
+                                "kind": null,
+                                "tags": {
+                                    "test": "Red"
+                                },
+                                "properties": {
+                                    "scopes": [
+                                        "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/RG-039cisalertlog"
+                                    ],
+                                    "condition": {
+                                        "allOf": [
+                                            {
+                                                "field": "category",
+                                                "equals": "Administrative",
+                                                "containsAny": null,
+                                                "odata.type": null
+                                            },
+                                            {
+                                                "field": "operationName",
+                                                "equals": "Microsoft.Authorization/policyAssignments/write",
+                                                "containsAny": null,
+                                                "odata.type": null
+                                            },
+                                            {
+                                                "field": "level",
+                                                "equals": "Informational",
+                                                "containsAny": null,
+                                                "odata.type": null
+                                            },
+                                            {
+                                                "field": "status",
+                                                "equals": "Succeded",
+                                                "containsAny": null,
+                                                "odata.type": null
+                                            }
+                                        ],
+                                        "odata.type": null
+                                    },
+                                    "actions": {
+                                        "actionGroups": []
+                                    },
+                                    "enabled": false,
+                                    "description": ""
+                                },
+                                "identity": null
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}

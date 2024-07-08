@@ -1,0 +1,343 @@
+{
+  "protoPayload": {
+    "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+    "status": {},
+    "authenticationInfo": {
+      "principalEmail": "service-agent-manager@system.gserviceaccount.com"
+    },
+    "requestMetadata": {
+      "callerIp": "2002:a5e:3c04:0:0:0:0:0",
+      "requestAttributes": {},
+      "destinationAttributes": {}
+    },
+    "serviceName": "cloudresourcemanager.googleapis.com",
+    "methodName": "SetIamPolicy",
+    "authorizationInfo": [
+      {
+        "resource": "projects/cloud-custodian",
+        "permission": "resourcemanager.projects.setIamPolicy",
+        "granted": true,
+        "resourceAttributes": {}
+      },
+      {
+        "resource": "projects/cloud-custodian",
+        "permission": "resourcemanager.projects.setIamPolicy",
+        "granted": true,
+        "resourceAttributes": {}
+      }
+    ],
+    "resourceName": "projects/cloud-custodian",
+    "serviceData": {
+      "@type": "type.googleapis.com/google.iam.v1.logging.AuditData",
+      "policyDelta": {
+        "bindingDeltas": [
+          {
+            "action": "ADD",
+            "role": "roles/cloudscheduler.serviceAgent",
+            "member": "serviceAccount:service-443732426401@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
+          }
+        ]
+      }
+    },
+    "request": {
+      "@type": "type.googleapis.com/google.iam.v1.SetIamPolicyRequest",
+      "policy": {
+        "auditConfigs": [
+          {
+            "auditLogConfigs": [
+              {
+                "logType": "DATA_READ"
+              },
+              {
+                "logType": "DATA_WRITE"
+              }
+            ],
+            "service": "allServices"
+          }
+        ],
+        "bindings": [
+          {
+            "members": [
+              "serviceAccount:service-443732426401@gcp-sa-cloudasset.iam.gserviceaccount.com"
+            ],
+            "role": "roles/cloudasset.serviceAgent"
+          },
+          {
+            "role": "roles/cloudbuild.builds.builder",
+            "members": [
+              "serviceAccount:443732426401@cloudbuild.gserviceaccount.com"
+            ]
+          },
+          {
+            "role": "roles/cloudbuild.serviceAgent",
+            "members": [
+              "serviceAccount:service-443732426401@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "members": [
+              "serviceAccount:service-443732426401@gcf-admin-robot.iam.gserviceaccount.com"
+            ],
+            "role": "roles/cloudfunctions.serviceAgent"
+          },
+          {
+            "role": "roles/compute.serviceAgent",
+            "members": [
+              "serviceAccount:service-443732426401@compute-system.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "role": "roles/container.serviceAgent",
+            "members": [
+              "serviceAccount:service-443732426401@container-engine-robot.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "members": [
+              "serviceAccount:service-443732426401@container-analysis.iam.gserviceaccount.com"
+            ],
+            "role": "roles/containeranalysis.ServiceAgent"
+          },
+          {
+            "role": "roles/containerthreatdetection.serviceAgent",
+            "members": [
+              "serviceAccount:service-443732426401@gcp-sa-ktd-control.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "members": [
+              "serviceAccount:service-443732426401@dataflow-service-producer-prod.iam.gserviceaccount.com"
+            ],
+            "role": "roles/dataflow.serviceAgent"
+          },
+          {
+            "role": "roles/editor",
+            "members": [
+              "serviceAccount:443732426401-compute@developer.gserviceaccount.com",
+              "serviceAccount:443732426401@cloudservices.gserviceaccount.com",
+              "serviceAccount:cloud-custodian@appspot.gserviceaccount.com",
+              "serviceAccount:service-443732426401@containerregistry.iam.gserviceaccount.com",
+              "user:Yuliia_Strekozova@epam.com",
+              "user:aliaksei_karpitski@epam.com",
+              "user:oleksandr_shulhin@epam.com",
+              "user:oleksii_shaina@epam.com",
+              "user:yauhen_shaliou@epam.com"
+            ]
+          },
+          {
+            "role": "roles/firebaserules.system",
+            "members": [
+              "serviceAccount:service-443732426401@firebase-rules.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "members": [
+              "group:lab_cust@epmcseclab.com",
+              "serviceAccount:eshaliov-custodian@cloud-custodian.iam.gserviceaccount.com",
+              "user:gcp.lab.admin1@epmcseclab.com"
+            ],
+            "role": "roles/owner"
+          },
+          {
+            "members": [
+              "serviceAccount:service-443732426401@cloud-redis.iam.gserviceaccount.com"
+            ],
+            "role": "roles/redis.serviceAgent"
+          },
+          {
+            "members": [
+              "user:yauhen_shaliou@epam.com"
+            ],
+            "role": "roles/resourcemanager.projectIamAdmin"
+          },
+          {
+            "role": "roles/servicenetworking.serviceAgent",
+            "members": [
+              "serviceAccount:service-443732426401@service-networking.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "role": "roles/sourcerepo.serviceAgent",
+            "members": [
+              "serviceAccount:service-443732426401@sourcerepo-service-accounts.iam.gserviceaccount.com"
+            ]
+          },
+          {
+            "members": [
+              "serviceAccount:cloudsploit@cloud-custodian.iam.gserviceaccount.com"
+            ],
+            "role": "roles/viewer"
+          },
+          {
+            "members": [
+              "serviceAccount:service-443732426401@gcp-sa-websecurityscanner.iam.gserviceaccount.com"
+            ],
+            "role": "roles/websecurityscanner.serviceAgent"
+          },
+          {
+            "role": "roles/cloudscheduler.serviceAgent",
+            "members": [
+              "serviceAccountId:105647928315003223353"
+            ]
+          }
+        ],
+        "etag": "BwW+XFdKHJQ="
+      },
+      "resource": "443732426401"
+    },
+    "response": {
+      "etag": "BwW+cLTItOo=",
+      "@type": "type.googleapis.com/google.iam.v1.Policy",
+      "auditConfigs": [
+        {
+          "auditLogConfigs": [
+            {
+              "logType": "DATA_READ"
+            },
+            {
+              "logType": "DATA_WRITE"
+            }
+          ],
+          "service": "allServices"
+        }
+      ],
+      "bindings": [
+        {
+          "members": [
+            "serviceAccount:service-443732426401@gcp-sa-cloudasset.iam.gserviceaccount.com"
+          ],
+          "role": "roles/cloudasset.serviceAgent"
+        },
+        {
+          "role": "roles/cloudbuild.builds.builder",
+          "members": [
+            "serviceAccount:443732426401@cloudbuild.gserviceaccount.com"
+          ]
+        },
+        {
+          "members": [
+            "serviceAccount:service-443732426401@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+          ],
+          "role": "roles/cloudbuild.serviceAgent"
+        },
+        {
+          "role": "roles/cloudfunctions.serviceAgent",
+          "members": [
+            "serviceAccount:service-443732426401@gcf-admin-robot.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "members": [
+            "serviceAccount:service-443732426401@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
+          ],
+          "role": "roles/cloudscheduler.serviceAgent"
+        },
+        {
+          "members": [
+            "serviceAccount:service-443732426401@compute-system.iam.gserviceaccount.com"
+          ],
+          "role": "roles/compute.serviceAgent"
+        },
+        {
+          "members": [
+            "serviceAccount:service-443732426401@container-engine-robot.iam.gserviceaccount.com"
+          ],
+          "role": "roles/container.serviceAgent"
+        },
+        {
+          "role": "roles/containeranalysis.ServiceAgent",
+          "members": [
+            "serviceAccount:service-443732426401@container-analysis.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "role": "roles/containerthreatdetection.serviceAgent",
+          "members": [
+            "serviceAccount:service-443732426401@gcp-sa-ktd-control.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "role": "roles/dataflow.serviceAgent",
+          "members": [
+            "serviceAccount:service-443732426401@dataflow-service-producer-prod.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "role": "roles/editor",
+          "members": [
+            "serviceAccount:443732426401-compute@developer.gserviceaccount.com",
+            "serviceAccount:443732426401@cloudservices.gserviceaccount.com",
+            "serviceAccount:cloud-custodian@appspot.gserviceaccount.com",
+            "serviceAccount:service-443732426401@containerregistry.iam.gserviceaccount.com",
+            "user:Yuliia_Strekozova@epam.com",
+            "user:aliaksei_karpitski@epam.com",
+            "user:oleksandr_shulhin@epam.com",
+            "user:oleksii_shaina@epam.com",
+            "user:yauhen_shaliou@epam.com"
+          ]
+        },
+        {
+          "members": [
+            "serviceAccount:service-443732426401@firebase-rules.iam.gserviceaccount.com"
+          ],
+          "role": "roles/firebaserules.system"
+        },
+        {
+          "role": "roles/owner",
+          "members": [
+            "group:lab_cust@epmcseclab.com",
+            "serviceAccount:eshaliov-custodian@cloud-custodian.iam.gserviceaccount.com",
+            "user:gcp.lab.admin1@epmcseclab.com"
+          ]
+        },
+        {
+          "role": "roles/redis.serviceAgent",
+          "members": [
+            "serviceAccount:service-443732426401@cloud-redis.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "members": [
+            "user:yauhen_shaliou@epam.com"
+          ],
+          "role": "roles/resourcemanager.projectIamAdmin"
+        },
+        {
+          "members": [
+            "serviceAccount:service-443732426401@service-networking.iam.gserviceaccount.com"
+          ],
+          "role": "roles/servicenetworking.serviceAgent"
+        },
+        {
+          "role": "roles/sourcerepo.serviceAgent",
+          "members": [
+            "serviceAccount:service-443732426401@sourcerepo-service-accounts.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "role": "roles/viewer",
+          "members": [
+            "serviceAccount:cloudsploit@cloud-custodian.iam.gserviceaccount.com"
+          ]
+        },
+        {
+          "members": [
+            "serviceAccount:service-443732426401@gcp-sa-websecurityscanner.iam.gserviceaccount.com"
+          ],
+          "role": "roles/websecurityscanner.serviceAgent"
+        }
+      ]
+    }
+  },
+  "insertId": "-5jqghzd12k8",
+  "resource": {
+    "type": "project",
+    "labels": {
+      "project_id": "cloud-custodian"
+    }
+  },
+  "timestamp": "2021-03-26T13:42:41.889Z",
+  "severity": "NOTICE",
+  "logName": "projects/cloud-custodian/logs/cloudaudit.googleapis.com%2Factivity",
+  "receiveTimestamp": "2021-03-26T13:42:43.014179955Z"
+}

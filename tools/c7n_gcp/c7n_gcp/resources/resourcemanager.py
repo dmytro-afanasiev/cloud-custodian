@@ -624,6 +624,115 @@ class AccessApprovalFilter(ValueFilter):
         return access_approval
 
 
+@resources.register('project-iam-policy-bindings')
+class ProjectIamPolicyBindings(QueryResourceManager):
+    """GCP resource: https://cloud.google.com/resource-manager/reference/
+                     rest/v1/projects/getIamPolicy
+    """
+    class resource_type(TypeInfo):
+        service = 'cloudresourcemanager'
+        version = 'v1'
+        component = 'projects'
+        scope = 'project'
+        enum_spec = ('getIamPolicy', 'bindings[]', {'body': {}})
+        scope_key = 'resource'
+        scope_template = '{}'
+        name = id = 'role'
+        default_report_fields = [id, 'members']
+        get_multiple_resources = True
+
+        @staticmethod
+        def get(client, resource_info):
+            iam_policy = client.execute_command(
+                'getIamPolicy', {'resource': resource_info['project_id']})
+            return iam_policy['bindings'] if 'bindings' in iam_policy else []
+
+
+@resources.register('project-iam-policy-bindings-by-members')
+class ProjectIamPolicyBindingsByMembers(QueryResourceManager):
+    """GCP resource: https://cloud.google.com/resource-manager/reference/
+                     rest/v1/projects/getIamPolicy
+    """
+
+    class resource_type(TypeInfo):
+        service = 'cloudresourcemanager'
+        version = 'v1'
+        component = 'projects'
+        scope = 'project'
+        enum_spec = ('getIamPolicy', 'bindings[]', {'body': {}})
+        scope_key = 'resource'
+        scope_template = '{}'
+        name = id = 'member'
+        default_report_fields = [id, 'roles']
+        get_multiple_resources = True
+
+    def _fetch_resources(self, query):
+        fetched_resources = super()._fetch_resources(query)
+        remapped_resources = []
+        remapped_members = []
+        for fetched_resource in fetched_resources:
+            for member in fetched_resource['members']:
+                if member in remapped_members:
+                    for remapped_resource in remapped_resources:
+                        if remapped_resource['member'] == member:
+                            remapped_resource['roles'].append(fetched_resource['role'])
+                else:
+                    remapped_resources.append(
+                        {'member': member, 'roles': [fetched_resource['role']]})
+                    remapped_members.append(member)
+        return remapped_resources
+
+
+@ProjectIamPolicyBindingsByMembers.filter_registry.register('new-roles-filter')
+class NewRolesFilter(Filter):
+    schema = type_schema('new-roles-filter',
+                         op={'$ref': '#/definitions/filters_common/value'},
+                         value={'$ref': '#/definitions/filters_common/value'},
+                         by={'$ref': '#/definitions/filters_common/value'})
+    permissions = ('resourcemanager.projects.list',)
+
+    def process(self, resources, event=None):
+        filtered = []
+        session = local_session(self.manager.session_factory)
+        client_simple = session.client(service_name='iam', version='v1', component='roles')
+        client_custom = session.client(service_name='iam', version='v1', component='projects.roles')
+        by_who = self.data.get('by')
+
+        for resource in resources:
+            if by_who == 'user' and resource['member'].startswith(by_who):
+                for role in resource['roles']:
+                    if role.startswith('project'):
+                        permissions = client_custom.execute_command('get', {
+                            "name": role})['includedPermissions']
+                        if op(self.data, permissions, self.data.get('value')):
+                            filtered.append(resource)
+                            break
+                    else:
+                        permissions = client_simple.execute_command('get', {
+                            "name": role})['includedPermissions']
+                        if op(self.data, permissions, self.data.get('value')):
+                            filtered.append(resource)
+                            break
+
+            elif by_who == 'serviceAccount' and resource['member'].startswith(by_who):
+                for role in resource['roles']:
+                    if role.startswith('project'):
+                        permissions = client_custom.execute_command('get', {
+                            "name": role})['includedPermissions']
+                        if op(self.data, permissions, self.data.get('value')):
+                            filtered.append(resource)
+                            break
+                    else:
+                        permissions = client_simple.execute_command('get', {
+                            "name": role})['includedPermissions']
+                        if op(self.data, permissions, self.data.get('value')):
+                            filtered.append(resource)
+                            break
+            else:
+                continue
+        return filtered
+
+
 @Organization.filter_registry.register('iam-policy')
 class OrganizationIamPolicyFilter(IamPolicyFilter):
     """

@@ -12,7 +12,7 @@ from c7n_gcp.resources.resourcemanager import (
     FolderIamPolicyFilter, HierarchyAction, OrganizationIamPolicyFilter
 )
 
-from gcp_common import BaseTest
+from gcp_common import BaseTest, event_data
 
 
 from c7n.exceptions import ResourceLimitExceeded
@@ -849,3 +849,95 @@ class TestOrgPoliciesFilter(BaseTest):
             'c7n:MatchedFilters': ['constraint']
         }])
         self.assertEqual(len(resources), 1)
+
+
+class ProjectIamPolicyBindingsTest(BaseTest):
+
+    def test_project_iam_policy_bindings_query(self):
+        project_id = 'cloud-custodian'
+        expected_member = 'serviceAccount:cloudsploit' \
+                          '@cloud-custodian.iam.gserviceaccount.com'
+
+        session_factory = self.replay_flight_data(
+            'project-iam-policy-bindings-query', project_id)
+
+        policy = self.load_policy({
+            'name': 'gcp-project-iam-policy-bindings-query',
+            'resource': 'gcp.project-iam-policy-bindings'
+        }, session_factory=session_factory)
+
+        resources = policy.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['role'], 'roles/viewer')
+        self.assertEqual(resources[0]['members'], [expected_member])
+
+    def test_project_iam_policy_bindings_get(self):
+        project_id = 'cloud-custodian'
+        expected_member = 'serviceAccount:cloudsploit' \
+                          '@cloud-custodian.iam.gserviceaccount.com'
+
+        session_factory = self.replay_flight_data(
+            'project-iam-policy-bindings-get', project_id)
+
+        policy = self.load_policy({
+            'name': 'gcp-project-iam-policy-bindings-get',
+            'resource': 'gcp.project-iam-policy-bindings',
+            'mode': {
+                'type': 'gcp-audit',
+                'methods': ['SetIamPolicy']}
+        }, session_factory=session_factory)
+
+        exec_mode = policy.get_execution_mode()
+        event = event_data('project-iam-policy-bindings-set-iam-policy.json')
+        resources = exec_mode.run(event, None)[0]  # list of lists, maybe bug
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['role'], 'roles/viewer')
+        self.assertEqual(resources[0]['members'], [expected_member])
+
+    def test_project_iam_policy_bindings_by_members_query(self):
+        project_id = 'cloud-custodian'
+        expected_member = 'serviceAccount:awscloudsploit' \
+                          '@cloud-custodian.iam.gserviceaccount.com'
+        expected_roles = ['roles/viewer', 'roles/editor']
+        session_factory = self.replay_flight_data(
+            'project-iam-policy-bindings-query-sort-by-members', project_id)
+        policy = self.load_policy({
+            'name': 'gcp-project-iam-policy-bindings-query',
+            'resource': 'gcp.project-iam-policy-bindings-by-members',
+            'filters': [{'and': [{
+                'type': 'value',
+                'key': 'roles',
+                'op': 'contains',
+                'value': 'roles/viewer'},
+                {
+                    'type': 'value',
+                    'key': 'roles',
+                    'op': 'contains',
+                    'value': 'roles/editor'}]}]
+        }, session_factory=session_factory)
+        resources = policy.run()
+
+        self.assertEqual(len(resources), 3)
+        self.assertEqual(resources[0]['member'], expected_member)
+        self.assertEqual(resources[0]['roles'], expected_roles)
+
+
+class NewRolesFilterTest(BaseTest):
+
+    def test_new_roles_filter_query(self):
+        factory = self.replay_flight_data('test_new_roles_filter_query',
+                                          project_id='cloud-custodian')
+        p = self.load_policy(
+            {'name': 'new-roles',
+             'resource': 'gcp.project-iam-policy-bindings-by-members',
+             'filters': [{'type': 'new-roles-filter',
+                          'op': 'intersect',
+                          'value': ['iam.serviceAccounts.actAs'],
+                          'by': 'user'}]},
+            session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 11)
+        self.assertEqual(resources[0]['member'],
+                         'user:gcp.lab.cust1@epmcseclab.com')

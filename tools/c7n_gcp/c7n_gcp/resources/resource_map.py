@@ -42,6 +42,9 @@ ResourceMap = {
     "gcp.secret": "c7n_gcp.resources.secret.Secret",
     "gcp.gke-cluster": "c7n_gcp.resources.gke.KubernetesCluster",
     "gcp.gke-nodepool": "c7n_gcp.resources.gke.KubernetesClusterNodePool",
+    "gcp.project-iam-policy-bindings": "c7n_gcp.resources.resourcemanager.ProjectIamPolicyBindings",
+    "gcp.project-iam-policy-bindings-by-members": "c7n_gcp.resources.resourcemanager."
+                                                  "ProjectIamPolicyBindingsByMembers",
     "gcp.iam-role": "c7n_gcp.resources.iam.Role",
     "gcp.image": "c7n_gcp.resources.compute.Image",
     "gcp.instance": "c7n_gcp.resources.compute.Instance",

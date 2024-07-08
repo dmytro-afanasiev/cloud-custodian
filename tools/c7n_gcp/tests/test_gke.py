@@ -364,3 +364,25 @@ class KubernetesClusterNodePoolTest(BaseTest):
         self.assertEqual(1, len(resources))
         self.assertEqual('c7nnode-node-pool-1',
                         resources[0]['name'])
+
+
+class IAMGKENodepoolFilterTest(BaseTest):
+
+    def test_iam_gke_nodepool_filter_query(self):
+        project_id = "cloud-custodian"
+        factory = self.replay_flight_data('iam-gke-nodepool-filter-query', project_id)
+        p = self.load_policy(
+            {'name': 'iam-gke-nodepool-filter',
+             'resource': 'gcp.gke-nodepool',
+             'filters': [{
+                 'type': 'iam-gke-nodepool-filter',
+                 'key': 'role',
+                 'op': 'contains',
+                 'value': 'roles/viewer'
+             }]},
+            session_factory=factory
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['name'], 'default-pool')

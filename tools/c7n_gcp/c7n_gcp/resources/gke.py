@@ -1,6 +1,7 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 import re
+import jmespath
 
 from c7n_gcp.provider import resources
 from c7n_gcp.query import (QueryResourceManager, TypeInfo, ChildTypeInfo,
@@ -10,6 +11,7 @@ from c7n_gcp.actions import MethodAction
 from c7n_gcp.utils import get_firewall_port_ranges
 
 from c7n.filters import ValueFilter
+from c7n.filters.core import op
 
 
 @resources.register('gke-cluster')
@@ -194,6 +196,47 @@ class KubernetesClusterNodePool(ChildResourceManager):
         def _get_location(cls, resource):
             "Get the region from the parent - the cluster"
             return super()._get_location(cls.get_parent(resource))
+
+
+@KubernetesClusterNodePool.filter_registry.register('iam-gke-nodepool-filter')
+class IAMGKENodepoolFilter(ValueFilter):
+    schema = type_schema('iam-gke-nodepool-filter', rinherit=ValueFilter.schema)
+    permissions = ('resourcemanager.projects.getIamPolicy',)
+    service_key = 'serviceAccount'
+    resource_key = 'config'
+
+    def process(self, resources, event=None):
+        accepted_resources = []
+        session = local_session(self.manager.session_factory)
+        client = session.client(
+            service_name='cloudresourcemanager', version='v1', component='projects')
+        project = session.get_default_project()
+        roles = client.execute_command('getIamPolicy', {'resource': project})['bindings']
+        for resource in resources:
+            if resource.get('serviceAccounts'):
+                members = ['serviceAccount:' + member[
+                    'email'] for member in resource.get('serviceAccounts')]
+                for role in roles:
+                    jmespath_key = jmespath.search(self.data.get('key'), role)
+                    if jmespath_key is None:
+                        continue
+                    countable = [True for i in role['members'] if i in members]
+                    if True in countable and op(self.data, jmespath_key, self.data.get('value')):
+                        accepted_resources.append(resource)
+                        break
+
+            elif resource[self.resource_key].get(self.service_key):
+                member = 'serviceAccount:' + resource[self.resource_key].get(self.service_key)
+                for role in roles:
+                    jmespath_key = jmespath.search(self.data.get('key'), role)
+                    if jmespath_key is None:
+                        continue
+                    if member in role['members'] and \
+                            op(self.data, jmespath_key, self.data.get('value')):
+                        accepted_resources.append(resource)
+                        break
+
+        return accepted_resources
 
 
 @KubernetesCluster.filter_registry.register('server-config')

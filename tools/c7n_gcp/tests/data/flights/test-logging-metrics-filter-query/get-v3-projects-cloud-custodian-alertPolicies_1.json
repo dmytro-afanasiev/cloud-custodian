@@ -1,0 +1,164 @@
+{
+  "headers": {
+    "content-type": "application/json; charset=UTF-8",
+    "vary": "Origin, X-Origin, Referer",
+    "date": "Wed, 19 Jan 2022 12:58:51 GMT",
+    "server": "ESF",
+    "cache-control": "private",
+    "x-xss-protection": "0",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"",
+    "transfer-encoding": "chunked",
+    "status": "200",
+    "content-length": "4819",
+    "-content-encoding": "gzip",
+    "content-location": "https://monitoring.googleapis.com/v3/projects/cloud-custodian/alertPolicies?alt=json"
+  },
+  "body": {
+    "alertPolicies": [
+      {
+        "name": "projects/cloud-custodian/alertPolicies/14253665246437095468",
+        "displayName": "alert1",
+        "combiner": "OR",
+        "creationRecord": {
+          "mutateTime": "2021-06-03T11:39:33.950332577Z",
+          "mutatedBy": "oleksii_shaina@epam.com"
+        },
+        "mutationRecord": {
+          "mutateTime": "2021-06-03T11:39:33.950332577Z",
+          "mutatedBy": "oleksii_shaina@epam.com"
+        },
+        "conditions": [
+          {
+            "conditionThreshold": {
+              "filter": "metric.type=\"logging.googleapis.com/user/metric-018\" resource.type=\"gke_container\"",
+              "comparison": "COMPARISON_GT",
+              "duration": "0s",
+              "trigger": {
+                "count": 1
+              },
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_RATE"
+                }
+              ]
+            },
+            "displayName": "logging/user/metric-018 [RATE]",
+            "name": "projects/cloud-custodian/alertPolicies/14253665246437095468/conditions/14253665246437096117"
+          },
+          {
+            "conditionThreshold": {
+              "filter": "metric.type=\"container.googleapis.com/container/cpu/usage_time\" resource.type=\"gke_container\"",
+              "comparison": "COMPARISON_GT",
+              "duration": "0s",
+              "trigger": {
+                "count": 1
+              },
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_RATE"
+                }
+              ]
+            },
+            "displayName": "GKE Container - CPU usage [RATE]",
+            "name": "projects/cloud-custodian/alertPolicies/14253665246437095468/conditions/14253665246437096766"
+          }
+        ],
+        "enabled": true,
+        "alertStrategy": {}
+      },
+      {
+        "name": "projects/cloud-custodian/alertPolicies/14440484990605263580",
+        "displayName": "alert2",
+        "combiner": "OR",
+        "creationRecord": {
+          "mutateTime": "2021-06-03T11:40:12.922041813Z",
+          "mutatedBy": "oleksii_shaina@epam.com"
+        },
+        "mutationRecord": {
+          "mutateTime": "2021-06-03T11:40:12.922041813Z",
+          "mutatedBy": "oleksii_shaina@epam.com"
+        },
+        "conditions": [
+          {
+            "conditionThreshold": {
+              "filter": "metric.type=\"logging.googleapis.com/user/metric-018\"",
+              "comparison": "COMPARISON_GT",
+              "duration": "0s",
+              "trigger": {
+                "count": 1
+              },
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_RATE"
+                }
+              ]
+            },
+            "displayName": "logging/user/metric-018 [RATE]",
+            "name": "projects/cloud-custodian/alertPolicies/14440484990605263580/conditions/14440484990605266837"
+          },
+          {
+            "conditionThreshold": {
+              "filter": "metric.type=\"compute.googleapis.com/instance/disk/write_bytes_count\" resource.type=\"gce_instance\"",
+              "comparison": "COMPARISON_GT",
+              "duration": "0s",
+              "trigger": {
+                "count": 1
+              },
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_RATE"
+                }
+              ]
+            },
+            "displayName": "VM Instance - Disk write bytes [RATE]",
+            "name": "projects/cloud-custodian/alertPolicies/14440484990605263580/conditions/14440484990605265998"
+          }
+        ],
+        "enabled": true,
+        "alertStrategy": {}
+      },
+      {
+        "name": "projects/cloud-custodian/alertPolicies/3766496461142913093",
+        "displayName": "alert3",
+        "combiner": "OR",
+        "creationRecord": {
+          "mutateTime": "2021-06-03T11:40:45.259694940Z",
+          "mutatedBy": "oleksii_shaina@epam.com"
+        },
+        "mutationRecord": {
+          "mutateTime": "2021-06-03T11:40:45.259694940Z",
+          "mutatedBy": "oleksii_shaina@epam.com"
+        },
+        "conditions": [
+          {
+            "conditionThreshold": {
+              "filter": "metric.type=\"logging.googleapis.com/user/mymetrictest\"",
+              "comparison": "COMPARISON_GT",
+              "duration": "0s",
+              "trigger": {
+                "count": 1
+              },
+              "aggregations": [
+                {
+                  "alignmentPeriod": "300s",
+                  "perSeriesAligner": "ALIGN_RATE"
+                }
+              ]
+            },
+            "displayName": "logging/user/mymetrictest [RATE]",
+            "name": "projects/cloud-custodian/alertPolicies/3766496461142913093/conditions/3766496461142913452"
+          }
+        ],
+        "enabled": true,
+        "alertStrategy": {}
+      }
+    ],
+    "totalSize": 3
+  }
+}

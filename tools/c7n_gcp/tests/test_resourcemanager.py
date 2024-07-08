@@ -601,6 +601,128 @@ class ProjectTest(BaseTest):
             self.fail('missing permissions on \"missing\" filter')
 
 
+class TestLogProjectSinkFilter(BaseTest):
+    def test_query(self):
+        project_id = 'cloud-custodian'
+        factory = self.replay_flight_data('test-log-project-sink-query', project_id)
+        p = self.load_policy({
+            'name': 'project',
+            'resource': 'gcp.project',
+            'filters': [{
+                'type': 'log-project-sink-filter',
+            }],
+        },
+            session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['lifecycleState'], 'ACTIVE')
+
+
+class TestLoggingMetricsFilter(BaseTest):
+    def test_query(self):
+        project_id = 'cloud-custodian'
+        factory = self.replay_flight_data('test-logging-metrics-filter-query', project_id)
+        p = self.load_policy({
+            'name': 'project',
+            'resource': 'gcp.project',
+            'filters': [{
+                'type': 'logging-metrics-filter',
+                'key': 'filter',
+                'op': 'eq',
+                'value': 'protoPayload.methodName="SetIamPolicy" AND '
+                         'protoPayload.serviceData.policyDelta.auditConfigDeltas:*'}],
+        },
+            session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['lifecycleState'], 'ACTIVE')
+
+
+class TestAuditConfigProjectFilter(BaseTest):
+    def test_query(self):
+        project_id = 'cloud-custodian'
+        factory = self.replay_flight_data('test-audit-config-project-query', project_id)
+        p = self.load_policy({
+            'name': 'project',
+            'resource': 'gcp.project',
+            'filters': [{
+                'type': 'audit-config-project-filter',
+            }],
+        },
+            session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['lifecycleState'], 'ACTIVE')
+
+    def test_project_iam_policy_value_filter(self):
+        factory = self.replay_flight_data('project-iam-policy')
+        p = self.load_policy({
+            'name': 'resource',
+            'resource': 'gcp.project',
+            'filters': [{
+                'type': 'iam-policy',
+                'doc':
+                    {'key': 'bindings[*].members[]',
+                     'op': 'contains',
+                     'value': 'user:abc@gmail.com'}
+            }]},
+            session_factory=factory)
+        resources = p.run()
+        self.assertEqual(len(resources), 3)
+
+        for resource in resources:
+            self.assertTrue('c7n:iamPolicy' in resource)
+            bindings = resource['c7n:iamPolicy']['bindings']
+            members = set()
+            for binding in bindings:
+                for member in binding['members']:
+                    members.add(member)
+            self.assertTrue('user:abc@gmail.com' in members)
+
+    def test_project_iam_policy_user_pair_filter(self):
+        factory = self.replay_flight_data('project-iam-policy')
+        p = self.load_policy({
+            'name': 'resource',
+            'resource': 'gcp.project',
+            'filters': [{
+                'type': 'iam-policy',
+                'user-role':
+                    {'user': "abcdefg",
+                     'has': True,
+                     'role': 'roles/admin'}
+            }]},
+            session_factory=factory)
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        for resource in resources:
+            self.assertTrue('c7n:iamPolicyUserRolePair' in resource)
+            user_role_pair = resource['c7n:iamPolicyUserRolePair']
+            self.assertTrue("abcdefg" in user_role_pair)
+            self.assertTrue('roles/admin' in user_role_pair["abcdefg"])
+
+
+class ServiceVulnScanningFilterTest(BaseTest):
+
+    def test_service_vuln_scanning_filter_query(self):
+        factory = self.replay_flight_data('test_service_vuln_scanning_filter_query')
+        p = self.load_policy(
+            {'name': 'all-services',
+             'resource': 'gcp.project',
+             'filters': [{'not': [{'type': 'service-vuln-scanning-filter',
+                                   'key': 'config.name',
+                                   'op': 'eq',
+                                   'value': 'containerscanning.googleapis.com'}]}]},
+            session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['name'], 'gcp-lab-custodian')
+
+
 class TestAccessApprovalFilter(BaseTest):
 
     def test_access_approval_enabled(self):

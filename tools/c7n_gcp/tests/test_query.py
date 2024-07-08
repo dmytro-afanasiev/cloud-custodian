@@ -38,12 +38,15 @@ def test_gcp_resource_metadata_asset_type():
         'ml-model',
         'notebook',
         'patch-deployment',
+        'project-iam-policy-bindings',
+        'project-iam-policy-bindings-by-members',
+        'service-account-bindings',
         'sourcerepo',
         'sql-backup-run',
         'sql-ssl-cert',
         'sql-user',
         'pubsub-snapshot',
-        'region'
+        'region',
     ))
     missing = set()
     for k, v in GoogleCloud.resources.items():

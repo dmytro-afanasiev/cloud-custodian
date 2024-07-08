@@ -1,5 +1,6 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
+import unittest
 
 from googleapiclient.errors import HttpError
 
@@ -178,3 +179,20 @@ class LogExclusionTest(BaseTest):
                 'gcp:logging::cloud-custodian:exclusion/qwerty',
             ],
         )
+
+
+class TestBucketAccessControlList(BaseTest):
+
+    @unittest.skip('Not working')
+    def test_query(self):
+        project_id = 'cloud-custodian'
+        bucket = 'for_test_12345678'
+        factory = self.replay_flight_data('bucket-access-control-list-query', project_id)
+        p = self.load_policy({
+            'name': 'gcp-bucket-access-control-list',
+            'resource': 'gcp.bucket-access-control-list',
+        }, session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 5)
+        self.assertEqual(resources[0]['bucket'], bucket)

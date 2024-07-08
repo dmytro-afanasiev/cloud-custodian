@@ -5,7 +5,7 @@ from c7n.filters.core import ValueFilter
 
 from c7n_gcp.actions import MethodAction
 from c7n_gcp.provider import resources
-from c7n_gcp.query import QueryResourceManager, TypeInfo
+from c7n_gcp.query import QueryResourceManager, TypeInfo, ChildResourceManager, ChildTypeInfo
 
 # TODO .. folder, billing account, org sink
 # how to map them given a project level root entity sans use of c7n-org
@@ -35,6 +35,32 @@ class LogProjectSink(QueryResourceManager):
             return client.execute_query('get', {
                 'sinkName': 'projects/{project_id}/sinks/{name}'.format(
                     **resource_info)})
+
+
+@resources.register('bucket-access-control-list')
+class BucketAccessControlList(ChildResourceManager):
+
+    class resource_type(ChildTypeInfo):
+        service = 'storage'
+        version = 'v1'
+        component = 'bucketAccessControls'
+        scope = 'bucket'
+        enum_spec = ('list', 'items[]', None)
+        name = id = 'buckets'
+        default_report_fields = [name, 'items']
+        asset_type = 'storage.googleapis.com/Bucket'
+        permissions = ('storage.buckets.list',)
+        parent_spec = {
+            'resource': 'log-project-sink',
+            'child_enum_params': [
+                ('name', 'bucket',),
+            ]}
+
+    def _get_child_enum_args_list(self, parent_instance):
+        if parent_instance['destination'].startswith('storage'):
+            bucket = parent_instance['destination'].split('/')[1]
+            return [{'bucket': bucket}]
+        return []
 
 
 @LogProjectSink.filter_registry.register('bucket')

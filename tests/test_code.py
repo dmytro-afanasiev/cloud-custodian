@@ -199,7 +199,10 @@ class CodeBuildSourceCredentials(BaseTest):
         )
         resources = p.run()
         self.assertEqual(len(resources), 1)
-        self.assertEqual(resources[0]['arn'], 'arn:aws:codebuild:eu-central-1:543742734891:token/github')
+        self.assertEqual(
+            resources[0]['arn'],
+            'arn:aws:codebuild:eu-central-1:543742734891:token/github'
+        )
 
 
 class CodePipeline(BaseTest):

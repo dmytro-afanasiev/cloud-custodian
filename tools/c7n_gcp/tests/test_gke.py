@@ -292,6 +292,19 @@ class KubernetesClusterTest(BaseTest):
 
         self.assertEqual(result['clusters'][0]['status'], 'STOPPING')
 
+    def test_cluster_pod_security_policy_query(self):
+        project_id = "cloud-custodian"
+        factory = self.replay_flight_data('test-gke-cluster-security-policy-query', project_id)
+        p = self.load_policy(
+            {'name': 'gke-cluster-security',
+             'resource': 'gcp.gke-cluster-beta-api',
+             'filters': [{'type': 'value',
+                          'key': 'podSecurityPolicyConfig.enabled',
+                          'value': True}]}, session_factory=factory)
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+
 
 class KubernetesClusterNodePoolTest(BaseTest):
 

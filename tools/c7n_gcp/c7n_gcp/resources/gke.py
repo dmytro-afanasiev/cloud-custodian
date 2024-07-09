@@ -334,3 +334,24 @@ class Delete(MethodAction):
                         project,
                         resource_info['location'],
                         resource_info['name'])}
+
+
+@resources.register('gke-cluster-beta-api')
+class KubernetesClusterBeta(QueryResourceManager):
+    """GCP resource:
+    https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.zones.clusters
+    """
+
+    class resource_type(TypeInfo):
+        service = 'container'
+        version = 'v1beta1'
+        component = 'projects.locations.clusters'
+        enum_spec = ('list', 'clusters[]', None)
+        scope = 'project'
+        scope_key = 'parent'
+        scope_template = "projects/{}/locations/-"
+        name = id = "name"
+        default_report_fields = [
+            'name', 'description', 'status', 'currentMasterVersion', 'currentNodeVersion',
+            'currentNodeCount', 'location']
+        asset_type = 'container.googleapis.com/Cluster'

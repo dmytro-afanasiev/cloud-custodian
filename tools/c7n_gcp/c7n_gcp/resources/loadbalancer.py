@@ -585,6 +585,31 @@ class LoadBalancingTargetHttpsProxySslPolicy(ChildResourceManager):
                 'resourceName': child_instance['parent_resource_name']}
 
 
+@resources.register('loadbalancer-backend-frontend')
+class LoadBalancingBackendFrontend(ChildResourceManager):
+    class resource_type(ChildTypeInfo):
+        service = 'compute'
+        version = 'v1'
+        component = 'targetHttpsProxies'
+        enum_spec = ('list', 'items[]', None)
+        scope = 'project'
+        id = name = 'name'
+        default_report_fields = [id]
+        parent_spec = {
+            'resource': 'loadbalancer-backend-service',
+            'child_enum_params': [],
+        }
+        asset_type = "compute.googleapis.com/TargetHttpsProxy"
+
+        @staticmethod
+        def get(client, resource_info):
+            return client.execute_command(
+                'get', {
+                    'backendService': resource_info['backendService'],
+                    'notification': resource_info['notification_id']
+                })
+
+
 @resources.register('loadbalancer-backend-frontend-ssl')
 class LoadBalancingBackendFrontendSsl(ChildResourceManager):
     class resource_type(ChildTypeInfo):

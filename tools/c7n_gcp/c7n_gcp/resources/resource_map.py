@@ -59,6 +59,8 @@ ResourceMap = {
     "gcp.kms-keyring-iam-policy-bindings": "c7n_gcp.resources.kms.KmsKeyRingsListGetIamPolicies",
     "gcp.loadbalancer-address": "c7n_gcp.resources.loadbalancer.LoadBalancingAddress",
     "gcp.loadbalancer-backend-bucket": "c7n_gcp.resources.loadbalancer.LoadBalancingBackendBucket",
+    "gcp.loadbalancer-backend-frontend":
+        "c7n_gcp.resources.loadbalancer.LoadBalancingBackendFrontend",
     "gcp.loadbalancer-backend-frontend-ssl":
         "c7n_gcp.resources.loadbalancer.LoadBalancingBackendFrontendSsl",
     "gcp.loadbalancer-backend-service": (
@@ -111,6 +113,7 @@ ResourceMap = {
     "gcp.router": "c7n_gcp.resources.network.Router",
     "gcp.service": "c7n_gcp.resources.service.Service",
     "gcp.service-account": "c7n_gcp.resources.iam.ServiceAccount",
+    "gcp.service-account-bindings": "c7n_gcp.resources.iam.ServiceAccountBindings",
     "gcp.service-account-key": "c7n_gcp.resources.iam.ServiceAccountKey",
     "gcp.snapshot": "c7n_gcp.resources.compute.Snapshot",
     "gcp.sourcerepo": "c7n_gcp.resources.source.SourceRepository",

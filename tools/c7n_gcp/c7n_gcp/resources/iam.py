@@ -7,6 +7,7 @@ from c7n_gcp.filters.iampolicy import IamPolicyFilter
 from c7n_gcp.provider import resources
 from c7n_gcp.query import QueryResourceManager, TypeInfo, ChildResourceManager, ChildTypeInfo
 from c7n_gcp.actions import MethodAction
+from c7n_gcp.filters.timerange import TimeRangeFilter
 
 
 @resources.register('project-role')
@@ -217,3 +218,9 @@ class ApiKey(QueryResourceManager):
         name = id = "name"
         default_report_fields = ['name', 'displayName', 'createTime', 'updateTime']
         asset_type = "apikeys.googleapis.com/projects.locations.keys"
+
+
+@ApiKey.filter_registry.register('time-range')
+class ApiKeyTimeRangeFilter(TimeRangeFilter):
+    create_time_field_name = 'createTime'
+    expire_time_field_name = 'updateTime'

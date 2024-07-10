@@ -224,3 +224,4 @@ class ApiKey(QueryResourceManager):
 class ApiKeyTimeRangeFilter(TimeRangeFilter):
     create_time_field_name = 'createTime'
     expire_time_field_name = 'updateTime'
+    permissions = ('apikeys.keys.list', )

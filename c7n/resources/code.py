@@ -142,7 +142,7 @@ class CodeBuildProject(QueryResourceManager):
     }
 
 
-@resources.register('codebuild-credentials')
+@resources.register('credential')
 class CodeBuildSourceCredentials(QueryResourceManager):
     class resource_type(TypeInfo):
         service = 'codebuild'

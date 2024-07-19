@@ -184,7 +184,7 @@ class CodeBuildSourceCredentials(BaseTest):
         p = self.load_policy(
             data={
                 "name": "test-get-source-credentials",
-                "resource": "aws.codebuild-credentials",
+                "resource": "aws.credential",
                 "filters": [{
                     "type": "value",
                     "key": "serverType",

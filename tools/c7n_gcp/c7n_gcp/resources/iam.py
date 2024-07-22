@@ -222,6 +222,18 @@ class ApiKey(QueryResourceManager):
 
 @ApiKey.filter_registry.register('time-range')
 class ApiKeyTimeRangeFilter(TimeRangeFilter):
+    """Filters api keys that haven't been changed during a specific time range.
+
+    .. code-block:: yaml
+
+        policies:
+          - name: api_keys_not_rotated_more_than_90_days
+            resource: gcp.api-key
+            filters:
+              - not:
+                  - type: time-range
+                    value: 90
+    """
     create_time_field_name = 'createTime'
     expire_time_field_name = 'updateTime'
     permissions = ('apikeys.keys.list', )

@@ -222,7 +222,7 @@ class ApiKey(QueryResourceManager):
 
 @ApiKey.filter_registry.register('time-range')
 class ApiKeyTimeRangeFilter(TimeRangeFilter):
-    """Filters api keys that haven't been changed during a specific time range.
+    """Filters api keys that have been changed during a specific time range.
 
     .. code-block:: yaml
 

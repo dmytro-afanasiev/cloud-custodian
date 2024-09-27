@@ -40,10 +40,10 @@ class Region:
         self.actions = ()
 
         if self._static_regions:
-            self.regions = list(self._static_regions)
+            self.regions = set(self._static_regions)
             return
         with open(REGION_DATA_PATH) as fh:
-            self.regions = json.load(fh)
+            self.regions = set(json.load(fh))
 
     def get_permissions(self):
         return ()
@@ -57,19 +57,15 @@ class Region:
 
     def resources(self, resource_ids=()):
         if resource_ids:
-            return [{'name': r} for r in self.regions if r in resource_ids]
-        elif self.config.regions or self.config.region != 'us-east-1':
-            regions = list(self.config.regions)
-            regions.append(self.config.region)
-            regions = list(filter(None, regions))
-            if 'us-east-1' in regions:
-                regions.remove('us-east-1')
-            return [{'name': r} for r in self.regions if r in regions]
-        elif 'query' in self.data:
-            qregions = {q['name'] for q in self.data['query']}
-            return [{'name': r} for r in self.regions if r in qregions]
-        else:
+            return [{'name': r} for r in resource_ids if r in self.regions]
+        if self.config.regions and 'all' in self.config.regions:
             return [{'name': r} for r in self.regions]
+        elif self.config.regions:  # but without all
+            return [{'name': r} for r in self.config.regions if r in self.regions]
+        # no self.config.regions
+        if 'query' in self.data:
+            return [{'name': q['name']} for q in self.data['query'] if q.get('name') in self.regions]
+        return [{'name': r} for r in self.regions]
 
     @classmethod
     def get_regions(cls):

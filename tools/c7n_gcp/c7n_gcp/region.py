@@ -60,8 +60,15 @@ class Region:
             return [{'name': r} for r in resource_ids if r in self.regions]
         if self.config.regions and 'all' in self.config.regions:
             return [{'name': r} for r in self.regions]
-        elif self.config.regions:  # but without all
-            return [{'name': r} for r in self.config.regions if r in self.regions]
+
+        if self.config.regions or self.config.region != 'us-east-1':
+            regions = set(self.config.regions)
+            if self.config.region:
+                regions.add(self.config.region)
+            if 'us-east-1' in regions:
+                regions.remove('us-east-1')
+            return [{'name': r} for r in regions if r in self.regions]
+
         # no self.config.regions
         if 'query' in self.data:
             return [

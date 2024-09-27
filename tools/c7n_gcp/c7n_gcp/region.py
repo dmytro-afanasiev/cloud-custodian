@@ -64,7 +64,10 @@ class Region:
             return [{'name': r} for r in self.config.regions if r in self.regions]
         # no self.config.regions
         if 'query' in self.data:
-            return [{'name': q['name']} for q in self.data['query'] if q.get('name') in self.regions]
+            return [
+                {'name': q['name']}
+                for q in self.data['query'] if q.get('name') in self.regions
+            ]
         return [{'name': r} for r in self.regions]
 
     @classmethod

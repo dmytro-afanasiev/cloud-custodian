@@ -1,10 +1,10 @@
 from c7n.utils import local_session
 from c7n_gcp.provider import resources
-from c7n_gcp.query import RegionalResourceManager, ChildTypeInfo
+from c7n_gcp.query import ChildResourceManager, ChildTypeInfo
 
 
 @resources.register('artifact-repository')
-class ArtifactRegistryRepository(RegionalResourceManager):
+class ArtifactRegistryRepository(ChildResourceManager):
     """Artifact Registry Repository
 
     https://cloud.google.com/artifact-registry/docs/reference/rest/v1/projects.locations.repositories
@@ -15,7 +15,7 @@ class ArtifactRegistryRepository(RegionalResourceManager):
         component = 'projects.locations.repositories'
         enum_spec = ('list', 'repositories[]', None)
         scope = 'parent'
-        name = id = 'id'
+        name = id = 'name'
         parent_spec = {
             'resource': 'region',
             'child_enum_params': {
@@ -32,3 +32,5 @@ class ArtifactRegistryRepository(RegionalResourceManager):
                 parent_instance['name'],
             )
         }
+
+    # todo threads?

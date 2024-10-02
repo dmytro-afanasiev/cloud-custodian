@@ -23,10 +23,44 @@ class ArtifactRegistryRepository(ChildResourceManager):
             'resource': 'region',
             'child_enum_params': {
                 ('name', 'region')},
-            'use_child_query': True,
+            'use_child_query': False,
         }
         permissions = ('artifactregistry.repositories.list',)
         default_report_fields = ['name', 'description', 'updateTime', 'sizeBytes']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._service_regions = None
+
+    def get_service_regions(self):
+        """
+        Returns all available artifact-repositories regions
+        :return:
+        """
+        if self._service_regions is not None:
+            return self._service_regions
+        client = local_session(self.session_factory).client(
+            self.resource_type.service,
+            self.resource_type.version,
+            'projects.locations'
+        )
+        items = client.execute_command('list', verb_arguments={
+            'name': f'projects/{local_session(self.session_factory).get_default_project()}'
+        })
+        self._service_regions = {
+            item['locationId'] for item in items.get('locations', [])
+        }
+        return self._service_regions
+
+    def _get_regions(self):
+        """
+        Returns regions according to config
+        """
+        regions = []
+        for r in self.get_service_regions():
+            if not self.config.regions or 'all' in self.config.regions or r in self.config.regions:
+                regions.append({'name': r})
+        return regions
 
     def _get_child_enum_args(self, parent_instance):
         return {
@@ -43,13 +77,9 @@ class ArtifactRegistryRepository(ChildResourceManager):
         if not query:
             query = {}
         annotation_key = self.resource_type.get_parent_annotation_key()
-        parent_query = self.get_parent_resource_query()
-        parent_resource_manager = self.get_resource_manager(
-            resource_type=self.resource_type.parent_spec['resource'],
-            data=({'query': parent_query} if parent_query else {})
-        )
+
         result = []
-        parent_instances = parent_resource_manager.resources()
+        parent_instances = self._get_regions()
         with self.executor_factory(None if os.name == 'nt' else len(parent_instances)) as w:
             futures = {}
             for parent_instance in parent_instances:

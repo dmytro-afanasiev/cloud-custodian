@@ -47,4 +47,3 @@ class AfdCustomDomain(ChildArmResourceManager):
                 'resource_group_name': parent_resource['resourceGroup'],
                 'profile_name': parent_resource['name']
             }
-

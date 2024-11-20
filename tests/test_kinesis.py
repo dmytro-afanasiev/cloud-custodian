@@ -69,6 +69,22 @@ class Kinesis(BaseTest):
         ]
         self.assertEqual(stream["EncryptionType"], "KMS")
 
+    def test_stream_cross_account(self):
+        factory = self.replay_flight_data("test_kinesis_cross_account")
+        p = self.load_policy(
+            {
+                "name": "kinesis-cross-account",
+                "resource": "kinesis",
+                "filters": [{"type": "cross-account"}],
+            },
+            session_factory=factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(
+            resources[0]['CrossAccountViolations'][0]['Resource'],
+            'arn:aws:kinesis:us-east-1:644160558196:stream/test-stream-2')
+
     def test_hose_query(self):
         factory = self.replay_flight_data("test_kinesis_hose_query")
         p = self.load_policy(
@@ -271,6 +287,26 @@ class Kinesis(BaseTest):
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources[0]['KmsKeyId'],
             'arn:aws:kms:us-east-1:123456789012:key/0d543df5-915c-42a1-afa1-c9c5f1f97955')
+
+    def test_kinesis_video_kms_key_alias(self):
+        p = self.load_policy(
+            {
+                "name": "kinesis-video-kms-alias",
+                "resource": "kinesis-video",
+                "filters": [
+                    {
+                        "type": "kms-key",
+                        "key": "c7n:AliasName",
+                        "value": "alias/aws/lambda",
+                    }
+                ]
+            },
+            session_factory=self.replay_flight_data("test_kinesis_video_kms_key_alias"),
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['KmsKeyId'],
+                         'arn:aws:kms:us-east-1:123456789012:alias/aws/lambda')
 
     def test_kinesis_video_tag(self):
         session_factory = self.replay_flight_data('test_kinesis_video_tag')

@@ -194,7 +194,7 @@ class StorageAccountManagementPolicyRulesFilter(ListItemFilter):
     .. code-block:: yaml
 
         policies:
-          - name: storage-no-soft-delete
+          - name: storage-delete-blob-le-3-days
             resource: azure.storage
             filters:
               - type: management-policy-rules

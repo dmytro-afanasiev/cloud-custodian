@@ -3,9 +3,12 @@
 
 from azure.mgmt.web import models
 from c7n.lookup import Lookup
+from c7n.filters import ListItemFilter
 from c7n_azure.actions.base import AzureBaseAction
 from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
+from c7n.utils import type_schema
+from c7n_azure.utils import ResourceIdParser
 
 
 @resources.register('appserviceplan')
@@ -43,6 +46,45 @@ class AppServicePlan(ArmResourceManager):
             'sku.[name, tier, capacity]'
         )
         resource_type = 'Microsoft.Web/serverfarms'
+
+
+@AppServicePlan.filter_registry.register("webapp")
+class AppServicePlanWebAppsFilter(ListItemFilter):
+    """
+    Filter service plans based on their associated WebApps
+
+    :example:
+
+    This policy will find all App Service Plans with at least one app running.
+
+    .. code-block: yaml
+
+        policies:
+          - name: exposed-redis
+            resource: azure.appserviceplan
+            filters:
+              - type: webapp
+                attrs:
+                  - type: value
+                    key: properties.state
+                    value: Running
+
+    """
+    schema = type_schema(
+        "webapp",
+        attrs={"$ref": "#/definitions/filters_common/list_item_attrs"},
+        count={"type": "number"},
+        count_op={"$ref": "#/definitions/filters_common/comparison_operators"}
+    )
+    annotate_items = True
+    item_annotation_key = "c7n:WebApps"
+
+    def get_item_values(self, resource):
+        it = self.manager.get_client().app_service_plans.list_web_apps(
+            resource_group_name=ResourceIdParser.get_resource_group(resource["id"]),
+            name=resource["name"]
+        )
+        return [item.serialize(True) for item in it]
 
 
 @AppServicePlan.action_registry.register('resize-plan')

@@ -63,5 +63,3 @@ class MachineLearningWorkspaceComputeInstancesFilterTest(BaseTest):
         resources = p.run()
         self.assertEqual(1, len(resources))
         self.assertEqual(resources[0]['c7n:ComputeInstances'][0]['name'], 'vvmlwrkspc11')
-
-

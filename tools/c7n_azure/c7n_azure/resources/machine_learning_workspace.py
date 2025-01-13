@@ -3,7 +3,8 @@ from c7n_azure.query import QueryResourceManager
 from c7n.utils import type_schema
 from c7n.filters import ListItemFilter
 from c7n_azure.utils import ResourceIdParser
-from azure.mgmt.machinelearningservices.models import ComputeInstanceProperties, AmlComputeProperties
+from azure.mgmt.machinelearningservices.models import (ComputeInstanceProperties,
+                                                       AmlComputeProperties)
 
 
 @resources.register('machine-learning-workspace')

@@ -60,7 +60,7 @@ class AppServicePlanWebAppsFilter(ListItemFilter):
     .. code-block: yaml
 
         policies:
-          - name: exposed-redis
+          - name: appservice-plan-with-running-apps
             resource: azure.appserviceplan
             filters:
               - type: webapp

@@ -8,7 +8,6 @@ from c7n_azure.actions.base import AzureBaseAction
 from c7n_azure.provider import resources
 from c7n_azure.resources.arm import ArmResourceManager
 from c7n.utils import type_schema
-from c7n_azure.utils import ResourceIdParser
 
 
 @resources.register('appserviceplan')
@@ -76,15 +75,17 @@ class AppServicePlanWebAppsFilter(ListItemFilter):
         count={"type": "number"},
         count_op={"$ref": "#/definitions/filters_common/comparison_operators"}
     )
-    annotate_items = True
-    item_annotation_key = "c7n:WebApps"
+    annotation_key = "c7n:WebApps"
 
-    def get_item_values(self, resource):
-        it = self.manager.get_client().app_service_plans.list_web_apps(
-            resource_group_name=ResourceIdParser.get_resource_group(resource["id"]),
-            name=resource["name"]
-        )
-        return [item.serialize(True) for item in it]
+    def process(self, resources, event=None):
+        self.data["key"] = f'"{self.annotation_key}"'
+        all_web_apps = self.manager.get_resource_manager('azure.webapp').resources()
+        web_apps_by_asp = {}
+        for web_app in all_web_apps:
+            web_apps_by_asp.setdefault(web_app['properties']['serverFarmId'], []).append(web_app)
+        for r in resources:
+            r[self.annotation_key] = web_apps_by_asp.get(r['id'], [])
+        return super().process(resources, event)
 
 
 @AppServicePlan.action_registry.register('resize-plan')

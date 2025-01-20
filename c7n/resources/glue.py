@@ -364,14 +364,15 @@ class GlueTable(query.ChildResourceManager):
         date = 'CreatedOn'
         arn_type = 'table'
 
+    def get_arns(self, resources):
+        return [self.generate_arn(r['DatabaseName'] + '/' + r['Name']) for r in resources]
+
 
 @query.sources.register('describe-table')
 class DescribeTable(query.ChildDescribeSource):
 
     def get_query(self):
-        query = super(DescribeTable, self).get_query()
-        query.capture_parent_id = True
-        return query
+        return super(DescribeTable, self).get_query(capture_parent_id=True)
 
     def augment(self, resources):
         result = []

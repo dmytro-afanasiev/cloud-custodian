@@ -123,44 +123,6 @@
                                     "virtualNetworkPeerings": [],
                                     "enableDdosProtection": false
                                 }
-                            },
-                            {
-                                "name": "TM-RM-vnet",
-                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/virtualNetworks/TM-RM-vnet",
-                                "etag": "W/\"87f29c36-08f0-4b26-bea7-e58386563e17\"",
-                                "type": "Microsoft.Network/virtualNetworks",
-                                "location": "westeurope",
-                                "properties": {
-                                    "provisioningState": "Succeeded",
-                                    "resourceGuid": "c3ea8c7f-6867-4666-9529-92923fa37be1",
-                                    "addressSpace": {
-                                        "addressPrefixes": [
-                                            "10.1.0.0/16"
-                                        ]
-                                    },
-                                    "subnets": [
-                                        {
-                                            "name": "default",
-                                            "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/virtualNetworks/TM-RM-vnet/subnets/default",
-                                            "etag": "W/\"87f29c36-08f0-4b26-bea7-e58386563e17\"",
-                                            "properties": {
-                                                "provisioningState": "Succeeded",
-                                                "addressPrefix": "10.1.0.0/24",
-                                                "ipConfigurations": [
-                                                    {
-                                                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/networkInterfaces/sasatm858/ipConfigurations/ipconfig1"
-                                                    }
-                                                ],
-                                                "delegations": [],
-                                                "privateEndpointNetworkPolicies": "Enabled",
-                                                "privateLinkServiceNetworkPolicies": "Enabled"
-                                            },
-                                            "type": "Microsoft.Network/virtualNetworks/subnets"
-                                        }
-                                    ],
-                                    "virtualNetworkPeerings": [],
-                                    "enableDdosProtection": false
-                                }
                             }
                         ]
                     }
@@ -278,55 +240,6 @@
                                     },
                                     "enableAcceleratedNetworking": false,
                                     "enableIPForwarding": false,
-                                    "hostedWorkloads": [],
-                                    "tapConfigurations": []
-                                },
-                                "type": "Microsoft.Network/networkInterfaces"
-                            },
-                            {
-                                "name": "sasatm858",
-                                "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/networkInterfaces/sasatm858",
-                                "etag": "W/\"eb4fff64-4888-43f8-896a-1df714e9af67\"",
-                                "location": "westeurope",
-                                "properties": {
-                                    "provisioningState": "Succeeded",
-                                    "resourceGuid": "a567c308-21ef-4a45-bc7c-c19668093889",
-                                    "ipConfigurations": [
-                                        {
-                                            "name": "ipconfig1",
-                                            "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/networkInterfaces/sasatm858/ipConfigurations/ipconfig1",
-                                            "etag": "W/\"eb4fff64-4888-43f8-896a-1df714e9af67\"",
-                                            "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
-                                            "properties": {
-                                                "provisioningState": "Succeeded",
-                                                "privateIPAddress": "10.1.0.4",
-                                                "privateIPAllocationMethod": "Dynamic",
-                                                "publicIPAddress": {
-                                                    "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/publicIPAddresses/SasaTM-ip"
-                                                },
-                                                "subnet": {
-                                                    "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/virtualNetworks/TM-RM-vnet/subnets/default"
-                                                },
-                                                "primary": true,
-                                                "privateIPAddressVersion": "IPv4"
-                                            }
-                                        }
-                                    ],
-                                    "dnsSettings": {
-                                        "dnsServers": [],
-                                        "appliedDnsServers": [],
-                                        "internalDomainNameSuffix": "p4govq1hnbtenfjjskjd5i112b.ax.internal.cloudapp.net"
-                                    },
-                                    "macAddress": "60-45-BD-8E-1D-A1",
-                                    "enableAcceleratedNetworking": false,
-                                    "enableIPForwarding": false,
-                                    "networkSecurityGroup": {
-                                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Network/networkSecurityGroups/SasaTM-nsg"
-                                    },
-                                    "primary": true,
-                                    "virtualMachine": {
-                                        "id": "/subscriptions/ea42f556-5106-4743-99b0-c129bfa71a47/resourceGroups/TM-RM/providers/Microsoft.Compute/virtualMachines/SasaTM"
-                                    },
                                     "hostedWorkloads": [],
                                     "tapConfigurations": []
                                 },

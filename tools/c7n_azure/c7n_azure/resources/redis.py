@@ -82,7 +82,7 @@ class RedisFirewallFilter(ListItemFilter):
 
     def get_item_values(self, resource):
         client = self.manager.get_client()
-        rules = client.firewall_rules.list_by_redis_resource(
+        rules = client.firewall_rules.list(
             cache_name=resource["name"],
             resource_group_name=resource["resourceGroup"]
         )

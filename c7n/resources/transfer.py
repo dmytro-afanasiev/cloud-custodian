@@ -14,7 +14,7 @@ class TransferServer(QueryResourceManager):
         service = 'transfer'
         enum_spec = ('list_servers', 'Servers', {'MaxResults': 60})
         detail_spec = (
-            'describe_server', 'ServerId', 'ServerId', None)
+            'describe_server', 'ServerId', 'ServerId', 'Server')
         id = name = 'ServerId'
         arn_type = "server"
         cfn_type = 'AWS::Transfer::Server'
@@ -150,9 +150,7 @@ class DeleteServer(BaseAction):
 class DescribeTransferUser(ChildDescribeSource):
 
     def get_query(self):
-        query = super().get_query()
-        query.capture_parent_id = True
-        return query
+        return super().get_query(capture_parent_id=True)
 
     def augment(self, resources):
         client = local_session(self.manager.session_factory).client('transfer')

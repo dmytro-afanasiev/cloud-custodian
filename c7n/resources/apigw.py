@@ -13,6 +13,7 @@ from c7n.filters import (
     FilterRegistry, ValueFilter, MetricsFilter, WafV2FilterBase,
     WafClassicRegionalFilterBase)
 from c7n.filters.iamaccess import CrossAccountAccessFilter
+from c7n.filters.policystatement import HasStatementFilter
 from c7n.filters.related import RelatedResourceFilter
 from c7n.manager import resources, ResourceManager
 from c7n import query, utils
@@ -30,6 +31,7 @@ class RestAccount(ResourceManager):
 
     filter_registry = FilterRegistry('rest-account.filters')
     action_registry = ActionRegistry('rest-account.actions')
+    retry = staticmethod(get_retry(('TooManyRequestsException',)))
 
     class resource_type(query.TypeInfo):
         service = 'apigateway'
@@ -54,10 +56,11 @@ class RestAccount(ResourceManager):
     def _get_account(self):
         client = utils.local_session(self.session_factory).client('apigateway')
         try:
-            account = client.get_account()
+            account = self.retry(client.get_account)
         except ClientError as e:
             if e.response['Error']['Code'] == 'NotFoundException':
                 return []
+            raise
         account.pop('ResponseMetadata', None)
         account['account_id'] = 'apigw-settings'
         return [account]
@@ -192,6 +195,26 @@ class RestApiCrossAccount(CrossAccountAccessFilter):
         return policy
 
 
+@RestApi.filter_registry.register('has-statement')
+class HasStatementRestApi(HasStatementFilter):
+
+    permissions = ('apigateway:GET',)
+    policy_attribute = 'policy'
+
+    def get_std_format_args(self, table):
+        return {
+            'api_name': table[self.manager.resource_type.name],
+            'account_id': self.manager.config.account_id,
+            'region': self.manager.config.region,
+        }
+
+    def process(self, resources, event=None):
+        for r in resources:
+            if policy := r.get(self.policy_attribute):
+                r[self.policy_attribute] = policy.replace('\\', '')
+        return super().process(resources, event)
+
+
 @RestApi.action_registry.register('update')
 class UpdateApi(BaseAction):
     """Update configuration of a REST API.
@@ -271,13 +294,10 @@ class DescribeRestStage(query.ChildDescribeSource):
     def __init__(self, manager):
         self.manager = manager
         self.query = query.ChildResourceQuery(
-            self.manager.session_factory, self.manager)
-        self.query.capture_parent_id = True
+            self.manager.session_factory, self.manager, capture_parent_id=True)
 
     def get_query(self):
-        query = super(DescribeRestStage, self).get_query()
-        query.capture_parent_id = True
-        return query
+        return super(DescribeRestStage, self).get_query(capture_parent_id=True)
 
     def augment(self, resources):
         results = []
@@ -453,9 +473,7 @@ class RestResource(query.ChildResourceManager):
 class DescribeRestResource(query.ChildDescribeSource):
 
     def get_query(self):
-        query = super(DescribeRestResource, self).get_query()
-        query.capture_parent_id = True
-        return query
+        return super(DescribeRestResource, self).get_query(capture_parent_id=True)
 
     def augment(self, resources):
         results = []

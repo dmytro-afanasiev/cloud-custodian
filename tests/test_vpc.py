@@ -1745,6 +1745,24 @@ class NetworkAddrTest(BaseTest):
         post_response = client.describe_addresses(AllocationIds=[allocation_id])
         self.assertNotIn("AssociationId", post_response["Addresses"][0])
 
+    def test_eip_used_by(self):
+        factory = self.replay_flight_data("test_eip_used_by")
+        p = self.load_policy(
+            {
+                "name": "eip-used-by-ec2",
+                "resource": "network-addr",
+                "filters": [
+                    {
+                        "type": "used-by",
+                        "resource-type": "ec2"
+                    }
+                ]
+            },
+            session_factory=factory, config={'region': 'us-west-2'}
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
 
 class RouteTableTest(BaseTest):
 
@@ -3244,6 +3262,10 @@ class SecurityGroupTest(BaseTest):
                         "Cidr": {
                             "value": "10.42.1.239", "op": "in", "value_type": "cidr"
                         },
+                    },
+                    {
+                        "type": "ingress",
+                        "SelfReference": False
                     }
                 ],
             },

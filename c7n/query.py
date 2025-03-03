@@ -42,9 +42,7 @@ class ResourceQuery:
     def resolve(resource_type):
         if not isinstance(resource_type, type):
             raise ValueError(resource_type)
-        else:
-            m = resource_type
-        return m
+        return resource_type
 
     def _invoke_client_enum(self, client, enum_op, params, path, retry=None):
         if client.can_paginate(enum_op):
@@ -118,12 +116,12 @@ class ChildResourceQuery(ResourceQuery):
     records (parent hosted zone), ecs services (ecs cluster).
     """
 
-    capture_parent_id = False
     parent_key = 'c7n:parent-id'
 
-    def __init__(self, session_factory, manager):
+    def __init__(self, session_factory, manager, capture_parent_id=False):
         self.session_factory = session_factory
         self.manager = manager
+        self.capture_parent_id = capture_parent_id
 
     def filter(self, resource_manager, parent_ids=None, **params):
         """Query a set of resources."""
@@ -165,10 +163,11 @@ class ChildResourceQuery(ResourceQuery):
             if annotate_parent:
                 for r in subset:
                     r[self.parent_key] = parent_id
-            if subset and self.capture_parent_id:
-                results.extend([(parent_id, s) for s in subset])
-            elif subset:
-                results.extend(subset)
+            if subset:
+                if self.capture_parent_id:
+                    results.extend([(parent_id, s) for s in subset])
+                else:
+                    results.extend(subset)
         return results
 
     def get_parent_parameters(self, params, parent_id, parent_key):
@@ -289,9 +288,9 @@ class ChildDescribeSource(DescribeSource):
 
     resource_query_factory = ChildResourceQuery
 
-    def get_query(self):
+    def get_query(self, capture_parent_id=False):
         return self.resource_query_factory(
-            self.manager.session_factory, self.manager)
+            self.manager.session_factory, self.manager, capture_parent_id=capture_parent_id)
 
 
 @sources.register('config')
@@ -746,7 +745,11 @@ def _scalar_augment(manager, model, detail_spec, client, resource_set):
     results = []
     for r in resource_set:
         kw = {param_name: param_key and r[param_key] or r}
-        response = op(*args, **kw)
+        try:
+            response = op(*args, **kw)
+        except client.exceptions.ResourceNotFoundException:
+            manager.log.warning("Resource not found: %s using %s" % (detail_op, kw))
+            continue
         if detail_path:
             response = response[detail_path]
         else:

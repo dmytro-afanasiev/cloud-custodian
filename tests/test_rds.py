@@ -2105,7 +2105,12 @@ class RDSEventSubscription(BaseTest):
         p = self.load_policy({
             "name": "rds-subscriptions-no-confirmed-topics",
             "resource": "aws.rds-subscription",
-            "filters": [{"type": "topic", "key": "SubscriptionsConfirmed", "value": 0, "value_type": "integer"}],
+            "filters": [{
+                "type": "topic",
+                "key": "SubscriptionsConfirmed",
+                "value": 0,
+                "value_type": "integer"
+            }],
         }, session_factory=session_factory)
         resources = p.run()
         self.assertEqual(len(resources), 1)

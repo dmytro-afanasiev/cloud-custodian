@@ -237,7 +237,11 @@ class CollectionRunner:
             log.warning("no %s source files found" % provider.type)
             return True
 
-        graph = self.provider.parse(self.options.source_dir, self.options.var_files)
+        graph = self.provider.parse(
+            self.options.source_dir,
+            self.options.var_files,
+            self.options.terraform_workspace,
+        )
 
         for p in self.policies:
             p.expand_variables(p.get_variables())
@@ -401,7 +405,7 @@ class IACResourceMap(object):
         return ()
 
     def get(self, k, default=None):
-        # that the resource is in the map has alerady been verified
+        # that the resource is in the map has already been verified
         # we get the unprefixed resource on get
         return self.resource_class
 

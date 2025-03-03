@@ -21,6 +21,27 @@ class TestNetworkManager(BaseTest):
         for r in resources:
             self.assertEqual(r["State"], "AVAILABLE")
             self.assertTrue(r["CoreNetworkArn"])
+            self.assertTrue("Edges" in r)
+            self.assertTrue("Segments" in r)
+
+    def test_list_core_networks_filter_out_shared_ram_networks(self):
+        # Test Core Networks shared from RAM are filtered out
+        # The test data has 2 Core Networks, one of which is shared from RAM
+        # Shared networks are detected by the 'OwnerAccountId' field
+        session_factory = self.replay_flight_data(
+            "test_networkmanager_core_networks_exclude_ram")
+        p = self.load_policy(
+            {
+                "name": "list-core-networks-verify-exclude-ram",
+                "resource": "networkmanager-core",
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        for r in resources:
+            self.assertNotEqual(r['OwnerAccountId'], '123456789012')
 
     def test_describe_global_networks(self):
         session_factory = self.replay_flight_data("test_networkmanager_describe_global_networks")
@@ -231,3 +252,170 @@ class TestNetworkManager(BaseTest):
         except client.exceptions.ResourceNotFoundException:
             self.fail('should not raise')
         mock_factory().client('networkmanager').delete_global_network.assert_called_once()
+
+
+class TestNetworkManagerSites(BaseTest):
+    def test_list_sites(self):
+        session_factory = self.replay_flight_data("test_networkmanager_list_sites")
+        p = self.load_policy(
+            {
+                "name": "list-sites",
+                "resource": "networkmanager-site",
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        for r in resources:
+            self.assertEqual(r["State"], "AVAILABLE")
+            self.assertTrue(r["SiteId"])
+
+    def test_tag_site(self):
+        session_factory = self.replay_flight_data("test_networkmanager_tag_site")
+        p = self.load_policy(
+            {
+                "name": "tag-site",
+                "resource": "networkmanager-site",
+            "actions": [{"type": "tag", "key": "c7n", "value": "test"}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        client = session_factory().client("networkmanager")
+        tags = client.list_tags_for_resource(ResourceArn=resources[0]["SiteArn"])["TagList"]
+        self.assertEqual(tags[0]["Value"], "test")
+
+    def test_untag_site(self):
+        session_factory = self.replay_flight_data("test_networkmanager_untag_site")
+        p = self.load_policy(
+            {
+                "name": "untag-site",
+                "resource": "networkmanager-site",
+                "filters": [{"tag:c7n": "test"}],
+                "actions": [{"type": "remove-tag", "tags": ["c7n"]}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        client = session_factory().client("networkmanager")
+        tags = client.list_tags_for_resource(ResourceArn=resources[0]["SiteArn"])["TagList"]
+        self.assertEqual(len(tags), 1)
+        self.assertTrue(tags[0]['Key'], "Name")
+
+
+class TestNetworkManagerDevices(BaseTest):
+    def test_list_devices(self):
+        session_factory = self.replay_flight_data("test_networkmanager_list_devices")
+        p = self.load_policy(
+            {
+                "name": "list-devices",
+                "resource": "networkmanager-device",
+                "filters": [{
+                    "State": "AVAILABLE"
+                }]
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        for r in resources:
+            self.assertEqual(r["State"], "AVAILABLE")
+            self.assertTrue(r["DeviceId"])
+
+    def test_tag_device(self):
+        session_factory = self.replay_flight_data("test_networkmanager_tag_device")
+        p = self.load_policy(
+            {
+                "name": "tag-device",
+                "resource": "networkmanager-device",
+                "filters": [{"tag:Name": "test-device"}],
+                "actions": [{"type": "tag", "key": "c7n", "value": "test"}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        client = session_factory().client("networkmanager")
+        tags = client.list_tags_for_resource(ResourceArn=resources[0]["DeviceArn"])["TagList"]
+        self.assertEqual(tags[0]["Value"], "test")
+
+    def test_untag_device(self):
+        session_factory = self.replay_flight_data("test_networkmanager_untag_device")
+        p = self.load_policy(
+            {
+                "name": "untag-device",
+                "resource": "networkmanager-device",
+                "filters": [{"tag:c7n": "test"}],
+                "actions": [{"type": "remove-tag", "tags": ["c7n"]}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        client = session_factory().client("networkmanager")
+        tags = client.list_tags_for_resource(ResourceArn=resources[0]["DeviceArn"])["TagList"]
+        self.assertEqual(len(tags), 1)
+        self.assertTrue(tags[0]['Key'], "Name")
+
+
+class TestNetworkManagerLinks(BaseTest):
+    def test_list_links(self):
+        session_factory = self.replay_flight_data("test_networkmanager_list_links")
+        p = self.load_policy(
+            {
+                "name": "list-links",
+                "resource": "networkmanager-link",
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        for r in resources:
+            self.assertEqual(r["State"], "AVAILABLE")
+            self.assertTrue(r["LinkId"])
+
+    def test_tag_link(self):
+        session_factory = self.replay_flight_data("test_networkmanager_tag_link")
+        p = self.load_policy(
+            {
+                "name": "tag-link",
+                "resource": "networkmanager-link",
+                "filters": [{"tag:Name": "test-link"}],
+                "actions": [{"type": "tag", "key": "c7n", "value": "test"}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        client = session_factory().client("networkmanager")
+        tags = client.list_tags_for_resource(ResourceArn=resources[0]["LinkArn"])["TagList"]
+        self.assertEqual(tags[0]["Value"], "test")
+
+    def test_untag_link(self):
+        session_factory = self.replay_flight_data("test_networkmanager_untag_link")
+        p = self.load_policy(
+            {
+                "name": "untag-link",
+                "resource": "networkmanager-link",
+                "filters": [{"tag:c7n": "test"}],
+                "actions": [{"type": "remove-tag", "tags": ["c7n"]}],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+        client = session_factory().client("networkmanager")
+        tags = client.list_tags_for_resource(ResourceArn=resources[0]["LinkArn"])["TagList"]
+        self.assertEqual(len(tags), 1)
+        self.assertTrue(tags[0]['Key'], "Name")

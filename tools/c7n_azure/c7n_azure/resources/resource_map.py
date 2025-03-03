@@ -2,8 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 ResourceMap = {
     "azure.advisor-recommendation": "c7n_azure.resources.advisor.AdvisorRecommendation",
+    "azure.afd-endpoint": "c7n_azure.resources.afd_endpoint.AfdEndpoint",
+    "azure.afd-custom-domain": "c7n_azure.resources.afd_custom_domain.AfdCustomDomain",
     "azure.aks": "c7n_azure.resources.k8s_service.KubernetesService",
     "azure.app-insights": "c7n_azure.resources.appinsights.AzureAppInsights",
+    "azure.app-service-environment": "c7n_azure.resources.app_service_environment.AppServiceEnvironment",  # noqa
     "azure.automation-account": "c7n_azure.resources.automation_account.AutomationAccount",
     "azure.open-shift": "c7n_azure.resources.open_shift.OpenShiftService",
     "azure.api-management": "c7n_azure.resources.apimanagement.ApiManagement",
@@ -84,6 +87,7 @@ ResourceMap = {
     "azure.service-fabric-cluster-managed": "c7n_azure.resources.service_fabric.ServiceFabricClusterManaged",  # noqa
     "azure.session-host": "c7n_azure.resources.session_host.SessionHost",
     "azure.signalr": "c7n_azure.resources.signalr.Signalr",
+    "azure.snapshot": "c7n_azure.resources.snapshot.Snapshot",
     "azure.stream-job": "c7n_azure.resources.stream_analytic.StreamJob",
     "azure.spring-app": "c7n_azure.resources.spring.SpringApp",
     "azure.spring-service-instance": "c7n_azure.resources.spring.SpringServiceInstance",

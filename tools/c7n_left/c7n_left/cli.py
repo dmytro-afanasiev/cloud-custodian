@@ -1,11 +1,13 @@
 # Copyright The Cloud Custodian Authors.
 # SPDX-License-Identifier: Apache-2.0
 #
+import itertools
 import logging
 from pathlib import Path
 import sys
 
 import click
+
 from c7n.config import Config
 
 from .core import CollectionRunner, ExecutionFilter, get_provider
@@ -13,7 +15,7 @@ from .entry import initialize_iac
 from .output import get_reporter, report_outputs, summary_options
 from .test import TestReporter, TestRunner
 from .policy import load_policies
-
+from .validate import validate_files
 
 log = logging.getLogger("c7n.iac")
 
@@ -40,25 +42,31 @@ def cli():
     type=click.File("w"),
     default="-",
 )
+@click.option("--terraform-workspace", help="Terraform workspace", default="default")
 @click.option(
     "--output-query",
     default=None,
     help="Use a jmespath expression to filter json output",
 )
-def dump(directory, var_file, output_file, output_query):
+def dump(directory, var_file, output_file, terraform_workspace, output_query):
     """Dump the parsed resource graph or subset"""
     config = get_config(
         directory,
         output="jsongraph",
         output_file=output_file,
         var_file=var_file,
+        terraform_workspace=terraform_workspace,
         output_query=output_query,
     )
     reporter = get_reporter(config)
     config["reporter"] = reporter
     provider = get_provider(config.source_dir)
     provider.initialize(config)
-    graph = provider.parse(config.source_dir, config.var_files)
+    graph = provider.parse(
+        config.source_dir,
+        config.var_files,
+        workspace=terraform_workspace,
+    )
     reporter.on_execution_started([], graph)
     reporter.on_execution_ended()
 
@@ -91,6 +99,7 @@ def dump(directory, var_file, output_file, output_query):
     default=(),
     multiple=True,
 )
+@click.option("--terraform-workspace", help="Terraform workspace", default="default")
 @click.option(
     "--output-query",
     default=None,
@@ -104,6 +113,7 @@ def run(
     output,
     output_file,
     var_file,
+    terraform_workspace,
     output_query,
     summary,
     filters,
@@ -124,6 +134,7 @@ def run(
         output_file=output_file,
         output_query=output_query,
         var_file=var_file,
+        terraform_workspace=terraform_workspace,
         summary=summary,
         warn_on=warn_on,
         filters=filters,
@@ -154,23 +165,54 @@ def test(policy_dir, filters):
     sys.exit(int(runner.run()))
 
 
+@cli.command()
+@click.option("-p", "--policy-dir", type=click.Path(), help="Directory with policies")
+def validate(policy_dir=None):
+    """Validate configuration files"""
+
+    glob_patterns = ("*.yml", "*.yaml", "*.json")
+    policy_dir = Path(policy_dir)
+
+    if not policy_dir.is_dir():
+        log.error(f"Policy directory {policy_dir} does not exist.")
+        sys.exit(1)
+
+    # Find all policy files in the given directory that match the glob patterns
+    policy_files = list(itertools.chain(*(policy_dir.rglob(pattern) for pattern in glob_patterns)))
+    if not policy_files:
+        log.warning(f"No policy files found in {policy_dir} during validation.")
+        return
+
+    file_errors = validate_files(policy_files)
+    if file_errors:
+        error_count = sum(map(len, file_errors.values()))
+        log.error(f"Validation failed with {error_count} errors")
+        for policy_file, errors in file_errors.items():
+            log.error(f"In file: {policy_file}")
+            for error in errors:
+                log.error(error)
+        sys.exit(1)
+
+
 def get_config(
     directory=None,
     policy_dir=None,
     output=None,
     output_file=None,
     var_file=(),
+    terraform_workspace="default",
     output_query=None,
     summary=None,
     filters=None,
     warn_on=None,
-    format='terraform',
+    format="terraform",
 ):
     config = Config.empty(
         source_dir=directory and Path(directory),
         policy_dir=policy_dir and Path(policy_dir),
         output=output,
         output_file=output_file,
+        terraform_workspace=terraform_workspace,
         var_files=var_file,
         output_query=output_query,
         summary=summary,
@@ -179,7 +221,7 @@ def get_config(
         format=format,
     )
     config["exec_filter"] = ExecutionFilter.parse(config.filters)
-    config["warn_filter"] = ExecutionFilter.parse(config.warn_on, severity_direction='gte')
+    config["warn_filter"] = ExecutionFilter.parse(config.warn_on, severity_direction="gte")
     return config
 
 

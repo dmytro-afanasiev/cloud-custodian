@@ -13,6 +13,19 @@ from c7n import tags
 from c7n.utils import local_session, type_schema
 
 
+class ConfigECR(ConfigSource):
+
+    def load_resource(self, item):
+        resource = super().load_resource(item)
+        for configk, servicek in {
+                'RepositoryName': 'repositoryName',
+                'Arn': 'repositoryArn',
+                'RepositoryUri': 'repositoryUri',
+                'RepositoryPolicyText': 'Policy'}.items():
+            resource[servicek] = resource.pop(configk, None)
+        return resource
+
+
 class DescribeECR(DescribeSource):
 
     def augment(self, resources):
@@ -45,7 +58,7 @@ class ECR(QueryResourceManager):
 
     source_mapping = {
         'describe': DescribeECR,
-        'config': ConfigSource
+        'config': ConfigECR
     }
 
 
@@ -72,9 +85,7 @@ class RepositoryImageDescribeSource(ChildDescribeSource):
     resource_query_factory = ECRImageQuery
 
     def get_query(self):
-        query = super(RepositoryImageDescribeSource, self).get_query()
-        query.capture_parent_id = True
-        return query
+        return super().get_query(capture_parent_id=True)
 
     def augment(self, resources):
         results = []
@@ -314,6 +325,8 @@ class ECRCrossAccountAccessFilter(CrossAccountAccessFilter):
         client = local_session(self.manager.session_factory).client('ecr')
 
         def _augment(r):
+            if r.get('Policy') is not None:
+                return r
             try:
                 r['Policy'] = client.get_repository_policy(
                     repositoryName=r['repositoryName'])['policyText']
@@ -346,6 +359,7 @@ LIFECYCLE_RULE_SCHEMA = {
             'required': ['countType', 'countNumber', 'tagStatus'],
             'properties': {
                 'tagStatus': {'enum': ['tagged', 'untagged', 'any']},
+                'tagPatternList': {'type': 'array', 'items': {'type': 'string'}},
                 'tagPrefixList': {'type': 'array', 'items': {'type': 'string'}},
                 'countNumber': {'type': 'integer'},
                 'countUnit': {'enum': ['hours', 'days']},
@@ -363,12 +377,13 @@ def lifecycle_rule_validate(policy, rule):
     #
     # https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html#lp_evaluation_rules
 
-    if (rule['selection']['tagStatus'] == 'tagged' and
-            'tagPrefixList' not in rule['selection']):
-        raise PolicyValidationError(
-            ("{} has invalid lifecycle rule {} tagPrefixList "
-             "required for tagStatus: tagged").format(
-                 policy.name, rule))
+    if rule['selection']['tagStatus'] == 'tagged':
+        if ('tagPrefixList' not in rule['selection'] and
+        'tagPatternList' not in rule['selection']):
+            raise PolicyValidationError(
+                ("{} has invalid lifecycle rule {} tagPrefixList or tagPatternList "
+                "required for tagStatus: tagged").format(
+                    policy.name, rule))
     if (rule['selection']['countType'] == 'sinceImagePushed' and
             'countUnit' not in rule['selection']):
         raise PolicyValidationError(

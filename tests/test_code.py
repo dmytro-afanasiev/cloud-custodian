@@ -341,4 +341,5 @@ class CodeDeploy(BaseTest):
         }, session_factory=factory)
         resources = p.run()
         self.assertEqual(len(resources), 1)
-        self.assertEqual(resources[0]['c7n:DeploymentConfig']['deploymentConfigId'], 'my-test-configuration')
+        self.assertEqual(resources[0]['c7n:DeploymentConfig']['deploymentConfigId'],
+                         'my-test-configuration')

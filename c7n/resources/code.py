@@ -416,13 +416,13 @@ class CodeDeployConfig(QueryResourceManager):
     class resource_type(TypeInfo):
         service = 'codedeploy'
         enum_spec = ('list_deployment_configs', 'deploymentConfigsList', None)
-        detail_spec = ('get_deployment_config', 'deploymentConfigName', None, 'deploymentConfigInfo')
+        detail_spec = ('get_deployment_config', 'deploymentConfigName', None,
+                       'deploymentConfigInfo')
         id = 'deploymentConfigId'
         name = 'deploymentConfigName'
         cfn_type = config_type = "AWS::CodeDeploy::DeploymentConfig"
         date = 'createTime'
         permissions_augment = ("codedeploy:GetDeploymentConfig",)
-
 
 
 @CodeDeployDeploymentGroup.filter_registry.register('config')
@@ -464,7 +464,6 @@ class CodeDeployDeploymentGroupConfigFilter(ValueFilter):
 
     def __call__(self, r):
         return super().__call__(r.setdefault(self.annotation_key, None))
-
 
 
 @CodeDeployDeploymentGroup.action_registry.register('delete')

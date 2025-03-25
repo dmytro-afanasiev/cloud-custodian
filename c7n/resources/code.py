@@ -420,6 +420,7 @@ class CodeDeployConfig(QueryResourceManager):
                        'deploymentConfigInfo')
         id = 'deploymentConfigId'
         name = 'deploymentConfigName'
+        arn = False
         cfn_type = config_type = "AWS::CodeDeploy::DeploymentConfig"
         date = 'createTime'
         permissions_augment = ("codedeploy:GetDeploymentConfig",)

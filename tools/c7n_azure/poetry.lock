@@ -1114,19 +1114,20 @@ msrest = ">=0.5.0"
 
 [[package]]
 name = "azure-mgmt-storage"
-version = "17.1.0"
+version = "22.1.1"
 description = "Microsoft Azure Storage Management Client Library for Python"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "azure-mgmt-storage-17.1.0.zip", hash = "sha256:01acb8e988c8082174fa952e1638d700146185644fbe4b126e65843e63d44600"},
-    {file = "azure_mgmt_storage-17.1.0-py2.py3-none-any.whl", hash = "sha256:884ca5bdcb23fc7aaca45dfb1f256155a17d1f632a857c7c5b4396f7b672deee"},
+    {file = "azure_mgmt_storage-22.1.1-py3-none-any.whl", hash = "sha256:a4a4064918dcfa4f1cbebada5bf064935d66f2a3647a2f46a1f1c9348736f5d9"},
+    {file = "azure_mgmt_storage-22.1.1.tar.gz", hash = "sha256:25aaa5ae8c40c30e2f91f8aae6f52906b0557e947d5c1b9817d4ff9decc11340"},
 ]
 
 [package.dependencies]
-azure-common = ">=1.1,<2.0"
-azure-mgmt-core = ">=1.2.0,<2.0.0"
-msrest = ">=0.6.21"
+azure-common = ">=1.1"
+azure-mgmt-core = ">=1.3.2"
+isodate = ">=0.6.1"
+typing-extensions = ">=4.6.0"
 
 [[package]]
 name = "azure-mgmt-streamanalytics"
@@ -2820,4 +2821,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "24cfae2939e89cf452d90a908542794ccbc4f61bc4f51dda5e3479a43696c5ca"
+content-hash = "2ec94fbd01489d5245073432d412c2b01f6cac59da55c1a123deb71b0222e1c4"

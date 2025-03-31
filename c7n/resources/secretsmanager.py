@@ -61,7 +61,6 @@ class SecretsManager(QueryResourceManager):
     }
 
 
-
 SecretsManager.filter_registry.register('marked-for-op', TagActionFilter)
 
 

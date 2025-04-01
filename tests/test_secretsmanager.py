@@ -256,3 +256,15 @@ class TestSecretsManager(BaseTest):
                 "actions": [{"type": "remove-statements", "statement_ids": "matched"}],
             }
         )
+
+    def test_secrets_manager_describe(self):
+        self.patch(SecretsManager, 'executor_factory', MainThreadExecutor)
+        session_factory = self.replay_flight_data("test_secrets_manager_describe")
+        p = self.load_policy({
+            "name": "list-all-secrets",
+            "resource": "aws.secrets-manager",
+        }, session_factory=session_factory)
+        resources = p.run()
+        self.assertEqual(len(resources), 2)
+        self.assertIsInstance(resources[0].get('VersionIdsToStages'), dict)
+        self.assertEqual(resources[1].get('VersionIdsToStages'), None)

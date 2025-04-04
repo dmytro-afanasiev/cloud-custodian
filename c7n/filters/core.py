@@ -765,10 +765,13 @@ class RelatedFilter(ValueFilter):
     schema_alias = True
     FetchThreshold = 10
 
-    def __init__(self, data, manager=None):
-        super().__init__(data, manager)
+    def get_permissions(self):
+        return self.get_resource_manager().get_permissions()
+
+    @property
+    def RelatedResource(self):
         rm = self.get_resource_manager()
-        self.RelatedResource = f'{rm.__module__}.{rm.__class__.__name__}'
+        return f'{rm.__module__}.{rm.__class__.__name__}'
 
     def get_resource_manager(self):
         return self.manager.get_resource_manager(self.data['resource'])

@@ -268,3 +268,4 @@ class TestSecretsManager(BaseTest):
         self.assertEqual(len(resources), 2)
         self.assertIsInstance(resources[0].get('VersionIdsToStages'), dict)
         self.assertEqual(resources[1].get('VersionIdsToStages'), None)
+        self.assertEqual(resources[1]['c7n:DeniedMethods'], ['describe_secret'])

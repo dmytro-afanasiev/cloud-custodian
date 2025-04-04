@@ -16,10 +16,13 @@ from c7n.filters.policystatement import HasStatementFilter
 class DescribeSecret(DescribeSource):
 
     def _augment_secret(self, secret, client):
+        detail_op, param_name, param_key, _ = self.manager.resource_type.detail_spec
+        op = getattr(client, detail_op)
+        kw = {param_name: secret[param_key]}
+
         try:
             secret.update(self.manager.retry(
-                client.describe_secret,
-                SecretId=secret['Name']
+                op, **kw
             ))
         except ClientError as e:
             code = e.response['Error']['Code']
@@ -29,8 +32,9 @@ class DescribeSecret(DescribeSource):
             # by resource-based policies
             self.manager.log.warning(
                 "Secret:%s unable to invoke method:%s error:%s ",
-                secret['Name'], 'describe_secret', e.response['Error']['Message']
+                secret[param_key], detail_op, e.response['Error']['Message']
             )
+            secret.setdefault('c7n:DeniedMethods', []).append(detail_op)
 
     def augment(self, secrets):
         client = local_session(self.manager.session_factory).client(

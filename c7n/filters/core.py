@@ -121,6 +121,7 @@ class FilterRegistry(PluginRegistry):
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
         self.register('value', ValueFilter)
+        self.register('related', RelatedFilter)
         self.register('or', Or)
         self.register('and', And)
         self.register('not', Not)
@@ -750,6 +751,47 @@ class ValueFilter(BaseValueFilter):
             return s, v
 
         return sentinel, value
+
+
+class RelatedFilter(ValueFilter):
+    schema = type_schema(
+        'related',
+        required=['resource', 'related_id_expression'],
+        rinherit=ValueFilter.schema,
+        resource={'type': 'string'},
+        related_id_expression={'type': 'string'},
+        annotation_key={'type': 'string'}
+    )
+    schema_alias = True
+    FetchThreshold = 10
+
+    def __init__(self, data, manager=None):
+        super().__init__(data, manager)
+        rm = self.get_resource_manager()
+        self.RelatedResource = f'{rm.__module__}.{rm.__class__.__name__}'
+
+    def get_resource_manager(self):
+        return self.manager.get_resource_manager(self.data['resource'])
+
+    def get_related_ids(self, resources):
+        return set(jmespath_search(
+            "[].%s" % self.data['related_id_expression'], resources))
+
+    def _add_annotations(self, related_ids, resource):
+        akey = self.data.get('annotation_key', 'c7n:Related')
+        resource[akey] = list(set(related_ids).union(resource.get(akey, [])))
+
+    def process(self, resources, event=None):
+        from c7n.filters.related import RelatedResourceFilter  # circular import
+        related = RelatedResourceFilter.get_related(
+            self=self,
+            resources=resources
+        )
+        return [r for r in resources if RelatedResourceFilter.process_resource(
+            self=self,
+            resource=r,
+            related=related
+        )]
 
 
 FilterRegistry.value_filter_class = ValueFilter

@@ -766,15 +766,19 @@ class RelatedFilter(ValueFilter):
     FetchThreshold = 10
 
     def get_permissions(self):
-        return self.get_resource_manager().get_permissions()
+        rm = self.get_resource_manager()
+        return rm.get_permissions() if rm else ()
 
     @property
     def RelatedResource(self):
         rm = self.get_resource_manager()
-        return f'{rm.__module__}.{rm.__class__.__name__}'
+        if rm:
+            return f'{rm.__module__}.{rm.__class__.__name__}'
 
     def get_resource_manager(self):
-        return self.manager.get_resource_manager(self.data['resource'])
+        res = self.data.get('resource')
+        if res:
+            return self.manager.get_resource_manager(res)
 
     def get_related_ids(self, resources):
         return set(jmespath_search(

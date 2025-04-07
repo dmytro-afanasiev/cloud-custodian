@@ -5,6 +5,7 @@ import itertools
 
 from c7n.actions import BaseAction
 from c7n.filters import ValueFilter
+from c7n.filters.related import RelatedResourceFilter
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.manager import resources
 from c7n.query import QueryResourceManager, TypeInfo, DescribeSource, ConfigSource
@@ -362,6 +363,44 @@ class WorkspacesDirectoryClientProperties(ValueFilter):
             if self.match(directory[self.annotation_key]):
                 results.append(directory)
         return results
+
+
+@WorkspaceDirectory.filter_registry.register('directory')
+class WorkspaceDirectoryDirectoryFilter(RelatedResourceFilter):
+    schema = type_schema('directory', rinherit=ValueFilter.schema)
+    RelatedResource = 'c7n.resources.directory.Directory'
+    RelatedIdsExpression = 'DirectoryId'
+
+    annotation_key = 'c7n:Directory'
+
+    def process(self, resources, event=None):
+        # NOTE: reusing RelateResourceFilter's logic of getting related
+        # resources and ValueFilter's logic of filtering
+
+        model = self.manager.get_model()
+        related = self.get_related([res for res in resources if self.annotation_key not in res])
+
+        for res in resources:
+            if self.annotation_key in res:
+                continue
+
+            # related_id = self.get_related_ids([res]).pop()
+            related_id = res[self.RelatedIdsExpression]
+            directory = related.get(related_id)
+            if directory:
+                res[self.annotation_key] = directory
+            else:
+                self.log.warning(
+                    "Resource %s:%s references non existent %s: %s",
+                    self.manager.type,
+                    res[model.id],
+                    self.RelatedResource.rsplit('.', 1)[-1],
+                    related_id)
+
+        return super().process(resources, event)
+
+    def __call__(self, r):
+        return super().__call__(r.setdefault(self.annotation_key, None))
 
 
 @WorkspaceDirectory.action_registry.register('modify-client-properties')

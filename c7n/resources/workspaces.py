@@ -5,7 +5,6 @@ import itertools
 
 from c7n.actions import BaseAction
 from c7n.filters import ValueFilter
-from c7n.filters.related import RelatedResourceFilter
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.manager import resources
 from c7n.query import QueryResourceManager, TypeInfo, DescribeSource, ConfigSource
@@ -366,27 +365,26 @@ class WorkspacesDirectoryClientProperties(ValueFilter):
 
 
 @WorkspaceDirectory.filter_registry.register('directory')
-class WorkspaceDirectoryDirectoryFilter(RelatedResourceFilter):
+class WorkspaceDirectoryDirectoryFilter(ValueFilter):
     schema = type_schema('directory', rinherit=ValueFilter.schema)
-    RelatedResource = 'c7n.resources.directory.Directory'
-    RelatedIdsExpression = 'DirectoryId'
-
     annotation_key = 'c7n:Directory'
+    FetchThreshold = 10
+    permissions = ('ds:DescribeDirectories', )
 
     def process(self, resources, event=None):
-        # NOTE: reusing RelateResourceFilter's logic of getting related
-        # resources and ValueFilter's logic of filtering
-
-        model = self.manager.get_model()
-        related = self.get_related([res for res in resources if self.annotation_key not in res])
-
+        ds = self.manager.get_resource_manager('aws.directory')
+        if len(resources) < self.FetchThreshold:
+            directories = ds.get_resources([
+                res['DirectoryId'] for res in resources if self.annotation_key not in res
+            ])
+        else:
+            directories = ds.resources()
+        model = ds.get_model()
+        by_id = {d[model.id]: d for d in directories}
         for res in resources:
             if self.annotation_key in res:
-                continue
-
-            # related_id = self.get_related_ids([res]).pop()
-            related_id = res[self.RelatedIdsExpression]
-            directory = related.get(related_id)
+                continue  # pragma: no cover
+            directory = by_id.get(res['DirectoryId'])
             if directory:
                 res[self.annotation_key] = directory
             else:
@@ -394,8 +392,9 @@ class WorkspaceDirectoryDirectoryFilter(RelatedResourceFilter):
                     "Resource %s:%s references non existent %s: %s",
                     self.manager.type,
                     res[model.id],
-                    self.RelatedResource.rsplit('.', 1)[-1],
-                    related_id)
+                    ds.__class__.__name__,
+                    res['DirectoryId']
+                )
 
         return super().process(resources, event)
 

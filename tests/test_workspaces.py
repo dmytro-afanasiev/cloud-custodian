@@ -397,8 +397,10 @@ class WorkspacesTest(BaseTest):
         }, session_factory=session_factory)
         resources = p.run()
         self.assertEqual(len(resources), 1)
-        self.assertEqual(resources[0]['c7n:Directory']['RadiusSettings']['AuthenticationProtocol'], 'CHAP')
-
+        self.assertEqual(
+            resources[0]['c7n:Directory']['RadiusSettings']['AuthenticationProtocol'],
+            'CHAP'
+        )
 
 
 class TestWorkspacesWeb(BaseTest):

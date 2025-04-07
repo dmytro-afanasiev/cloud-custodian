@@ -44,6 +44,50 @@
             }
           ]
         }
+      },
+      {
+        "CreationTime": 1744033714.635,
+        "FileSystemId": "fs-05b4c44707bc2596e",
+        "Lifecycle": "AVAILABLE",
+        "Name": "child-vol1",
+        "ResourceARN": "arn:aws:fsx:eu-west-1:644160558196:volume/fs-05b4c44707bc2596e/fsvol-05e36c8043521ac95",
+        "VolumeId": "fsvol-05e36c8043521ac95",
+        "VolumeType": "OPENZFS",
+        "OpenZFSConfiguration": {
+          "ParentVolumeId": "fsvol-03790c16a7f73c76e",
+          "VolumePath": "/fsx/child-vol1",
+          "StorageCapacityReservationGiB": 1,
+          "StorageCapacityQuotaGiB": 1,
+          "RecordSizeKiB": 128,
+          "DataCompressionType": "LZ4",
+          "CopyTagsToSnapshots": false,
+          "ReadOnly": false,
+          "NfsExports": [
+            {
+              "ClientConfigurations": [
+                {
+                  "Clients": "*",
+                  "Options": [
+                    "rw",
+                    "crossmnt"
+                  ]
+                }
+              ]
+            }
+          ],
+          "UserAndGroupQuotas": [
+            {
+              "Type": "USER",
+              "Id": 0,
+              "StorageCapacityQuotaGiB": 0
+            },
+            {
+              "Type": "GROUP",
+              "Id": 0,
+              "StorageCapacityQuotaGiB": 0
+            }
+          ]
+        }
       }
     ],
     "ResponseMetadata": {

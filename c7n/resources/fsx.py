@@ -10,10 +10,10 @@ from c7n.query import (
     DescribeWithResourceTags)
 from c7n.actions import BaseAction
 from c7n.tags import Tag, TagDelayedAction, RemoveTag, coalesce_copy_user_tags, TagActionFilter
-from c7n.utils import type_schema, local_session, chunks
-from c7n.filters import Filter
+from c7n.utils import type_schema, local_session, chunks, group_by
+from c7n.filters import Filter, ListItemFilter
 from c7n.filters.kms import KmsRelatedFilter
-from c7n.filters.vpc import SubnetFilter
+from c7n.filters.vpc import SubnetFilter, VpcFilter
 from c7n.filters.backup import ConsecutiveAwsBackupsFilter
 
 
@@ -35,10 +35,12 @@ class FSx(QueryResourceManager):
     class resource_type(TypeInfo):
         service = 'fsx'
         enum_spec = ('describe_file_systems', 'FileSystems', None)
-        name = id = 'FileSystemId'
+        id = 'FileSystemId'
+        name = 'DNSName'
         arn = "ResourceARN"
         date = 'CreationTime'
         cfn_type = 'AWS::FSx::FileSystem'
+        id_prefix = 'fs-'
 
     source_mapping = {
         'describe': DescribeFSx
@@ -68,12 +70,43 @@ class FSxVolume(QueryResourceManager):
             'OpenZFSConfiguration.VolumePath'
         )
         universal_taggable = object()
+        permissions_augment = ('fsx:ListTagsForResource',)
+        id_prefix = 'fsvol-'
 
     source_mapping = {
         "describe": DescribeWithResourceTags
     }
     permissions = ('fsx:DescribeVolumes', )
-    # TODO: server side filtering on ids
+
+
+@FSx.filter_registry.register('volume')
+class FSxVolumesFilter(ListItemFilter):
+    schema = type_schema(
+        'volume',
+        attrs={"$ref": "#/definitions/filters_common/list_item_attrs"},
+        count={"type": "number"},
+        count_op={"$ref": "#/definitions/filters_common/comparison_operators"}
+    )
+    annotation_key = 'c7n:Volumes'
+    permissions = ('fsx:DescribeVolumes', 'fsx:ListTagsForResource')
+
+    def __init__(self, data, manager=None):
+        data['key'] = f'"{self.annotation_key}"'
+        super().__init__(data, manager)
+
+    def process(self, resources, event=None):
+        vol = self.manager.get_resource_manager('aws.fsx-volume')
+
+        # NOTE: each fsx item contains only RootVolumeId and does not contain
+        # children volumes ids. So, cannot filter out individual volumes by ids
+
+        volumes = vol.resources()
+        mapping = group_by(volumes, 'FileSystemId')
+
+        model = self.manager.get_model()
+        for res in resources:
+            res[self.annotation_key] = mapping.get(res[model.id], [])
+        return super().process(resources, event)
 
 
 @resources.register('fsx-backup')
@@ -477,6 +510,12 @@ class ConsecutiveBackups(Filter):
 class Subnet(SubnetFilter):
 
     RelatedIdsExpression = 'SubnetIds[]'
+
+
+@FSx.filter_registry.register('vpc')
+class VpcFilter(VpcFilter):
+
+    RelatedIdsExpression = "VpcId"
 
 
 FSx.filter_registry.register('consecutive-aws-backups', ConsecutiveAwsBackupsFilter)

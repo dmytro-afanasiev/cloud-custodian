@@ -6,11 +6,12 @@ from datetime import datetime, timedelta
 
 from c7n.manager import resources
 from c7n.query import (
-    QueryResourceManager, TypeInfo, DescribeSource, RetryPageIterator)
+    QueryResourceManager, TypeInfo, DescribeSource, RetryPageIterator,
+    DescribeWithResourceTags)
 from c7n.actions import BaseAction
 from c7n.tags import Tag, TagDelayedAction, RemoveTag, coalesce_copy_user_tags, TagActionFilter
 from c7n.utils import type_schema, local_session, chunks
-from c7n.filters import Filter, ValueFilter
+from c7n.filters import Filter
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.filters.vpc import SubnetFilter
 from c7n.filters.backup import ConsecutiveAwsBackupsFilter
@@ -68,6 +69,9 @@ class FSxVolume(QueryResourceManager):
         )
         universal_taggable = object()
 
+    source_mapping = {
+        "describe": DescribeWithResourceTags
+    }
     permissions = ('fsx:DescribeVolumes', )
     # TODO: server side filtering on ids
 

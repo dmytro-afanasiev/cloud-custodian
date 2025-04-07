@@ -466,6 +466,26 @@ class TestFSx(BaseTest):
         self.assertEqual(len(resources), 1)
 
 
+class TestFSxVolume(BaseTest):
+    def test_fsx_volume_query(self):
+        session_factory = self.replay_flight_data('test_fsx_volume_query')
+        p = self.load_policy(
+            {
+                "name": "fsx_volume_query",
+                "resource": "aws.fsx-volume",
+                "filters": [{
+                    "type": "value",
+                    "key": "Lifecycle",
+                    "value": "AVAILABLE"
+                }]
+            },
+            session_factory=session_factory,
+        )
+
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+
+
 class TestFSxBackup(BaseTest):
     def test_fsx_backup_delete(self):
         session_factory = self.replay_flight_data('test_fsx_backup_delete')

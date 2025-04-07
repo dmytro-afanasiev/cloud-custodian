@@ -10,7 +10,7 @@ from c7n.query import (
 from c7n.actions import BaseAction
 from c7n.tags import Tag, TagDelayedAction, RemoveTag, coalesce_copy_user_tags, TagActionFilter
 from c7n.utils import type_schema, local_session, chunks
-from c7n.filters import Filter
+from c7n.filters import Filter, ValueFilter
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.filters.vpc import SubnetFilter
 from c7n.filters.backup import ConsecutiveAwsBackupsFilter
@@ -42,6 +42,34 @@ class FSx(QueryResourceManager):
     source_mapping = {
         'describe': DescribeFSx
     }
+
+
+@resources.register('fsx-volume')
+class FSxVolume(QueryResourceManager):
+
+    class resource_type(TypeInfo):
+        service = 'fsx'
+        enum_spec = ('describe_volumes', 'Volumes', None)
+        name = 'Name'
+        id = 'VolumeId'
+        arn = 'ResourceARN'
+        date = 'CreationTime'
+        cfn_type = 'AWS::FSx::Volume'
+        filter_name = 'VolumeIds'
+        filter_type = 'list'
+        default_report_fields = (
+            'CreationTime',
+            'FileSystemId',
+            'Name',
+            'VolumeId',
+            'VolumeType',
+            'Lifecycle',
+            'OpenZFSConfiguration.VolumePath'
+        )
+        universal_taggable = object()
+
+    permissions = ('fsx:DescribeVolumes', )
+    # TODO: server side filtering on ids
 
 
 @resources.register('fsx-backup')

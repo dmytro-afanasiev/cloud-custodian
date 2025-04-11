@@ -1785,21 +1785,26 @@ class AnnotationSweeperTest(unittest.TestCase):
 
 
 class TestGenericRelatedFilter(BaseTest):
-    def test_ebs_volume_generic_filter(self):
-        session_factory = self.replay_flight_data("test_ebs_volume_related_filter")
+    def test_ebs_volume_generic_policy_filter(self):
+        session_factory = self.replay_flight_data("test_ebs_volume_policy_filter")
 
         p = self.load_policy(
             {
-                "name": "cloudtrail-related-bucket",
+                "name": "ebs-snapshots-related-volumes",
                 "resource": "aws.ebs-snapshot",
                 "filters": [
                     {
-                        "type": "related",
-                        "related_id_expression": "VolumeId",
-                        "annotation_key": "Volume",
-                        "resource": "aws.ebs",
-                        "key": "AvailabilityZone",
-                        "value": "us-east-1a"
+                        "type": "policy",
+                        "ids": "VolumeId",
+                        "annotation": "Volume",
+                        "policy": {
+                            "resource": "aws.ebs",
+                            "filters": [{
+                                "type": "value",
+                                "key": "AvailabilityZone",
+                                "value": "us-east-1a"
+                            }]
+                        },
                     }
                 ],
             },
@@ -1807,6 +1812,7 @@ class TestGenericRelatedFilter(BaseTest):
         )
         resources = p.run()
         self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0]['Volume'][0]['VolumeId'], resources[0]['VolumeId'])
 
 
 if __name__ == "__main__":

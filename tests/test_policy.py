@@ -943,7 +943,7 @@ class PolicyMetaLint(BaseTest):
                 if n in (
                     "event",
                     "value",
-                    "related",
+                    "policy",
                     "tag-count",
                     "marked-for-op",
                     "offhour",

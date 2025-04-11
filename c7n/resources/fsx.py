@@ -35,8 +35,7 @@ class FSx(QueryResourceManager):
     class resource_type(TypeInfo):
         service = 'fsx'
         enum_spec = ('describe_file_systems', 'FileSystems', None)
-        id = 'FileSystemId'
-        name = 'DNSName'
+        name = id = 'FileSystemId'
         arn = "ResourceARN"
         date = 'CreationTime'
         cfn_type = 'AWS::FSx::FileSystem'

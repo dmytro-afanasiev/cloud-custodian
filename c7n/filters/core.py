@@ -798,18 +798,18 @@ class PolicyFilter(Filter):
 
     def get_related(self, resources):
         related_manager = self.get_related_manager()
-        related_model = related_manager.get_model()
+        model = related_manager.get_model()
 
         if 'ids' not in self.data:
             related = related_manager.resources()
         else:  # 'ids' in data
             related_ids = self.get_related_ids(self.data['ids'], resources)
             if len(related_ids) > self.FetchThreshold:
-                related = [r for r in related_manager.resources() if r[related_model.id] in related_ids]
+                related = [r for r in related_manager.resources() if r[model.id] in related_ids]
             else:
                 related = self._get_by_ids_with_filtering(related_manager, related_ids)
 
-        return {r[related_model.id]: r for r in related}
+        return {r[model.id]: r for r in related}
 
     def _add_annotation(self, resource, related):
         if 'annotation' not in self.data:
@@ -845,7 +845,7 @@ class PolicyFilter(Filter):
         return [r for r in resources if self.check_resource(r, related)]
 
 
-FilterRegistry.value_filter_class =  ValueFilter
+FilterRegistry.value_filter_class = ValueFilter
 
 
 class AgeFilter(Filter):

@@ -108,7 +108,6 @@ class AzureCredential:
 
             command = ['account', 'show', '--output', 'json']
             if az_identity_version <= '1.19.0':
-                # in case that version of azure-identity is used.
                 # 1.19 has no patch releases so can check version like that
                 command.insert(0, 'az')
                 command = ' '.join(command)

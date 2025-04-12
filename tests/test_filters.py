@@ -1786,7 +1786,7 @@ class AnnotationSweeperTest(unittest.TestCase):
 
 class TestGenericRelatedFilter(BaseTest):
     def test_ebs_volume_generic_policy_filter(self):
-        session_factory = self.replay_flight_data("test_ebs_volume_policy_filter")
+        session_factory = self.replay_flight_data("test_ebs_volume_related_filter")
 
         p = self.load_policy(
             {

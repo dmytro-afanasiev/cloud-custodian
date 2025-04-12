@@ -779,14 +779,17 @@ class PolicyFilter(Filter):
     FetchThreshold = 10
 
     def get_permissions(self):
-        return self.get_related_manager().get_permissions()
+        rm = self.get_related_manager()
+        return rm.get_permissions() if rm else ()
 
     @staticmethod
     def get_related_ids(path, resources):
         return set(jmespath_search("[].%s" % path, resources))
 
     def get_related_manager(self):
-        policy = self.data['policy']
+        policy = self.data.get('policy')
+        if not policy:
+            return
         return self.manager.get_resource_manager(policy['resource'], policy)
 
     @staticmethod

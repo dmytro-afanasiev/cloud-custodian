@@ -12,6 +12,7 @@ import os
 
 from c7n.exceptions import PolicyValidationError, PolicyExecutionError
 from c7n.executor import MainThreadExecutor
+from c7n.filters.core import PolicyFilter
 from c7n import filters as base_filters
 from c7n.resources.ec2 import filters
 from c7n.resources.elb import ELB
@@ -1785,7 +1786,7 @@ class AnnotationSweeperTest(unittest.TestCase):
 
 
 class TestGenericRelatedFilter(BaseTest):
-    def test_ebs_volume_generic_policy_filter(self):
+    def test_ebs_snapshot_related_volume(self):
         session_factory = self.replay_flight_data("test_ebs_volume_related_filter")
 
         p = self.load_policy(
@@ -1813,6 +1814,74 @@ class TestGenericRelatedFilter(BaseTest):
         resources = p.run()
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources[0]['Volume'][0]['VolumeId'], resources[0]['VolumeId'])
+
+    def test_ebs_snapshot_related_volume_count(self):
+        session_factory = self.replay_flight_data("test_ebs_volume_related_filter")
+        p = self.load_policy(
+            {
+                "name": "ebs-snapshots-related-volumes-count",
+                "resource": "aws.ebs-snapshot",
+                "filters": [
+                    {
+                        "type": "policy",
+                        "ids": "VolumeId",
+                        "policy": {
+                            "resource": "aws.ebs",
+                        },
+                        "count": 1,
+                        "count_op": "ge"
+                    }
+                ],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources[0].get('Volume'), None)
+
+    def test_ebs_snapshot_related_volume_annotation_overlap(self):
+        session_factory = self.replay_flight_data("test_ebs_volume_related_filter")
+        p = self.load_policy(
+            {
+                "name": "ebs-snapshots-related-volumes-annotation-overlap",
+                "resource": "aws.ebs-snapshot",
+                "filters": [
+                    {
+                        "type": "policy",
+                        "ids": "VolumeId",
+                        "annotation": "VolumeId",
+                        "policy": {
+                            "resource": "aws.ebs",
+                        },
+                    }
+                ],
+            },
+            session_factory=session_factory,
+        )
+        with self.assertRaises(PolicyExecutionError):
+            p.run()
+
+    def test_esc_cluster_all_tasks(self):
+        session_factory = self.replay_flight_data("test_ecs_task")
+        p = self.load_policy(
+            {
+                "name": "esc-cluster-all-tasks",
+                "resource": "aws.ecs",
+                "filters": [
+                    {
+                        "type": "policy",
+                        "annotation": "AllTasks",
+                        "policy": {
+                            "resource": "aws.ecs-task",
+                        },
+                    }
+                ],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(len(resources[0]['AllTasks']), 4)
 
 
 if __name__ == "__main__":

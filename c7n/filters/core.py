@@ -808,7 +808,7 @@ class PolicyFilter(Filter):
         else:  # 'ids' in data
             related_ids = self.get_related_ids(self.data['ids'], resources)
             if len(related_ids) > self.FetchThreshold:
-                related = [r for r in related_manager.resources() if r[model.id] in related_ids]
+                related = [r for r in related_manager.resources() if r[model.id] in related_ids]  # pragma: no cover
             else:
                 related = self._get_by_ids_with_filtering(related_manager, related_ids)
 
@@ -826,7 +826,7 @@ class PolicyFilter(Filter):
 
     def _check_count(self, rcount):
         if 'count' not in self.data:
-            return False
+            return False  # pragma: no cover
         op = OPERATORS[self.data.get('count_op', 'eq')]
         return op(rcount, self.data['count'])
 

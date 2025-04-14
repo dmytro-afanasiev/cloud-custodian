@@ -12,7 +12,6 @@ import os
 
 from c7n.exceptions import PolicyValidationError, PolicyExecutionError
 from c7n.executor import MainThreadExecutor
-from c7n.filters.core import PolicyFilter
 from c7n import filters as base_filters
 from c7n.resources.ec2 import filters
 from c7n.resources.elb import ELB

@@ -640,3 +640,28 @@ class TestElastiCacheUser(BaseTest):
         self.assertEqual(len(resources), 1)
         users = client.describe_users(UserId='c7n-user')["Users"]
         assert users[0]["Status"] == "deleting"
+
+    def test_elasticace_query_node_info(self):
+        session_factory = self.replay_flight_data("test_elasticache_query_node_info")
+        p = self.load_policy(
+            {
+                "name": "elasticache-node-default-port",
+                "resource": "aws.cache-cluster",
+                "query": [{
+                    "Name": "ShowCacheNodeInfo",
+                    "Value": True
+                }],
+                "filters": [{
+                    "type": "list-item",
+                    "key": "CacheNodes",
+                    "attrs": [{
+                        "type": "value",
+                        "key": "Endpoint.Port",
+                        "value": 11211
+                    }]
+                }],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+        self.assertEqual(len(resources), 1)

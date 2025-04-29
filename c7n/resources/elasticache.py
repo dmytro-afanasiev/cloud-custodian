@@ -13,10 +13,10 @@ from c7n.filters import FilterRegistry, AgeFilter
 import c7n.filters.vpc as net_filters
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.manager import resources
-from c7n.query import QueryResourceManager, TypeInfo
+from c7n.query import QueryResourceManager, TypeInfo, DescribeSource, ConfigSource
 from c7n.tags import universal_augment
 from c7n.utils import (
-    local_session, chunks, snapshot_identifier, type_schema, jmespath_search, get_retry)
+    local_session, chunks, snapshot_identifier, type_schema, jmespath_search, get_retry, QueryParser)
 
 from .aws import shape_validate
 
@@ -24,6 +24,25 @@ filters = FilterRegistry('elasticache.filters')
 actions = ActionRegistry('elasticache.actions')
 
 TTYPE = re.compile('cache.t1')
+
+
+class ElastiCacheQueryParser(QueryParser):
+
+    QuerySchema = {
+        'ShowCacheNodeInfo': bool,
+        'ShowCacheClustersNotInReplicationGroups': bool,
+    }
+    multi_value = False
+    value_key = 'Value'
+
+
+class DescribeElastiCache(DescribeSource):
+
+    def get_query_params(self, query_params):
+        query_params = query_params or {}
+        for q in ElastiCacheQueryParser.parse(self.manager.data.get('query', [])):
+            query_params[q['Name']] = q['Value']
+        return query_params
 
 
 @resources.register('cache-cluster')
@@ -48,6 +67,11 @@ class ElastiCacheCluster(QueryResourceManager):
     action_registry = actions
     permissions = ('elasticache:ListTagsForResource',)
     augment = universal_augment
+
+    source_mapping = {
+        'describe': DescribeElastiCache,
+        'config': ConfigSource
+    }
 
 
 @filters.register('security-group')

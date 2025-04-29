@@ -16,7 +16,8 @@ from c7n.manager import resources
 from c7n.query import QueryResourceManager, TypeInfo, DescribeSource, ConfigSource
 from c7n.tags import universal_augment
 from c7n.utils import (
-    local_session, chunks, snapshot_identifier, type_schema, jmespath_search, get_retry, QueryParser)
+    local_session, chunks, snapshot_identifier, type_schema, jmespath_search,
+    get_retry, QueryParser)
 
 from .aws import shape_validate
 

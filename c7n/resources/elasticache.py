@@ -116,6 +116,24 @@ class SubnetFilter(net_filters.SubnetFilter):
         return super(SubnetFilter, self).process(resources, event)
 
 
+@filters.register('vpc')
+class VpcFilter(net_filters.VpcFilter):
+
+    RelatedIdsExpression = ""
+
+    def get_related_ids(self, resources):
+        return {
+            self.groups[res['CacheSubnetGroupName']]['VpcId'] for res in resources
+        }
+
+    def process(self, resources, event=None):
+        self.groups = {
+            r['CacheSubnetGroupName']: r
+            for r in self.manager.get_resource_manager('cache-subnet-group').resources()
+        }
+        return super().process(resources, event)
+
+
 filters.register('network-location', net_filters.NetworkLocation)
 
 

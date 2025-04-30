@@ -38,6 +38,27 @@ class ElastiCacheQueryParser(QueryParser):
 
 
 class DescribeElastiCache(DescribeSource):
+    """
+    Allows to use query to retrieve more information
+
+    :example
+
+    .. code-block:: yaml
+
+        policies:
+          - name: cache-node-with-default-port
+            resource: aws.cache-cluster
+            query:
+              - Name: ShowCacheNodeInfo
+                Value: true
+            filters:
+              - type: list-item
+                key: CacheNodes
+                attrs:
+                  - type: value
+                    key: Endpoint.Port
+                    value: 11211
+    """
 
     def get_query_params(self, query_params):
         query_params = query_params or {}
@@ -118,6 +139,20 @@ class SubnetFilter(net_filters.SubnetFilter):
 
 @filters.register('vpc')
 class VpcFilter(net_filters.VpcFilter):
+    """Filters elasticache clusters based on their associated VPCs
+
+    :example:
+
+    .. code-block:: yaml
+
+        policies:
+          - name: cache-node-with-default-vpc
+            resource: aws.cache-cluster
+            filters:
+              - type: vpc
+                key: IsDefault
+                value: false
+    """
 
     RelatedIdsExpression = ""
 

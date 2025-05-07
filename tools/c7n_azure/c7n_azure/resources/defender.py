@@ -43,7 +43,6 @@ class DefenderPricing(QueryResourceManager, metaclass=QueryMeta):
             }
 
 
-
 @resources.register("defender-setting")
 class DefenderSetting(QueryResourceManager, metaclass=QueryMeta):
     """Top-level Microsoft Defender settings for a subscription.

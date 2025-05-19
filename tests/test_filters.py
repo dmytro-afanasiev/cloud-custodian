@@ -1794,7 +1794,7 @@ class TestGenericRelatedFilter(BaseTest):
                 "resource": "aws.ebs-snapshot",
                 "filters": [
                     {
-                        "type": "policy",
+                        "type": "related",
                         "ids": "VolumeId",
                         "annotation": "Volume",
                         "policy": {
@@ -1822,7 +1822,7 @@ class TestGenericRelatedFilter(BaseTest):
                 "resource": "aws.ebs-snapshot",
                 "filters": [
                     {
-                        "type": "policy",
+                        "type": "related",
                         "ids": "VolumeId",
                         "policy": {
                             "resource": "aws.ebs",
@@ -1846,7 +1846,7 @@ class TestGenericRelatedFilter(BaseTest):
                 "resource": "aws.ebs-snapshot",
                 "filters": [
                     {
-                        "type": "policy",
+                        "type": "related",
                         "ids": "VolumeId",
                         "annotation": "VolumeId",
                         "policy": {
@@ -1868,7 +1868,7 @@ class TestGenericRelatedFilter(BaseTest):
                 "resource": "aws.ecs",
                 "filters": [
                     {
-                        "type": "policy",
+                        "type": "related",
                         "annotation": "AllTasks",
                         "policy": {
                             "resource": "aws.ecs-task",

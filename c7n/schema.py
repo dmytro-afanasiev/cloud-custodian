@@ -29,7 +29,7 @@ from c7n.resources import load_available
 from c7n.resolver import ValuesFrom
 from c7n.filters.core import (
     ValueFilter,
-    PolicyFilter,
+    GenericRelatedFilter,
     EventFilter,
     ReduceFilter,
     OPERATORS,
@@ -253,7 +253,7 @@ def get_default_definitions(resource_defs):
         'actions': {},
         'filters': {
             'value': ValueFilter.schema,
-            'policy': PolicyFilter.schema,
+            'related': GenericRelatedFilter.schema,
             'event': EventFilter.schema,
             'reduce': ReduceFilter.schema,
             # Shortcut form of value filter as k=v

@@ -121,7 +121,7 @@ class FilterRegistry(PluginRegistry):
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
         self.register('value', ValueFilter)
-        self.register('policy', PolicyFilter)
+        self.register('related', GenericRelatedFilter)
         self.register('or', Or)
         self.register('and', And)
         self.register('not', Not)
@@ -753,10 +753,10 @@ class ValueFilter(BaseValueFilter):
         return sentinel, value
 
 
-class PolicyFilter(Filter):
+class GenericRelatedFilter(Filter):
 
     schema = type_schema(
-        'policy',
+        'related',
         required=['policy'],
         policy={
             'type': 'object',

@@ -605,7 +605,7 @@ class GlueDataCatalog(ResourceManager):
 
     def generate_arn(self, res):
         """
-        https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html#awsglue-rootcatalog  # noqa
+        https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsglue.html
         One resource per region and one arn per region
         """
         return generate_arn(
